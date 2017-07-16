@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>awk命令简介（一） | 子实</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="干货来源于酷壳的AWK 简明教程以及Linux与unix shell编程指南。 本文纯属搬砖。 最近经常遇到需要处理大段文本输出的情况，所以想学习一下awk命令，这个命令更像是一个微型语言。 《awk命令简介（一）》先着重介绍awk的应用场景，内容主要来自酷壳的AWK 简明教程。">
+<meta name="keywords" content="编程,脚本,Shell,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="awk命令简介（一）">
+<meta property="og:url" content="https://zlotus.github.io/2014/07/11/awk-simple-guide-1/index.html">
+<meta property="og:site_name" content="子实">
+<meta property="og:description" content="干货来源于酷壳的AWK 简明教程以及Linux与unix shell编程指南。 本文纯属搬砖。 最近经常遇到需要处理大段文本输出的情况，所以想学习一下awk命令，这个命令更像是一个微型语言。 《awk命令简介（一）》先着重介绍awk的应用场景，内容主要来自酷壳的AWK 简明教程。">
+<meta property="og:updated_time" content="2014-07-11T11:11:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="awk命令简介（一）">
+<meta name="twitter:description" content="干货来源于酷壳的AWK 简明教程以及Linux与unix shell编程指南。 本文纯属搬砖。 最近经常遇到需要处理大段文本输出的情况，所以想学习一下awk命令，这个命令更像是一个微型语言。 《awk命令简介（一）》先着重介绍awk的应用场景，内容主要来自酷壳的AWK 简明教程。">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">子实</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">子实</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/zlotus/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                16
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                13
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/zlotus/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/Zealot_uS" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.facebook.com/qinzishi" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.linkedin.com/in/zishiqin/" target="_blank" title="linkedin" class=tooltip>
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://plus.google.com/u/0/+LotusQin" target="_blank" title="google-plus" class=tooltip>
+                            <i class="fa fa-google-plus"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-awk-simple-guide-1" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            awk命令简介（一）
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2014/07/11/awk-simple-guide-1/">
+            <time datetime="2014-07-11T11:11:27.000Z" itemprop="datePublished">2014-07-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Shell/">Shell</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Shell/">Shell</a>, <a class="tag-link" href="/tags/编程/">编程</a>, <a class="tag-link" href="/tags/脚本/">脚本</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>干货来源于<a href="http://coolshell.cn/" target="_blank" rel="external">酷壳</a>的<strong><a href="http://coolshell.cn/articles/9070.html" target="_blank" rel="external">AWK 简明教程</a></strong>以及<strong>Linux与unix shell编程指南</strong>。</p>
+<p>本文纯属搬砖。</p>
+<p>最近经常遇到需要处理大段文本输出的情况，所以想学习一下<code>awk</code>命令，这个命令更像是一个微型语言。</p>
+<p>《awk命令简介（一）》先着重介绍<code>awk</code>的应用场景，内容主要来自<a href="http://coolshell.cn/" target="_blank" rel="external">酷壳</a>的<strong><a href="http://coolshell.cn/articles/9070.html" target="_blank" rel="external">AWK 简明教程</a></strong>。</p>
+<a id="more"></a>
+<h1 id="awk快速上手"><a href="#awk快速上手" class="headerlink" title="awk快速上手"></a>awk快速上手</h1><h2 id="待处理的文本"><a href="#待处理的文本" class="headerlink" title="待处理的文本"></a>待处理的文本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ netstat -a &gt; output</div><div class="line">$ cat output | more -n 6</div><div class="line">$ Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)</div><div class="line">tcp4       0      0  192.168.1.100.62750    114.112.202.20.http    SYN_SENT</div><div class="line">tcp4       0      0  192.168.1.100.62749    113.103.139.251.10684  CLOSE_WAIT</div><div class="line">tcp4       0      0  192.168.1.100.62748    202.150.16.5.cslistene ESTABLISHED</div><div class="line">tcp4       0      0  192.168.1.100.62747    114.112.202.20.http    ESTABLISHED</div><div class="line">tcp4       0      0  192.168.1.100.62746    114.82.234.97.12077    SYN_SENT</div></pre></td></tr></table></figure>
+<h2 id="最简单的选择列，输出第一列-1与第四列-4"><a href="#最简单的选择列，输出第一列-1与第四列-4" class="headerlink" title="最简单的选择列，输出第一列$1与第四列$4"></a>最简单的选择列，输出第一列<code>$1</code>与第四列<code>$4</code></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'&#123;print $1, $4&#125;'</span> output</div><div class="line">Proto Local-Address</div><div class="line">tcp4 192.168.1.100.62750</div><div class="line">tcp4 192.168.1.100.62749</div><div class="line">tcp4 192.168.1.100.62748</div><div class="line">tcp4 192.168.1.100.62747</div></pre></td></tr></table></figure>
+<h2 id="C风格的格式化输出"><a href="#C风格的格式化输出" class="headerlink" title="C风格的格式化输出"></a>C风格的格式化输出</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'&#123;printf "%-8s %-8s %-8s %-18s %-22s %-15s\n", $1, $2, $3, $4, $5, $6&#125;'</span> output</div><div class="line">Proto    Recv-Q   Send-Q   Local-Address      Foreign-Address        (state)</div><div class="line">tcp4     0        0        192.168.1.100.62750 114.112.202.20.http    SYN_SENT</div><div class="line">tcp4     0        0        192.168.1.100.62749 113.103.139.251.10684  CLOSE_WAIT</div><div class="line">tcp4     0        0        192.168.1.100.62748 202.150.16.5.cslistene ESTABLISHED</div><div class="line">tcp4     0        0        192.168.1.100.62747 114.112.202.20.http    ESTABLISHED</div></pre></td></tr></table></figure>
+<h2 id="过滤条目"><a href="#过滤条目" class="headerlink" title="过滤条目"></a>过滤条目</h2><ol>
+<li><p>取第三列为0且第6列位“LISTEN”的数据：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$3==0 &amp;&amp; $6=="LISTEN"'</span> output</div><div class="line">tcp4       0      0  *.oms                  *.*                    LISTEN</div><div class="line">tcp4       0      0  *.socks                *.*                    LISTEN</div><div class="line">tcp4       0      0  *.58932                *.*                    LISTEN</div><div class="line">tcp4       0      0  localhost.ddi-tcp-1    *.*                    LISTEN</div><div class="line">tcp4       0      0  localhost.51219        *.*                    LISTEN</div></pre></td></tr></table></figure>
+</li>
+<li><p>同时用内建变量<code>NR</code>选出表头（第一行）：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$3==0 &amp;&amp; $6=="LISTEN" || NR==1'</span> output</div><div class="line">Proto Recv-Q Send-Q  Local-Address          Foreign-Address        (state)</div><div class="line">tcp4       0      0  *.oms                  *.*                    LISTEN</div><div class="line">tcp4       0      0  *.socks                *.*                    LISTEN</div><div class="line">tcp4       0      0  *.58932                *.*                    LISTEN</div><div class="line">tcp4       0      0  localhost.ddi-tcp-1    *.*                    LISTEN</div></pre></td></tr></table></figure>
+</li>
+<li><p>取第三列大于0的数据：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">' $3&gt;0 &#123;print $0&#125;'</span> output</div><div class="line">Proto Recv-Q Send-Q  Local-Address          Foreign-Address        (state)</div><div class="line">tcp4       0     68  192.168.1.100.62743    123.138.206.178.8948   ESTABLISHED</div><div class="line">tcp4       0     68  192.168.1.100.62720    123.138.54.160.mdqs    ESTABLISHED</div><div class="line">tcp4       0      9  192.168.1.100.62707    180.97.152.55.http-alt FIN_WAIT_1</div><div class="line">tcp4       0     68  192.168.1.100.62695    123.138.206.178.8948   FIN_WAIT_1</div></pre></td></tr></table></figure>
+</li>
+<li><p>取第三列为0且第六列为“LISTEN”的数据，并进行格式输出：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$3==0 &amp;&amp; $6=="LISTEN" || NR==1 &#123;printf "%-20s %-20s %s\n",$4,$5,$6&#125;'</span> output</div><div class="line">Local-Address        Foreign-Address      (state)</div><div class="line">*.oms                *.*                  LISTEN</div><div class="line">*.socks              *.*                  LISTEN</div><div class="line">*.58932              *.*                  LISTEN</div><div class="line">localhost.ddi-tcp-1</div><div class="line">*.*                  LISTEN</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">内置变量名称</th>
+<th style="text-align:left">功能描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">$0</td>
+<td style="text-align:left">当前记录（行）</td>
+</tr>
+<tr>
+<td style="text-align:left">$1~$n</td>
+<td style="text-align:left">当前行的第n个字段（列）</td>
+</tr>
+<tr>
+<td style="text-align:left">FS</td>
+<td style="text-align:left">输入字段（列）分隔符，默认为space或tab</td>
+</tr>
+<tr>
+<td style="text-align:left">NF</td>
+<td style="text-align:left">当前记录（行）的字段（列）数</td>
+</tr>
+<tr>
+<td style="text-align:left">NR</td>
+<td style="text-align:left">总记录（行）数，多文件记录（行）数累加，不清零</td>
+</tr>
+<tr>
+<td style="text-align:left">FNR</td>
+<td style="text-align:left">当前文件记录（行）数，每文件清零</td>
+</tr>
+<tr>
+<td style="text-align:left">RS</td>
+<td style="text-align:left">输入换行符，默认系统换行符</td>
+</tr>
+<tr>
+<td style="text-align:left">OFS</td>
+<td style="text-align:left">输出字段（列）分隔符，默认为space</td>
+</tr>
+<tr>
+<td style="text-align:left">ORS</td>
+<td style="text-align:left">输出换行符，默认系统换行符</td>
+</tr>
+<tr>
+<td style="text-align:left">FILENAME</td>
+<td style="text-align:left">当前文件名</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><p>输出行号</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$3==0 &amp;&amp; $6=="ESTABLISHED" || NR==1 &#123;printf "%02s %s %-20s %-20s %s %s", NR, FNR, $4, $5, $6, ORS&#125;'</span> output</div><div class="line">01 1 Local-Address        Foreign-Address      (state)</div><div class="line">04 4 192.168.1.100.62748  202.150.16.5.cslistene ESTABLISHED</div><div class="line">05 5 192.168.1.100.62747  114.112.202.20.http  ESTABLISHED</div><div class="line">07 7 192.168.1.100.62744  114.112.202.20.http  ESTABLISHED</div><div class="line">11 11 192.168.1.100.62739  14.157.50.39.13566   ESTABLISHED</div></pre></td></tr></table></figure>
+</li>
+<li><p>指定输入字段（列）分隔符</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk  <span class="string">'BEGIN&#123;FS=":"&#125; &#123;print $1,$3,$6&#125;'</span> /etc/passwd</div><div class="line">nobody -2 /var/empty</div><div class="line">root 0 /var/root</div><div class="line">daemon 1 /var/root</div><div class="line">_uucp 4 /var/spool/uucp</div><div class="line">_taskgated 13 /var/empty</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li><p>也可以用<code>-F</code>指定</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ awk  -F: <span class="string">'&#123;print $1,$3,$6&#125;'</span> /etc/passwd</div></pre></td></tr></table></figure>
+</li>
+<li><p>或指定多种分隔符</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ awk  -F <span class="string">'[;:]'</span> <span class="string">'&#123;print $1,$3,$6&#125;'</span> /etc/passwd</div></pre></td></tr></table></figure>
+</li>
+<li><p>指定输出字段（列）分隔符</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk  -F: <span class="string">'&#123;print $1,$3,$6&#125;'</span> OFS=<span class="string">"\t"</span> /etc/passwd</div><div class="line">nobody  -2      /var/empty</div><div class="line">root    0       /var/root</div><div class="line">daemon  1       /var/root</div><div class="line">_uucp   4       /var/spool/uucp</div><div class="line">_taskgated      13      /var/empty</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="字符串匹配"><a href="#字符串匹配" class="headerlink" title="字符串匹配"></a>字符串匹配</h2><p><code>~</code>表示匹配开始，<code>//</code>中是模式，类似正则表达式</p>
+<ol>
+<li><p>匹配第六个字段（列）有“FIN”的记录（行）</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$6 ~ /FIN/ || NR==1 &#123;printf "%-4s %-20s %-30s %-10s\n", NR, $4, $5, $6&#125;'</span> output</div><div class="line">1    Local-Address        Foreign-Address                (state)</div><div class="line">21   192.168.1.100.62707  180.97.152.55.http-alt         FIN_WAIT_1</div><div class="line">22   192.168.1.100.62695  123.138.206.178.8948           FIN_WAIT_1</div><div class="line">24   192.168.1.100.62690  218.86.133.247.8368            FIN_WAIT_1</div><div class="line">25   192.168.1.100.62689  14.157.50.39.13566             FIN_WAIT_1</div></pre></td></tr></table></figure>
+</li>
+<li><p>或是有“WAIT”的记录</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$6 ~ /WAIT/ || NR==1 &#123;printf "%-4s %-20s %-30s %-10s\n", NR, $4, $5, $6&#125;'</span> output</div><div class="line">1    Local-Address        Foreign-Address                (state)</div><div class="line">3    192.168.1.100.62749  113.103.139.251.10684          CLOSE_WAIT</div><div class="line">21   192.168.1.100.62707  180.97.152.55.http-alt         FIN_WAIT_1</div><div class="line">22   192.168.1.100.62695  123.138.206.178.8948           FIN_WAIT_1</div><div class="line">24   192.168.1.100.62690  218.86.133.247.8368            FIN_WAIT_1</div></pre></td></tr></table></figure>
+</li>
+<li><p>或是直接匹配一整条记录（行）</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'/LISTEN/'</span> output</div><div class="line">tcp4       0      0  *.oms                  *.*                    LISTEN</div><div class="line">tcp4       0      0  *.socks                *.*                    LISTEN</div><div class="line">tcp4       0      0  *.58932                *.*                    LISTEN</div><div class="line">tcp4       0      0  localhost.ddi-tcp-1    *.*                    LISTEN</div><div class="line">tcp4       0      0  localhost.51219        *.*                    LISTEN</div></pre></td></tr></table></figure>
+</li>
+<li><p>像正则表达式一样，使用<code>|</code>表示“或”</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$6 ~ /CLOSE|LAST/ &#123;printf "%-4s %-20s %-30s %-10s\n", NR, $4, $5, $6&#125;'</span> output</div><div class="line">3    192.168.1.100.62749  113.103.139.251.10684          CLOSE_WAIT</div><div class="line">10   192.168.1.100.62741  114.82.234.97.12077            LAST_ACK</div><div class="line">13   192.168.1.100.62729  114.82.234.97.12077            LAST_ACK</div><div class="line">16   192.168.1.100.62722  114.82.234.97.12077            LAST_ACK</div><div class="line">19   192.168.1.100.62711  113.103.139.251.10684          LAST_ACK</div></pre></td></tr></table></figure>
+</li>
+<li><p>用<code>!</code>取反</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'$6 !~ /WAIT/ &#123;printf "%-4s %-20s %-30s %-10s\n", NR, $4, $5, $6&#125;'</span> output</div><div class="line">1    Local-Address        Foreign-Address                (state)</div><div class="line">2    192.168.1.100.62750  114.112.202.20.http            SYN_SENT</div><div class="line">4    192.168.1.100.62748  202.150.16.5.cslistene         ESTABLISHED</div><div class="line">5    192.168.1.100.62747  114.112.202.20.http            ESTABLISHED</div><div class="line">6    192.168.1.100.62746  114.82.234.97.12077            SYN_SENT</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li><p>也可以</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'!/WAIT/'</span> output</div><div class="line">Proto Recv-Q Send-Q  Local-Address          Foreign-Address        (state)</div><div class="line">tcp4       0      0  192.168.1.100.62750    114.112.202.20.http    SYN_SENT</div><div class="line">tcp4       0      0  192.168.1.100.62748    202.150.16.5.cslistene ESTABLISHED</div><div class="line">tcp4       0      0  192.168.1.100.62747    114.112.202.20.http    ESTABLISHED</div><div class="line">tcp4       0      0  192.168.1.100.62746    114.82.234.97.12077    SYN_SENT</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="拆分文件"><a href="#拆分文件" class="headerlink" title="拆分文件"></a>拆分文件</h2><ol>
+<li><p>按照第六个字段（列）拆分文件</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'NR!=1 &#123;print &gt; $6&#125;'</span> output</div><div class="line">$ ls</div><div class="line">CLOSE_WAIT  ESTABLISHED FIN_WAIT_1  FIN_WAIT_2  LAST_ACK    LISTEN      SYN_SENT    output</div></pre></td></tr></table></figure>
+</li>
+<li><p>也可以指定要输出的字段（列）</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'NR!=1 &#123;print $4, $5 &gt; $6&#125;'</span> output</div></pre></td></tr></table></figure>
+</li>
+<li><p>或是更加复杂，注意<code>quote&gt;</code>说明了<code>awk</code>是一个脚本解释器</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'NR!=1&#123;if($6 ~ /TIME|ESTABLISHED/) print &gt; "1.txt";</span></div><div class="line">quote&gt; else if($6 ~ /LISTEN/) print &gt; "2.txt";</div><div class="line">quote&gt; else print &gt; "3.txt" &#125;' output</div><div class="line"></div><div class="line">$ ls ?.txt</div><div class="line">1.txt  2.txt  3.txt</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="统计"><a href="#统计" class="headerlink" title="统计"></a>统计</h2><ol>
+<li><p>统计当前目录下.py, .pyc, .pyo文件的总大小</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ ls -l *.py *.pyc *.pyo | awk <span class="string">'&#123;sum+=$5&#125; END &#123;print sum&#125;'</span></div><div class="line">11609730</div></pre></td></tr></table></figure>
+</li>
+<li><p>或是按照第六个字段（列）统计，类似GROUP BY，其中<code>a</code>类似Python中的dict（键-值）</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$ awk <span class="string">'NR!=1 &#123;a[$6]++;&#125; END &#123;for (i in a) print i ", " a[i];&#125;'</span> output</div><div class="line">LISTEN, 12</div><div class="line">FIN_WAIT_1, 51</div><div class="line">FIN_WAIT_2, 23</div><div class="line">SYN_SENT, 3常见的正则表达式功能</div><div class="line">LAST_ACK, 21</div><div class="line">CLOSE_WAIT, 5</div><div class="line">ESTABLISHED, 20</div></pre></td></tr></table></figure>
+</li>
+<li><p>统计每个用户的进程所占用的内存信息</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ aux | awk <span class="string">'NR!=1 &#123;a[$1]+=$6;&#125; END &#123; for(i in a) print i ", " a[i]"KB";&#125;'</span></div><div class="line">root, 718624KB</div><div class="line">_usbmuxd, 2768KB</div><div class="line">_locationd, 7780KB</div><div class="line">_mdnsresponder, 3760KB</div><div class="line">zealot, 3800464KB</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>-EOF-</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2014/07/11/awk-simple-guide-1/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://zlotus.github.io/2014/07/11/awk-simple-guide-1/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2014/07/17/the-story-of-the-past/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    平凡之路
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2014/07/07/using-cli-like-a-hacker/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">学习T神的《像黑客一样使用Linux命令行》</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/01/18/init-2017/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2017/01/18/init-2017/" class="title">初始化2017</a></p>
+                            <p class="item-date"><time datetime="2017-01-18T14:28:23.000Z" itemprop="datePublished">2017-01-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/01/02/live-with-the-fire-wall/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2017/01/02/live-with-the-fire-wall/" class="title">一些关于大防火墙的命令</a></p>
+                            <p class="item-date"><time datetime="2017-01-02T07:40:13.000Z" itemprop="datePublished">2017-01-02</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/05/29/novel-and-logic/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2015/05/29/novel-and-logic/" class="title">小说の逻辑</a></p>
+                            <p class="item-date"><time datetime="2015-05-29T01:10:11.000Z" itemprop="datePublished">2015-05-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/05/10/yesterday-yes-a-day/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2015/05/10/yesterday-yes-a-day/" class="title">来自昨天的音轨</a></p>
+                            <p class="item-date"><time datetime="2015-05-10T01:10:11.000Z" itemprop="datePublished">2015-05-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/04/17/first-farewell/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2015/04/17/first-farewell/" class="title">第一次告别</a></p>
+                            <p class="item-date"><time datetime="2015-04-17T01:10:11.000Z" itemprop="datePublished">2015-04-17</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/Python/" style="font-size: 12px;">Python</a> <a href="/tags/Shell/" style="font-size: 14px;">Shell</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 12px;">旅行</a> <a href="/tags/日记/" style="font-size: 20px;">日记</a> <a href="/tags/杂谈/" style="font-size: 20px;">杂谈</a> <a href="/tags/电影/" style="font-size: 12px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 18px;">编程</a> <a href="/tags/脚本/" style="font-size: 16px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 子实<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://zlotus.github.io/2014/07/11/awk-simple-guide-1/';
+        
+        this.page.identifier = 'awk-simple-guide-1';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'zlotus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

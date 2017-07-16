@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>下载网易公开课的Python脚本 | 子实</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="po主算法奇菜无比，看到163的公开课上有《算法导论》，就弄了个小脚本下载。 结果发现，在OSX上，竟然比迅雷快！快好多！当然，这全怪po主当年中二，办了广电的网络…而且OSX下的迅雷运行起来有时发热会很大！ Talk is cheap…">
+<meta name="keywords" content="编程,Python,脚本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="下载网易公开课的Python脚本">
+<meta property="og:url" content="https://zlotus.github.io/2014/07/05/using-python-download-163-opencourse/index.html">
+<meta property="og:site_name" content="子实">
+<meta property="og:description" content="po主算法奇菜无比，看到163的公开课上有《算法导论》，就弄了个小脚本下载。 结果发现，在OSX上，竟然比迅雷快！快好多！当然，这全怪po主当年中二，办了广电的网络…而且OSX下的迅雷运行起来有时发热会很大！ Talk is cheap…">
+<meta property="og:updated_time" content="2014-07-06T11:29:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="下载网易公开课的Python脚本">
+<meta name="twitter:description" content="po主算法奇菜无比，看到163的公开课上有《算法导论》，就弄了个小脚本下载。 结果发现，在OSX上，竟然比迅雷快！快好多！当然，这全怪po主当年中二，办了广电的网络…而且OSX下的迅雷运行起来有时发热会很大！ Talk is cheap…">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">子实</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">子实</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/zlotus/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                16
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                13
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/zlotus/" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/Zealot_uS" target="_blank" title="twitter" class=tooltip>
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.facebook.com/qinzishi" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.linkedin.com/in/zishiqin/" target="_blank" title="linkedin" class=tooltip>
+                            <i class="fa fa-linkedin"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://plus.google.com/u/0/+LotusQin" target="_blank" title="google-plus" class=tooltip>
+                            <i class="fa fa-google-plus"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-using-python-download-163-opencourse" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            下载网易公开课的Python脚本
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2014/07/05/using-python-download-163-opencourse/">
+            <time datetime="2014-07-05T09:20:10.000Z" itemprop="datePublished">2014-07-05</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Python/">Python</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/编程/">编程</a>, <a class="tag-link" href="/tags/脚本/">脚本</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>po主算法奇菜无比，看到163的公开课上有<a href="http://v.163.com/special/opencourse/algorithms.html" title="麻省理工学院公开课：算法导论" target="_blank" rel="external">《算法导论》</a>，就弄了个小脚本下载。</p>
+<p>结果发现，在OSX上，竟然比迅雷快！快好多！当然，这全怪po主当年中二，办了广电的网络…而且OSX下的迅雷运行起来有时发热会很大！</p>
+<p>Talk is cheap…</p>
+<a id="more"></a>
+<ul>
+<li><p>用到了<a href="http://docs.python-requests.org/en/latest/" title="Requests: HTTP for Humans" target="_blank" rel="external">requests</a>库。</p>
+</li>
+<li><p>用到了<code>wget</code>下载工具。</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> requests</div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">import</span> os</div><div class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> call</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">urls_iter</span><span class="params">(origin_url=<span class="string">'http://v.163.com/special/opencourse/algorithms.html'</span>, begin_from=<span class="number">1</span>)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    *origin_url* is the origin download page of 163 OpenCourse, the default value is 'algorithms course from MIT'.</div><div class="line">    *begin_from* can make the function jump to the No.*begin_from* item to start download.</div><div class="line">    """</div><div class="line">    download_request = requests.get(origin_url)</div><div class="line"></div><div class="line">    course_list_pattern = re.compile(<span class="string">r'&lt;table class="m-clist" id="list2".*?&gt;(.*?)&lt;/table&gt;'</span>, flags=re.DOTALL)</div><div class="line">    course_pattern = re.compile(<span class="string">r'&lt;tr class="(?:u-odd|u-even)"&gt;.*?&lt;/tr&gt;'</span>, flags=re.DOTALL)</div><div class="line">    course_text = course_list_pattern.search(download_request.text).group(<span class="number">1</span>)</div><div class="line">    course_list = course_pattern.findall(course_text)</div><div class="line"></div><div class="line">    course_name_pattern = re.compile(<span class="string">r'&lt;a href=.*?&gt;(.*?)&lt;/a&gt;'</span>, flags=re.DOTALL)</div><div class="line">    course_video_pattern = re.compile(<span class="string">r'&lt;a class="downbtn" href=[\'""](.*?)[\'""].*?&gt;.*?&lt;/a&gt;'</span>, flags=re.DOTALL)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> index, course <span class="keyword">in</span> enumerate(course_list, <span class="number">1</span>):</div><div class="line">        <span class="keyword">if</span> index &lt; begin_from:</div><div class="line">            <span class="keyword">continue</span></div><div class="line"></div><div class="line">        index = <span class="string">'&#123;:0&gt;2&#125;_'</span>.format(index)</div><div class="line">        video_title = index + course_name_pattern.search(course).group(<span class="number">1</span>) + <span class="string">'.mp4'</span></div><div class="line">        video_address = course_video_pattern.search(course).group(<span class="number">1</span>)</div><div class="line">        <span class="keyword">yield</span> (video_title, video_address)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">download_course</span><span class="params">(download_list, download_dir=<span class="string">'/Users/zealot/Downloads/algorithms'</span>)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    *download_list* is a collection contains a list of tuple whose 1st element is the filename of the video,</div><div class="line">        and 2nd element is the download url of the video.</div><div class="line">    *download_dir* defines the directory where the files should be stored in.</div><div class="line"></div><div class="line">    function using common download tool `wget` to fetch videos one at a time.</div><div class="line">    raise error if `wget` not found.</div><div class="line">    """</div><div class="line">    <span class="keyword">with</span> open(<span class="string">'/dev/null'</span>) <span class="keyword">as</span> black_hole:</div><div class="line">        <span class="keyword">if</span> call([<span class="string">'which'</span>, <span class="string">'wget'</span>], stdout=black_hole):</div><div class="line">            <span class="keyword">raise</span> OSError(<span class="string">'command not found: wget'</span>)</div><div class="line"></div><div class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(download_dir):</div><div class="line">        os.makedirs(download_dir)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> video_title, video_address <span class="keyword">in</span> download_list:</div><div class="line">        call([<span class="string">'wget'</span>, <span class="string">'-c'</span>, video_address, <span class="string">'-O'</span>, os.path.join(download_dir, video_title)])</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    download_course(urls_iter())</div></pre></td></tr></table></figure>
+<ul>
+<li>找链接全部用的正则；</li>
+<li>函数默认行为是帮po主从<code>http://v.163.com/special/opencourse/algorithms.html</code>下载《算法导论》视频，并默认帮po主存到<code>/Users/zealot/Downloads/algorithms</code>目录里；</li>
+<li><code>wget -c</code>支持断点续传，对于广电渣网络来说简直是福音；</li>
+</ul>
+<p>当然，如果你想要下载<a href="http://v.163.com/special/opencourse/fouriertransforms.html" title="斯坦福大学公开课：傅里叶变换及其应用" target="_blank" rel="external">《傅里叶变换及其应用》</a>可以把最后的调用改为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    download_course(urls_iter(<span class="string">'http://v.163.com/special/opencourse/fouriertransforms.html'</span>),</div><div class="line">                    <span class="string">'/Users/zealot/downloads/fouriertransforms'</span>)</div></pre></td></tr></table></figure>
+<p>效果不错~</p>
+<p>-EOF-</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2014/07/05/using-python-download-163-opencourse/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://zlotus.github.io/2014/07/05/using-python-download-163-opencourse/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2014/07/07/using-cli-like-a-hacker/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    学习T神的《像黑客一样使用Linux命令行》
+                
+            </div>
+        </a>
+    
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/01/18/init-2017/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2017/01/18/init-2017/" class="title">初始化2017</a></p>
+                            <p class="item-date"><time datetime="2017-01-18T14:28:23.000Z" itemprop="datePublished">2017-01-18</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2017/01/02/live-with-the-fire-wall/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2017/01/02/live-with-the-fire-wall/" class="title">一些关于大防火墙的命令</a></p>
+                            <p class="item-date"><time datetime="2017-01-02T07:40:13.000Z" itemprop="datePublished">2017-01-02</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/05/29/novel-and-logic/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2015/05/29/novel-and-logic/" class="title">小说の逻辑</a></p>
+                            <p class="item-date"><time datetime="2015-05-29T01:10:11.000Z" itemprop="datePublished">2015-05-29</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/05/10/yesterday-yes-a-day/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2015/05/10/yesterday-yes-a-day/" class="title">来自昨天的音轨</a></p>
+                            <p class="item-date"><time datetime="2015-05-10T01:10:11.000Z" itemprop="datePublished">2015-05-10</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2015/04/17/first-farewell/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2015/04/17/first-farewell/" class="title">第一次告别</a></p>
+                            <p class="item-date"><time datetime="2015-04-17T01:10:11.000Z" itemprop="datePublished">2015-04-17</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/Python/" style="font-size: 12px;">Python</a> <a href="/tags/Shell/" style="font-size: 14px;">Shell</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 12px;">旅行</a> <a href="/tags/日记/" style="font-size: 20px;">日记</a> <a href="/tags/杂谈/" style="font-size: 20px;">杂谈</a> <a href="/tags/电影/" style="font-size: 12px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 18px;">编程</a> <a href="/tags/脚本/" style="font-size: 16px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 子实<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://zlotus.github.io/2014/07/05/using-python-download-163-opencourse/';
+        
+        this.page.identifier = 'using-python-download-163-opencourse';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'zlotus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
