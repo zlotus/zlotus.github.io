@@ -3,18 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>归档: 2015/5 | 子实</title>
+    <title>准备一块树莓派 | 子实</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="观察-尝试-记录">
-<meta property="og:type" content="website">
-<meta property="og:title" content="子实">
-<meta property="og:url" content="https://zlotus.github.io/archives/2015/05/index.html">
+    <meta name="description" content="准备树莓派的运行环境">
+<meta name="keywords" content="Python,Linux,Raspberry Pi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="准备一块树莓派">
+<meta property="og:url" content="https://zlotus.github.io/2017/08/13/rbp3-env/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="观察-尝试-记录">
+<meta property="og:description" content="准备树莓派的运行环境">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-13T14:15:03.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="子实">
-<meta name="twitter:description" content="观察-尝试-记录">
+<meta name="twitter:title" content="准备一块树莓派">
+<meta name="twitter:description" content="准备树莓派的运行环境">
     
 
     
@@ -209,86 +211,182 @@
 </aside>
 
             
-            <section id="main"><div class="timeline timeline-wrap">
-    
-            <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa fa-calendar"></i></span>
-                <h1 class="title">2015</h1>
-            </div>
+            <section id="main"><article id="post-rbp3-env" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2015/05/29/novel-and-logic/">小说の逻辑</a>
+        <h1 class="article-title" itemprop="name">
+            准备一块树莓派
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2015/05/29/novel-and-logic/">
-            <time datetime="2015-05-29T01:10:11.000Z" itemprop="datePublished">2015-05-29</time>
+        <a href="/2017/08/13/rbp3-env/">
+            <time datetime="2017-08-13T14:15:03.000Z" itemprop="datePublished">2017-08-13</time>
         </a>
     </div>
 
 
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Diary/">Diary</a>
+        <a class="article-category-link" href="/categories/Programming/">Programming</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/日记/">日记</a>, <a class="tag-link" href="/tags/杂谈/">杂谈</a>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
     </div>
 
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+                    </div>
                 
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2015/05/10/yesterday-yes-a-day/">来自昨天的音轨</a>
-        </h1>
-    
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>第二季度接了一个有意思的任务——用机器学习算法做数据拟合，算法本身没什么，但是如何让一个在python中的算法变成一个有界面的服务就比较有意思了。我刚好又买了一块树莓派3，于是打算把后端程序放在树莓派上运行。首先需要在新鲜出炉的树莓派上做一些环境准备……</p>
+<a id="more"></a>
+<h1 id="1-例行更新"><a href="#1-例行更新" class="headerlink" title="1. 例行更新"></a>1. 例行更新</h1><p>更新前最好用<code>df -h</code>确认一下存储卡剩余空间：</p>
+<p>固件升级并重启：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install rpi-update</div><div class="line">sudo rpi-update &amp;&amp; sudo reboot -h now</div></pre></td></tr></table></figure></p>
+<p>软件包升级<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update &amp;&amp; time sudo apt-get dist-upgrade</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>参考<a href="https://askubuntu.com/questions/194651/why-use-apt-get-upgrade-instead-of-apt-get-dist-upgrade" target="_blank" rel="external">Why use apt-get upgrade instead of apt-get dist-upgrade?</a></p>
+</blockquote>
+<p>另外，对于有洁癖的人，可以隔一段时间执行一下清理：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get clean</div></pre></td></tr></table></figure></p>
+<h1 id="2-远程访问"><a href="#2-远程访问" class="headerlink" title="2. 远程访问"></a>2. 远程访问</h1><p>常用的几个远程访问方式有<code>ssh</code>、远程桌面协议、互联网访问。</p>
+<p><code>ssh</code>的配置参考<a href="https://www.raspberrypi.org/documentation/remote-access/ssh/README.md" target="_blank" rel="external">SSH (SECURE SHELL)</a></p>
+<p>远程桌面配置参考<a href="https://www.raspberrypi.org/documentation/remote-access/vnc/README.md" target="_blank" rel="external">VNC (VIRTUAL NETWORK COMPUTING)</a></p>
+<p>使用<a href="http://www.dataplicity.com/" target="_blank" rel="external">Dataplicity</a>配置互联网访问：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl https://www.dataplicity.com/fldsy1bm.py | sudo python</div></pre></td></tr></table></figure>
+<h1 id="3-配置VPN-Cisco-IPSec"><a href="#3-配置VPN-Cisco-IPSec" class="headerlink" title="3. 配置VPN(Cisco IPSec)"></a>3. 配置VPN(Cisco IPSec)</h1><p>有时网络环境不太好，应该提前准备个梯子（我买的泰坦加速器）：</p>
+<p>安装<code>vpnc</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install vpnc</div></pre></td></tr></table></figure></p>
+<p>配置vpnc，<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vi /etc/vpnc/default.conf</div></pre></td></tr></table></figure></p>
+<p>按下面的格式写入VPN配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">IPSec gateway &lt;VPN服务商提供的服务器地址&gt;</div><div class="line">IPSec ID &quot;&quot;</div><div class="line">IKE Authmode psk</div><div class="line">IPSec secret &lt;VPN服务商提供的共享秘钥&gt;</div><div class="line">Xauth username &lt;VPN服务商给出的用户名，通常是注册用户名&gt;</div><div class="line">Xauth password &lt;VPN服务商给出的密码，通常是注册密码&gt;</div></pre></td></tr></table></figure></p>
+<p>连接vpnc：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vpnc --<span class="built_in">local</span>-port 0</div></pre></td></tr></table></figure></p>
+<p>断开vpnc：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vpnc-disconnect</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>参见<a href="https://linux.die.net/man/8/vpnc" target="_blank" rel="external">vpnc</a></p>
+</blockquote>
+<h1 id="4-部署Miniconda"><a href="#4-部署Miniconda" class="headerlink" title="4. 部署Miniconda"></a>4. 部署Miniconda</h1><p>这里就不仔细介绍这位conda家族成员了。</p>
+<p>下载并安装Miniconda：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-armv7l.sh</div><div class="line">sudo md5sum Miniconda3-latest-Linux-armv7l.sh</div><div class="line">sudo /bin/bash Miniconda3-latest-Linux-armv7l.sh</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>安装过程会自动设置环境变量</p>
+</blockquote>
+<p>设置环境变量（自动设置的内容，无需手动配置）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo vi /home/pi/.bashrc</div><div class="line"><span class="comment"># 最后加入：</span></div><div class="line"><span class="built_in">export</span> PATH=<span class="string">"/home/pi/miniconda3/bin:<span class="variable">$PATH</span>”</span></div></pre></td></tr></table></figure></p>
+<p>新建python环境，使用<code>conda</code>管理python环境，类似与<code>virtualenv</code>，可以让我们独立管理各种用途的python环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda create -n webenv python=3.4</div></pre></td></tr></table></figure></p>
+<p>使用时激活环境<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">source</span> activate webenv</div></pre></td></tr></table></figure></p>
+<p>注销环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">source</span> deactivate</div></pre></td></tr></table></figure></p>
 
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2015/05/10/yesterday-yes-a-day/">
-            <time datetime="2015-05-10T01:10:11.000Z" itemprop="datePublished">2015-05-10</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Diary/">Diary</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/日记/">日记</a>, <a class="tag-link" href="/tags/杂谈/">杂谈</a>
-    </div>
-
-                </div>
-            </div>
+        
         </div>
-    
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
 </div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2017/08/13/rbp3-env/#comments" class="article-comment-link">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/08/16/rbp3-nginx-uwsgi-flask/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    在树莓派上部署Nginx+uWSGI+Flask
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/01/18/init-2017/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">初始化2017</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
 </section>
             
                 

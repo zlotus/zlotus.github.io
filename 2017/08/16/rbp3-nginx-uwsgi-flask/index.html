@@ -3,18 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>归档: 2015/5 | 子实</title>
+    <title>在树莓派上部署Nginx+uWSGI+Flask | 子实</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="观察-尝试-记录">
-<meta property="og:type" content="website">
-<meta property="og:title" content="子实">
-<meta property="og:url" content="https://zlotus.github.io/archives/2015/05/index.html">
+    <meta name="description" content="在Raspberry Pi 3上部署网络服务">
+<meta name="keywords" content="Python,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在树莓派上部署Nginx+uWSGI+Flask">
+<meta property="og:url" content="https://zlotus.github.io/2017/08/16/rbp3-nginx-uwsgi-flask/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="观察-尝试-记录">
+<meta property="og:description" content="在Raspberry Pi 3上部署网络服务">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-16T08:23:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="子实">
-<meta name="twitter:description" content="观察-尝试-记录">
+<meta name="twitter:title" content="在树莓派上部署Nginx+uWSGI+Flask">
+<meta name="twitter:description" content="在Raspberry Pi 3上部署网络服务">
     
 
     
@@ -209,86 +211,164 @@
 </aside>
 
             
-            <section id="main"><div class="timeline timeline-wrap">
-    
-            <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa fa-calendar"></i></span>
-                <h1 class="title">2015</h1>
-            </div>
+            <section id="main"><article id="post-rbp3-nginx-uwsgi-flask" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2015/05/29/novel-and-logic/">小说の逻辑</a>
+        <h1 class="article-title" itemprop="name">
+            在树莓派上部署Nginx+uWSGI+Flask
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2015/05/29/novel-and-logic/">
-            <time datetime="2015-05-29T01:10:11.000Z" itemprop="datePublished">2015-05-29</time>
+        <a href="/2017/08/16/rbp3-nginx-uwsgi-flask/">
+            <time datetime="2017-08-16T08:23:34.000Z" itemprop="datePublished">2017-08-16</time>
         </a>
     </div>
 
 
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Diary/">Diary</a>
+        <a class="article-category-link" href="/categories/Programming/">Programming</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/日记/">日记</a>, <a class="tag-link" href="/tags/杂谈/">杂谈</a>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Python/">Python</a>
     </div>
 
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+                    </div>
                 
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2015/05/10/yesterday-yes-a-day/">来自昨天的音轨</a>
-        </h1>
-    
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>第二季度接了一个有意思的任务——用机器学习算法做数据拟合，算法本身没什么，但是如何让一个在python中的算法变成一个有界面的服务就比较有意思了。我刚好又买了一块树莓派3，于是打算把后端程序放在树莓派上运行。经过上一篇的工作，树莓派已经具备python等工具的运行环境，接下来该调试发布程序了……</p>
+<a id="more"></a>
+<h1 id="1-部署Nginx"><a href="#1-部署Nginx" class="headerlink" title="1. 部署Nginx"></a>1. 部署Nginx</h1><p>安装并启动Nginx<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install nginx</div><div class="line">sudo /etc/init.d/nginx start</div></pre></td></tr></table></figure></p>
+<p>创建Nginx配置文件<code>~/webapp/helloflask.conf</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#==========helloflask.conf==========</span></div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    charset utf-8;</div><div class="line">    client_max_body_size 75M;</div><div class="line">    location / &#123; try_files <span class="variable">$uri</span> @app; &#125;</div><div class="line">    location @app &#123;</div><div class="line">        include uwsgi_params;</div><div class="line">        uwsgi_pass unix:/home/pi/webapp/helloflask_uwsgi.sock;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">#==========helloflask.conf==========</span></div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>这里使用80端口是为了配合Dataplicity的Wormhole:)，这样可以直接通过互联网访问Nginx发布的内容。</p>
+</blockquote>
+<p>删除默认配置的软链接：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rm /etc/nginx/sites-enabled/default</div></pre></td></tr></table></figure></p>
+<p>备份默认配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak</div></pre></td></tr></table></figure></p>
+<p>将配置用软链接配置在<code>sites-enabled</code>文件夹中：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo ln -s /home/pi/webapp/helloflask_nginx.conf /etc/nginx/sites-enabled/</div></pre></td></tr></table></figure></p>
+<p>重启Nginx服务：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo /etc/init.d/nginx restart</div></pre></td></tr></table></figure></p>
+<p>此时由于没有运行<code>uwsgi</code>，所以访问 <a href="http://192.168.1.106" target="_blank" rel="external">http://192.168.1.106</a> 会出现502错误。（原因很明显，配置文件中的<code>unix:/home/pi/webapp/helloflask_uwsgi.sock</code>并没有被创建）</p>
+<h1 id="2-测试Flask"><a href="#2-测试Flask" class="headerlink" title="2. 测试Flask"></a>2. 测试Flask</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install flask</div></pre></td></tr></table></figure>
+<p>创建flask的hello world程序<code>~/webapp/helloflask.py</code>，内容如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#==========helloflask.py==========</span></div><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</div><div class="line">app = Flask(__name__)</div><div class="line"></div><div class="line"><span class="meta">@app.route("/")</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">"Hello World!"</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    app.run(host=<span class="string">'0.0.0.0'</span>, port=<span class="number">5001</span>)</div><div class="line"><span class="comment">#==========helloflask.py==========</span></div></pre></td></tr></table></figure></p>
+<p>测试这个小程序：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python helloflask.py</div></pre></td></tr></table></figure></p>
+<p>访问 <a href="http://192.168.1.106:5001" target="_blank" rel="external">http://192.168.1.106:5001</a> （我的树莓派IP）出现<code>Hello World!</code>。</p>
+<h1 id="3-部署uWSGI"><a href="#3-部署uWSGI" class="headerlink" title="3. 部署uWSGI"></a>3. 部署uWSGI</h1><p>为了编译uwsgi，需要安装<code>build-essential</code>以及<code>python3.4-dev</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install build-essential python3.4-dev</div></pre></td></tr></table></figure></p>
+<p>为了便于包管理，我们依然使用<code>webenv</code>环境，在conda的python3.4.3下uWSGI：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">source</span> activate webenv</div><div class="line">pip install uwsgi</div></pre></td></tr></table></figure></p>
+<p>为uWSGI编写配置文件，方便以后使用<code>~/webapp/helloflask_uwsgi.ini</code>：<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#==========helloflask_uwsgi.ini==========</span></div><div class="line"><span class="section">[uwsgi]</span></div><div class="line"></div><div class="line"><span class="attr">chdir</span> = /home/pi/webapp</div><div class="line"><span class="attr">module</span> = helloflask:app</div><div class="line"></div><div class="line"><span class="attr">master</span> = <span class="literal">true</span></div><div class="line"><span class="attr">processes</span> = <span class="number">1</span></div><div class="line"><span class="attr">threads</span> = <span class="number">2</span></div><div class="line"></div><div class="line"><span class="attr">socket</span> = /home/pi/webapp/helloflask_uwsgi.sock</div><div class="line"><span class="attr">chmod-socket</span> = <span class="number">666</span></div><div class="line"><span class="attr">vacuum</span> = <span class="literal">true</span></div><div class="line"></div><div class="line"><span class="attr">die-on-term</span> = <span class="literal">true</span></div><div class="line"><span class="comment">#==========helloflask_uwsgi.ini==========</span></div></pre></td></tr></table></figure></p>
+<p>运行uWSGI：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">uwsgi --ini helloflask_uwsgi.ini</div></pre></td></tr></table></figure></p>
+<p>此时可以看到<code>/home/pi/webapp/helloflask_uwsgi.sock</code>文件生成，再访问<a href="http://192.168.1.106" target="_blank" rel="external">http://192.168.1.106</a>则会看到我们的<code>Hello World</code>。</p>
+<p>此时在<a href="http://www.dataplicity.com/" target="_blank" rel="external">Dataplicity</a>上将Wormhole设为Enabled，就可以通过Wormhole看到这个<code>Hello World</code>了。</p>
+<p>另外：常用Nginx命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 启动：</span></div><div class="line">sudo nginx</div><div class="line"><span class="comment"># 重载：</span></div><div class="line">sudo nginx -s reload</div><div class="line"><span class="comment"># 停止：</span></div><div class="line">sudo nginx -s stop</div><div class="line"><span class="comment"># 启动服务：</span></div><div class="line">sudo service nginx start</div><div class="line"><span class="comment"># 重启服务：</span></div><div class="line">sudo service nginx restart</div><div class="line"><span class="comment"># 停止服务：</span></div><div class="line">sudo service nginx stop</div></pre></td></tr></table></figure></p>
 
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2015/05/10/yesterday-yes-a-day/">
-            <time datetime="2015-05-10T01:10:11.000Z" itemprop="datePublished">2015-05-10</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Diary/">Diary</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/日记/">日记</a>, <a class="tag-link" href="/tags/杂谈/">杂谈</a>
-    </div>
-
-                </div>
-            </div>
+        
         </div>
-    
+        <footer class="article-footer">
+            <div class="share-container">
+
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
 </div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2017/08/16/rbp3-nginx-uwsgi-flask/#comments" class="article-comment-link">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/08/13/rbp3-env/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">准备一块树莓派</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
 </section>
             
                 
