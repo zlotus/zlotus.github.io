@@ -3,18 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>分类: Programming | 子实</title>
+    <title>在树莓派上部署微信机器人 | 子实</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="观察-尝试-记录">
-<meta property="og:type" content="website">
-<meta property="og:title" content="子实">
-<meta property="og:url" content="https://zlotus.github.io/categories/Programming/index.html">
+    <meta name="description" content="在Raspberry Pi 3上部署微信机器人">
+<meta name="keywords" content="Python,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在树莓派上部署微信机器人">
+<meta property="og:url" content="https://zlotus.github.io/2017/08/25/rbp3-weixin/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="观察-尝试-记录">
+<meta property="og:description" content="在Raspberry Pi 3上部署微信机器人">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-25T10:35:47.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="子实">
-<meta name="twitter:description" content="观察-尝试-记录">
+<meta name="twitter:title" content="在树莓派上部署微信机器人">
+<meta name="twitter:description" content="在Raspberry Pi 3上部署微信机器人">
     
 
     
@@ -209,25 +211,21 @@
 </aside>
 
             
-            <section id="main">
-<div class="timeline timeline-wrap">
-    <div class="timeline-row timeline-row-major">
-        <span class="node"><i class="fa fa-folder"></i></span>
-        <h1 class="title">Programming</h1>
-    </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+            <section id="main"><article id="post-rbp3-weixin" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2017/08/25/rbp3-weixin/">在树莓派上部署微信机器人</a>
+        <h1 class="article-title" itemprop="name">
+            在树莓派上部署微信机器人
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
         <a href="/2017/08/25/rbp3-weixin/">
@@ -236,131 +234,151 @@
     </div>
 
 
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
         <a class="article-category-link" href="/categories/Programming/">Programming</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
         <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Python/">Python</a>
     </div>
 
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+                    </div>
                 
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2017/08/16/rbp3-nginx-uwsgi-flask/">在树莓派上部署Nginx+uWSGI+Flask</a>
-        </h1>
-    
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>第二季度接了一个有意思的任务——用机器学习算法做数据拟合，算法本身没什么，但是如何让一个在python中的算法变成一个有界面的服务就比较有意思了。我刚好又买了一块树莓派3，于是打算把后端程序放在树莓派上运行。经过上一篇的工作，树莓派已经具备web发布功能，我们可以部署一个微信机器人用来监视树莓派上的计算任务……</p>
+<a id="more"></a>
+<p>说实在的，这篇文章算是一个闲篇。就是最近帮一个做期货的朋友做了一个<a href="https://github.com/zlotus/rbp_zlm" target="_blank" rel="external">盯盘小程序</a>，这个程序是需要24小时运行的，而且没有什么计算量，主要就是抓数据，是一个非常适合树莓派的应用场景。</p>
+<h1 id="1-安装itchat"><a href="#1-安装itchat" class="headerlink" title="1. 安装itchat"></a>1. 安装itchat</h1><p>itchat是一个通过抓包分析并实现的基于python的微信客户端（个人感觉相当给力）。<br>首先是安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo pip3 install itchat</div></pre></td></tr></table></figure></p>
+<p>然后按照官方教程写一个测试小程序：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> itchat</div><div class="line"></div><div class="line"><span class="meta">@itchat.msg_register(itchat.content.TEXT)</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_content</span><span class="params">(msg)</span>:</span></div><div class="line">    print(msg[<span class="string">'Text'</span>])</div><div class="line"></div><div class="line">itchat.auto_login()</div><div class="line">itchat.run()</div></pre></td></tr></table></figure></p>
+<p>将小程序拷贝到树莓派上（貌似VNC客户端也可以通过图形界面拷贝，但我没试过，在使用<code>scp</code>命令前最好在树莓派上配置<code>ssh</code>，以后会比较方便）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp -r <span class="built_in">test</span> pi@192.168.1.106:webapp/</div></pre></td></tr></table></figure></p>
+<p>这时候测试发现问题来了，不论是用树莓派自带的python3.4、或是用conda中的python3.4、甚至是树莓派自带的python2.7运行测试脚本，都会报一河滩错，大致类似：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">requests.exceptions.SSLError: (<span class="string">"bad handshake: Error([('SSL routines', 'SSL3_GET_SERVER_CERTIFICATE', 'certificate verify failed')],)"</span>,)</div></pre></td></tr></table></figure></p>
+<p>乍一看是requests的报错，觉得是小事，没想到接下来是长达几小时的填坑[捂脸]……</p>
+<h1 id="1-1-尝试解决requests报错"><a href="#1-1-尝试解决requests报错" class="headerlink" title="1.1 尝试解决requests报错"></a>1.1 尝试解决requests报错</h1><p>为了解决上面这个<code>requests</code>报错，需要安装相关库（操作依据<a href="https://github.com/adafruit/io-issues/issues/19" target="_blank" rel="external">Raspbian (latest) + Python : SSL error when trying to send data</a>）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install libffi-dev libssl-dev</div><div class="line">pip install requests[security]</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>经测试发现上面这个方法对报错没有任何影响(-_-)</p>
+</blockquote>
+<h1 id="1-2-尝试解决OpenSSL报错"><a href="#1-2-尝试解决OpenSSL报错" class="headerlink" title="1.2 尝试解决OpenSSL报错"></a>1.2 尝试解决OpenSSL报错</h1><p>考虑更新树莓派上的OpenSSL（操作依据<a href="https://github.com/requests/requests/issues/3212#issuecomment-221016311" target="_blank" rel="external">SSL Error: bad handshake #3212</a>的第一种方法）：</p>
+<p>测试OpenSSL时可以直接使用<code>openssl</code>命令，会发现能够正常连接的主机（比如<code>github.com:443</code>）与会产生证书错误的主机（比如<code>weixin.qq.com.cn:443</code>）的返回信息状态不同（正常是<code>0</code>，微信非正常的返回了<code>20</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl s_client -connect <span class="string">"&lt;url&gt;:443"</span> -showcerts -servername <span class="string">"&lt;url&gt;"</span></div></pre></td></tr></table></figure>
+<p>更新方法参考<a href="https://raspberrypi.stackexchange.com/questions/66782/how-to-install-openssl-1-0-2-on-raspberry-pi3" target="_blank" rel="external">How to install OpenSSL 1.0.2 on Raspberry Pi3</a></p>
+<p>为包管理器手动新增源：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">echo</span> <span class="string">"deb-src http://httpredir.debian.org/debian jessie-backports main contrib non-free"</span> | sudo tee /etc/apt/sources.list.d/jessie-backports.list</div></pre></td></tr></table></figure></p>
+<p>更新包管理器：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt update</div></pre></td></tr></table></figure></p>
+<p>下载<code>jessie-backports</code>中的OpenSSL源码：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get <span class="built_in">source</span> --allow-unauthenticated openssl/jessie-backports</div></pre></td></tr></table></figure></p>
+<p>安装debain构建程序：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install devscripts</div><div class="line"><span class="built_in">cd</span> openssl-1.0.2l/</div><div class="line"><span class="built_in">export</span> DEB_BUILD_OPTIONS=nocheck; debuild -us -uc -aarmhf</div><div class="line">sudo dpkg -i libssl1.0.0_1.0.2l-1~bpo8+1_armhf.deb</div><div class="line">sudo dpkg -i openssl_1.0.2l-1~bpo8+1_armhf.deb</div></pre></td></tr></table></figure></p>
+<p>一步一步执行这个过程会用掉几个小时[捂脸]……结束后就可以测试安装结果了：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/usr/bin/openssl version</div><div class="line">OpenSSL 1.0.2l  25 May 2017</div></pre></td></tr></table></figure></p>
+<p>此时在使用<code>openssl</code>命令会发现两个主机的返回值一致了。然而并没有什么卵用，用python运行程序依然是一样的报错（这时候已经是凌晨了[捂脸]此时我是崩溃的）。</p>
+<p>这时候突然意识到，python本身build的时候是需要使用到OpenSSL源码的，也就是说，python本身有自己的OpenSSL。到python的<code>/bin</code>文件夹下一看，果然是有openssl，检查一下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">python -c <span class="string">"import ssl; print(ssl.OPENSSL_VERSION)"</span></div><div class="line">OpenSSL 1.0.1k 8 Jan 2015</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>因为python本身的OpenSSL版本和系统OpenSSL版本不同，要使用这种方法解决问题，必须使用当前树莓派的OpenSSL版本（我们升级过的1.0.2l）源码编译python[捂脸]……</p>
+</blockquote>
+<h2 id="1-3-将requests的环境变量指向旧证书"><a href="#1-3-将requests的环境变量指向旧证书" class="headerlink" title="1.3 将requests的环境变量指向旧证书"></a>1.3 将requests的环境变量指向旧证书</h2><p>于是只好再试另一种补丁试的方法，虽然不彻底，但是<strong>能解决问题</strong>（操作依据<a href="https://github.com/requests/requests/issues/3212#issuecomment-221016311" target="_blank" rel="external">SSL Error: bad handshake #3212</a>的第二种方法）：<br>找到当前python的weak.pem：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">python -c <span class="string">"import certifi; print(certifi.old_where())"</span></div><div class="line">/home/pi/miniconda3/envs/webenv/lib/python3.4/site-packages/certifi/weak.pem</div></pre></td></tr></table></figure></p>
+<p>此时，要为requests配置环境变量：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">export</span> REQUESTS_CA_BUNDLE=/home/pi/miniconda3/envs/webenv/lib/python3.4/site-packages/certifi/weak.pem</div></pre></td></tr></table></figure></p>
+<p>再使用python的requests.get测试连接微信主机，成功！在以后的python代码的requests发送https请求之前，加上以下几行代码即可：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> os, certifi</div><div class="line">os.environ[<span class="string">'REQUESTS_CA_BUNDLE'</span>] = certifi.old_where()</div></pre></td></tr></table></figure></p>
+<p>如果像我一样在Flask程序中使用<code>celery</code>异步处理作业，则需要在celery运行入口中（比如我的就是在<code>app/__init__</code>）加入上面这段代码。</p>
+<h1 id="2-安装终端复用程序Tmux"><a href="#2-安装终端复用程序Tmux" class="headerlink" title="2. 安装终端复用程序Tmux"></a>2. 安装终端复用程序Tmux</h1><p>上面这个小程序需要同时开三四个终端监视运行状态（<code>redis-server</code>、<code>celery</code>、<code>flask</code>、<code>redis-cli</code>等），所以安装一个<code>tmux</code>会非常方便。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install tmux</div></pre></td></tr></table></figure>
+<p>配置鼠标模式参考：<a href="https://gist.github.com/niun/c7fd6abb5c0d5e847890" target="_blank" rel="external">https://gist.github.com/niun/c7fd6abb5c0d5e847890</a><br>tmux重新连接会话：<code>session：tmux attach [-t target-session] &lt;host&gt;</code><br>tmux退出连接的会话：<code>^b</code>+<code>d</code>或者<code>^b</code>+命令<code>:detach</code><br>另外，将wget的内容输出到终端的命令时：<code>wget -qO- &lt;url&gt;</code>（<code>-q</code>为quiet模式，屏蔽request header信息的回显；<code>-O</code>指定输出文件，后面加<code>-</code>，就定向为标准输出了）。</p>
 
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/16/rbp3-nginx-uwsgi-flask/">
-            <time datetime="2017-08-16T08:23:34.000Z" itemprop="datePublished">2017-08-16</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Programming/">Programming</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Python/">Python</a>
-    </div>
-
-                </div>
-            </div>
+        
         </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2017/08/13/rbp3-env/">准备一块树莓派</a>
-        </h1>
-    
+        <footer class="article-footer">
+            <div class="share-container">
 
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/08/13/rbp3-env/">
-            <time datetime="2017-08-13T14:15:03.000Z" itemprop="datePublished">2017-08-13</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Programming/">Programming</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2017/01/02/live-with-the-fire-wall/">一些关于大防火墙的命令</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2017/01/02/live-with-the-fire-wall/">
-            <time datetime="2017-01-02T07:40:13.000Z" itemprop="datePublished">2017-01-02</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/Programming/">Programming</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/杂谈/">杂谈</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
+    <div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_qzone">QQ空间</a>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_tqq">腾讯微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+    <a class="jiathis_counter_style"></a>
 </div>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<style>
+    .jiathis_style div:first-child:not(.jiadiv_01) {
+        width: auto !important;
+        border: none !important;
+    }
+    .jiathis_style .jiadiv_01 {
+        margin: 10px 0;
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .jiathis_style .jiadiv_01 div:first-child {
+        display: none;
+    }
+    .jiathis_style .jiadiv_02 {
+        padding: 7px 0 !important;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle {
+        width: 85px;
+        border: none;
+        height: auto;
+        margin: 3px 10px;
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:hover {
+        border: none;
+    }
+    .jiathis_style .jiadiv_02 .jiatitle:nth-child(even) {
+        margin-left: 0;
+    }
+    .jiathis_style .jtico:hover {
+        opacity: 1;
+    }
+    .jiathis_style .ckepopBottom,
+    .jiathis_style .centerBottom {
+        width: auto !important;
+        padding: 5px;
+        background: #f7f7f7;
+    }
+</style>
+
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2017/08/25/rbp3-weixin/#comments" class="article-comment-link">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2017/08/16/rbp3-nginx-uwsgi-flask/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">在树莓派上部署Nginx+uWSGI+Flask</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="uyan_frame"></div>
+</section>
+    
+
 </section>
             
                 
