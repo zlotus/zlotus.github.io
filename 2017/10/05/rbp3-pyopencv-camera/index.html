@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>树莓派上的摄像头与OpenCV | 子实</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="在树莓派上构建并编译OpenCV3">
+<meta name="keywords" content="Python,Linux,Raspberry Pi,OpenCV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派上的摄像头与OpenCV">
+<meta property="og:url" content="https://zlotus.github.io/2017/10/05/rbp3-pyopencv-camera/index.html">
+<meta property="og:site_name" content="子实">
+<meta property="og:description" content="在树莓派上构建并编译OpenCV3">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_perspective_transform.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_edge.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_outline.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_scanned.png">
+<meta property="og:updated_time" content="2017-10-05T13:09:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="树莓派上的摄像头与OpenCV">
+<meta name="twitter:description" content="在树莓派上构建并编译OpenCV3">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_perspective_transform.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/avatar.png" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-brands.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-solid.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">子实</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fas fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fas fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">子实</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>Xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/zlotus/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                28
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/zlotus/" target="_blank" title="github" class=tooltip>
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/Zealot_uS" target="_blank" title="twitter" class=tooltip>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.facebook.com/qinzishi" target="_blank" title="facebook" class=tooltip>
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.linkedin.com/in/zishiqin/" target="_blank" title="linkedin" class=tooltip>
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://plus.google.com/u/0/+LotusQin" target="_blank" title="google-plus" class=tooltip>
+                            <i class="fab fa-google-plus"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-rbp3-pyopencv-camera" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            树莓派上的摄像头与OpenCV
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2017/10/05/rbp3-pyopencv-camera/">
+            <time datetime="2017-10-05T13:09:11.000Z" itemprop="datePublished">2017-10-05</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fas fa-folder"></i>
+        <a class="article-category-link" href="/categories/Programming/">Programming</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/OpenCV/">OpenCV</a>, <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>树莓派上都有OpenCV了，是不是再装个摄像头玩[奸笑]</p>
+<a id="more"></a>
+<p>参考：<a href="https://www.pyimagesearch.com/2015/03/30/accessing-the-raspberry-pi-camera-with-opencv-and-python/" target="_blank" rel="noopener">Accessing the Raspberry Pi Camera with OpenCV and Python</a></p>
+<h1 id="1-摄像头连接及配置"><a href="#1-摄像头连接及配置" class="headerlink" title="1 摄像头连接及配置"></a>1 摄像头连接及配置</h1><p>摄像头安装及配置我就不写了，懒的翻译原文……</p>
+<h2 id="1-1-安装依赖"><a href="#1-1-安装依赖" class="headerlink" title="1.1 安装依赖"></a>1.1 安装依赖</h2><p>安装带<code>array</code>子模块的<code>picamera</code>，用以将图像Numpy的array传给OpenCV处理：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> activate cv</span><br><span class="line">pip install <span class="string">"picamera[array]"</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="1-2-摄像头图像预览"><a href="#1-2-摄像头图像预览" class="headerlink" title="1.2 摄像头图像预览"></a>1.2 摄像头图像预览</h2><p>需要注意的是，树莓派上的vnc-server默认配置是不能将传输摄像头预览图像传送到vnc-client上的，需要修改配置：在树莓派上打开vnc-server的菜单 -&gt; <code>Options...</code>-&gt; <code>TroubleShooting</code> -&gt; 选择<code>Enable experimental direct capture mode</code>。（参考<a href="https://raspberrypi.stackexchange.com/a/74390" target="_blank" rel="noopener">Sending Raspberry Pi Camera preview to a laptop running VNC Viewer</a>）</p>
+<h1 id="2-使用Python-OpenCV访问摄像头输出的图片"><a href="#2-使用Python-OpenCV访问摄像头输出的图片" class="headerlink" title="2 使用Python+OpenCV访问摄像头输出的图片"></a>2 使用Python+OpenCV访问摄像头输出的图片</h1><p>通过Python将摄像头输出的图片送入OpenCV进行显示，显示时用到了OpenCV的highGUI：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> picamera.array <span class="keyword">import</span> PiRGBArray</span><br><span class="line"><span class="keyword">from</span> picamera <span class="keyword">import</span> PiCamera</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化摄像头</span></span><br><span class="line">camera = PiCamera()</span><br><span class="line"><span class="comment"># 新建原始摄像头数据的引用</span></span><br><span class="line">rawCapture = PiRGBArray(camera)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 等一小段时间让摄像头启动</span></span><br><span class="line">time.sleep(<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从摄像头获取一张图片</span></span><br><span class="line">camera.capture(rawCapture, format=<span class="string">"bgr"</span>)</span><br><span class="line">image = rawCapture.array</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在屏幕上显示，按下任意键退出</span></span><br><span class="line">cv2.imshow(<span class="string">"Image"</span>, image)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure></p>
+<p>需要注意的是获取图片时使用的矩阵格式为<code>format=&quot;bgr&quot;</code>，参见<a href="https://picamera.readthedocs.io/en/release-1.13/recipes2.html?highlight=capture#capturing-to-an-opencv-object" target="_blank" rel="noopener">4.2. Capturing to an OpenCV object</a>。</p>
+<p>使用<code>PiRGBArray</code>对象的好处就是省去了将原始的RGB矩阵封装成各种格式（如JPEG）的步骤，这样读入OpenCV时也就省去了OpenCV将各种格式解码为RGP矩阵的步骤，尤其是在树莓派这种资源受限的设备上能够节省很多算力。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> picamera.array <span class="keyword">import</span> PiRGBArray</span><br><span class="line"><span class="keyword">from</span> picamera <span class="keyword">import</span> PiCamera</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化摄像头并设置分辨率和帧率</span></span><br><span class="line">camera = PiCamera()</span><br><span class="line">camera.resolution = (<span class="number">640</span>, <span class="number">480</span>)</span><br><span class="line">camera.framerate = <span class="number">32</span></span><br><span class="line"><span class="comment"># 新建原始摄像头数据的引用，指定分辨率</span></span><br><span class="line">rawCapture = PiRGBArray(camera, size=(<span class="number">640</span>, <span class="number">480</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 等一小段时间让摄像头启动</span></span><br><span class="line">time.sleep(<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从摄像头中获取视频帧</span></span><br><span class="line"><span class="keyword">for</span> frame <span class="keyword">in</span> camera.capture_continuous(rawCapture, format=<span class="string">"bgr"</span>, use_video_port=<span class="keyword">True</span>):</span><br><span class="line">    <span class="comment"># 直接从摄像头获取使用Numpy矩阵表达的原始图片数据，</span></span><br><span class="line">    <span class="comment"># 其中`camera.capture_continuous`返回一个`frame`对象，</span></span><br><span class="line">    <span class="comment"># `frame`对象的`array`属性中存储的就是该帧Numpy矩阵</span></span><br><span class="line">    image = frame.array</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 在highGUI中显示该帧</span></span><br><span class="line">    cv2.imshow(<span class="string">"Frame"</span>, image)</span><br><span class="line">    key = cv2.waitKey(<span class="number">1</span>) &amp; <span class="number">0xFF</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 注意，在读取下一帧前需要清空当前帧，否则代码报错</span></span><br><span class="line">    rawCapture.truncate(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 在highGUI中按q键退出循环</span></span><br><span class="line">    <span class="keyword">if</span> key == ord(<span class="string">"q"</span>):</span><br><span class="line">        cv2.destroyAllWindows()</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+<h1 id="3-试一试图像的透视变换"><a href="#3-试一试图像的透视变换" class="headerlink" title="3 试一试图像的透视变换"></a>3 试一试图像的透视变换</h1><p><strong>搞事情之前</strong>：我想在Python模块搜索路径中加入我的工作环境<code>~/pyworkspace</code>，以后的事情都在这里搞。<br>因此，在<code>~/berryconda3/envs/cv/lib/python3.5/site-packages</code>下新建<code>workspace.pth</code>文件，写入内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/home/pi/pyworkspace</span><br></pre></td></tr></table></figure>
+<p>搞一个小事情先，试一下OpenCV的性能，比如<a href="https://www.pyimagesearch.com/2014/08/25/4-point-opencv-getperspective-transform-example/" target="_blank" rel="noopener">4 Point OpenCV getPerspective Transform Example</a>，矩形的四点透视变换。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir cvpi &amp;&amp; <span class="built_in">cd</span> cvpi</span><br><span class="line">touch __init__.py</span><br><span class="line">mkdir transform &amp;&amp; <span class="built_in">cd</span> transform</span><br><span class="line">touch perspective_transform.py</span><br></pre></td></tr></table></figure>
+<p>透视变换的代码思路：</p>
+<ol>
+<li>通过Python代码测量图片中目标矩形区域的长宽；</li>
+<li>计算输出直角坐标系中的矩形顶点坐标</li>
+<li>利用<code>cv2.getPerspectiveTransform()</code>函数计算变换矩阵并应用，输出图片</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment"># /home/pi/cvpi/transform/perspective_transform.py</span></span><br><span class="line"><span class="comment"># 使用透视变换还原矩形</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">order_points</span><span class="params">(pts)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    调整矩形四个点的排列顺序，用以维护有序的坐标列表。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    接受一个包含四个坐标的列表，按照左上、右上、右下、左下的顺序重新排列坐标。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        pts: 一个shape为(4, 2)的nparray。</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        顺序调整后的nparray，shape依然是(4, 2)。</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 初始化包含四个坐标的坐标列表（cv用坐标系，x轴向右，y轴向下），分别对应矩形的左上、右上、右下、左下坐标</span></span><br><span class="line">    rect = np.zeros((<span class="number">4</span>, <span class="number">2</span>), dtype = <span class="string">"float32"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算每个坐标的x+y，左上应当具有最小的和，而右下则应当具有最大的和</span></span><br><span class="line">    s = pts.sum(axis = <span class="number">1</span>)</span><br><span class="line">    rect[<span class="number">0</span>] = pts[np.argmin(s)]</span><br><span class="line">    rect[<span class="number">2</span>] = pts[np.argmax(s)]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算每个坐标的y-x，右上应具有最小差，左下应具有最大差</span></span><br><span class="line">    diff = np.diff(pts, axis = <span class="number">1</span>)</span><br><span class="line">    rect[<span class="number">1</span>] = pts[np.argmin(diff)]</span><br><span class="line">    rect[<span class="number">3</span>] = pts[np.argmax(diff)]</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> rect</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">four_point_transform</span><span class="params">(image, pts)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    用透视变换，将图片中使用`pts`标注的透视图矩形区域，变换为鸟瞰图中的矩形区域。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    接受一个图片，以及图片中一个矩形的顶点坐标列表，通过透视变换输出该区域的鸟瞰图。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args: </span></span><br><span class="line"><span class="string">        image: 图片RGB矩阵。</span></span><br><span class="line"><span class="string">        pts: 目标矩形区域的顶点坐标列表。</span></span><br><span class="line"><span class="string">    Returns: </span></span><br><span class="line"><span class="string">        透视变换后的矩形区域鸟瞰图片。</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 重新排列矩形顶点坐标，初始化左上、右上、右下、左下坐标</span></span><br><span class="line">    rect = order_points(pts)</span><br><span class="line">    (tl, tr, br, bl) = rect</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算矩形宽度：取 右上与左上顶点间的距离 与 右下与左下顶点间的距离 之中的最大值</span></span><br><span class="line">    widthA = np.sqrt(((br[<span class="number">0</span>] - bl[<span class="number">0</span>]) ** <span class="number">2</span>) + ((br[<span class="number">1</span>] - bl[<span class="number">1</span>]) ** <span class="number">2</span>))</span><br><span class="line">    widthB = np.sqrt(((tr[<span class="number">0</span>] - tl[<span class="number">0</span>]) ** <span class="number">2</span>) + ((tr[<span class="number">1</span>] - tl[<span class="number">1</span>]) ** <span class="number">2</span>))</span><br><span class="line">    maxWidth = max(int(widthA), int(widthB))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算矩形高度：取 右上与右下顶点间的距离 与 左上与左下顶点间的距离 之中的最大值</span></span><br><span class="line">    heightA = np.sqrt(((tr[<span class="number">0</span>] - br[<span class="number">0</span>]) ** <span class="number">2</span>) + ((tr[<span class="number">1</span>] - br[<span class="number">1</span>]) ** <span class="number">2</span>))</span><br><span class="line">    heightB = np.sqrt(((tl[<span class="number">0</span>] - bl[<span class="number">0</span>]) ** <span class="number">2</span>) + ((tl[<span class="number">1</span>] - bl[<span class="number">1</span>]) ** <span class="number">2</span>))</span><br><span class="line">    maxHeight = max(int(heightA), int(heightB))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 按照左上(0, 0)、右上(0, H)、右下(W, H)、左下(W, 0)的顺序构造变换后的鸟瞰图坐标列表</span></span><br><span class="line">    dst = np.array([</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">        [maxWidth - <span class="number">1</span>, <span class="number">0</span>],</span><br><span class="line">        [maxWidth - <span class="number">1</span>, maxHeight - <span class="number">1</span>],</span><br><span class="line">        [<span class="number">0</span>, maxHeight - <span class="number">1</span>]</span><br><span class="line">    ], dtype = <span class="string">"float32"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用源坐标和目标坐标计算透视变换矩阵</span></span><br><span class="line">    M = cv2.getPerspectiveTransform(rect, dst)</span><br><span class="line">    <span class="comment"># 在源图片上应用透视变换</span></span><br><span class="line">    warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> warped</span><br></pre></td></tr></table></figure>
+<p>测试变换效果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">mkdir <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> <span class="built_in">test</span></span><br><span class="line">touch pptf_test.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> cvpi.transform.perspective_transform <span class="keyword">import</span> four_point_transform</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line"><span class="comment"># /home/pi/cvpi/test/pptf_test.py</span></span><br><span class="line"><span class="comment"># 测试透视变换：</span></span><br><span class="line"><span class="comment"># python pptf_test.py --image images/example_01.png --coords "[(73, 239), (356, 117), (475, 265), (187, 443)]"</span></span><br><span class="line"><span class="comment"># python pptf_test.py --image images/example_02.png --coords "[(101, 185), (393, 151), (479, 323), (187, 441)]"</span></span><br><span class="line"><span class="comment"># python pptf_test.py --image images/example_03.png --coords "[(63, 242), (291, 110), (361, 252), (78, 386)]"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构造命令行工具</span></span><br><span class="line">ap = argparse.ArgumentParser()</span><br><span class="line">ap.add_argument(<span class="string">"-i"</span>, <span class="string">"--image"</span>, help = <span class="string">"path to the image file"</span>)</span><br><span class="line">ap.add_argument(<span class="string">"-c"</span>, <span class="string">"--coords"</span>,</span><br><span class="line">	help = <span class="string">"comma seperated list of source points"</span>)</span><br><span class="line">args = vars(ap.parse_args())</span><br><span class="line"> </span><br><span class="line"><span class="comment"># load the image and grab the source coordinates (i.e. the list of</span></span><br><span class="line"><span class="comment"># of (x, y) points)</span></span><br><span class="line"><span class="comment"># 从文件读取图片RGB矩阵，从命令行中读取目标矩形区域的顶点坐标。</span></span><br><span class="line"><span class="comment"># <span class="doctag">NOTE:</span> 出于安全考虑，不鼓励使用`eval`函数，但在此仅为测试代码功能。</span></span><br><span class="line">image = cv2.imread(args[<span class="string">"image"</span>])</span><br><span class="line">pts = np.array(eval(args[<span class="string">"coords"</span>]), dtype = <span class="string">"float32"</span>)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 测试`four_point_transform`的功能。</span></span><br><span class="line">warped = four_point_transform(image, pts)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 显示图片</span></span><br><span class="line">cv2.imshow(<span class="string">"Original"</span>, image)</span><br><span class="line">cv2.imshow(<span class="string">"Warped"</span>, warped)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_perspective_transform.png" alt="矩形透视变换测试"></p>
+<h1 id="4-试一试OpenCV文档扫描器"><a href="#4-试一试OpenCV文档扫描器" class="headerlink" title="4 试一试OpenCV文档扫描器"></a>4 试一试OpenCV文档扫描器</h1><p>在搞事情之前：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pwd: ~./pyworkspace/cvpi</span></span><br><span class="line">mkdir tool &amp;&amp; <span class="built_in">cd</span> tool</span><br><span class="line">touch __init__.py scan.py</span><br><span class="line">conda install -y scikit-image</span><br></pre></td></tr></table></figure></p>
+<p>作者还开源了自己封装的OpenCV常用函数，比如上面的透视变换就包含在内，安装<a href="https://github.com/jrosebr1/imutils" target="_blank" rel="noopener">imutils</a>工具包：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade imutils</span><br></pre></td></tr></table></figure></p>
+<p>另外，我发现16G的卡已经用了很多空间了，所以推荐删点空间出来：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get purge wolfram-engine</span><br><span class="line">sudo apt-get purge libreoffice*</span><br><span class="line">sudo apt-get clean</span><br><span class="line">sudo apt-get autoremove</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> cvpi.transform.perspective_transform <span class="keyword">import</span> four_point_transform</span><br><span class="line"><span class="keyword">from</span> skimage.filters <span class="keyword">import</span> threshold_local</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> imutils</span><br><span class="line"></span><br><span class="line"><span class="comment"># /home/pi/cvpi/tool/scan.py</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 构造命令行工具</span></span><br><span class="line">ap = argparse.ArgumentParser()</span><br><span class="line">ap.add_argument(<span class="string">"-i"</span>, <span class="string">"--image"</span>, required = <span class="keyword">True</span>,</span><br><span class="line">	help = <span class="string">"Path to the image to be scanned"</span>)</span><br><span class="line">args = vars(ap.parse_args())</span><br><span class="line"></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment"># 1 边缘检测</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment"># 读取图片，计算图片原始高度与目标高度的缩放比例</span></span><br><span class="line"><span class="comment"># 备份图片，然后以500为高度成比例缩放图片</span></span><br><span class="line">image = cv2.imread(args[<span class="string">"image"</span>])</span><br><span class="line">ratio = image.shape[<span class="number">0</span>] / <span class="number">500.0</span></span><br><span class="line">orig = image.copy()</span><br><span class="line">image = imutils.resize(image, height = <span class="number">500</span>)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 将图片处理为灰阶图</span></span><br><span class="line">gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)</span><br><span class="line"><span class="comment"># 使用高斯模糊去掉较为繁杂的边界，目的是仅保留明显的轮廓，有助于轮廓检查</span></span><br><span class="line">gray = cv2.GaussianBlur(gray, (<span class="number">5</span>, <span class="number">5</span>), <span class="number">0</span>)</span><br><span class="line">edged = cv2.Canny(gray, <span class="number">75</span>, <span class="number">200</span>)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># show the original image and the edge detected image</span></span><br><span class="line"><span class="comment"># 显示原图与边缘检测的结果对比</span></span><br><span class="line">print(<span class="string">"STEP 1: Edge Detection"</span>)</span><br><span class="line">cv2.imshow(<span class="string">"Image"</span>, image)</span><br><span class="line">cv2.imshow(<span class="string">"Edged"</span>, edged)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br><span class="line"></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment"># 2 轮廓查找</span></span><br><span class="line"><span class="comment">#   文档扫描的对象通常是一页矩形的文档，按照经验矩形有四个顶点。</span></span><br><span class="line"><span class="comment">#   因此我们假设，边界检查结果中最大的且具有四个顶点的轮廓即为文档轮廓。</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment"># 获得轮廓列表：</span></span><br><span class="line"><span class="comment"># 第一个参数：传入要进行轮廓查找的图片，由于函数会直接操作该图片，这里使用边缘检测后的图片备份。</span></span><br><span class="line"><span class="comment"># 第二个参数：表示使用仅普通列表组织返回的轮廓，</span></span><br><span class="line"><span class="comment">#   若指定为RETR_TREE则还会返回为有层级结构的列表（即表示出轮廓之间的包含关系）。</span></span><br><span class="line"><span class="comment"># 第三参数表示简单压缩轮廓点集，如将共线段的点简化为线段两端点，节省内存。</span></span><br><span class="line">cnts = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)</span><br><span class="line"><span class="comment"># 由于OpenCV2与3返回轮廓检查返回值结构不一样，因此为了代码通用性需要判断OpenCV版本。</span></span><br><span class="line">cnts = cnts[<span class="number">0</span>] <span class="keyword">if</span> imutils.is_cv2() <span class="keyword">else</span> cnts[<span class="number">1</span>]</span><br><span class="line"><span class="comment"># 按面积将轮廓从大到小排序，保留面积最大的5个轮廓。</span></span><br><span class="line">cnts = sorted(cnts, key = cv2.contourArea, reverse = <span class="keyword">True</span>)[:<span class="number">5</span>]</span><br><span class="line"> </span><br><span class="line"><span class="keyword">for</span> c <span class="keyword">in</span> cnts:</span><br><span class="line">	<span class="comment"># 测量轮廓周长。</span></span><br><span class="line">	peri = cv2.arcLength(c, <span class="keyword">True</span>)</span><br><span class="line">    <span class="comment"># 使用Douglas-Peucker曲线近似算法，允许2%的周长误差，返回近似后的顶点列表。</span></span><br><span class="line">	approx = cv2.approxPolyDP(c, <span class="number">0.02</span> * peri, <span class="keyword">True</span>)</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># 如果近似结果仅包含4个顶点，则假设找到原图片中目标文件的轮廓</span></span><br><span class="line">	<span class="keyword">if</span> len(approx) == <span class="number">4</span>:</span><br><span class="line">		screenCnt = approx</span><br><span class="line">		<span class="keyword">break</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 显示目标文件的轮廓</span></span><br><span class="line">print(<span class="string">"STEP 2: Find contours of paper"</span>)</span><br><span class="line"><span class="comment"># 参数分别为：要绘制的原图，轮廓点集列表，需要绘制的轮廓（-1表示画出所有），轮廓颜色，轮廓粗细</span></span><br><span class="line">cv2.drawContours(image, [screenCnt], <span class="number">-1</span>, (<span class="number">0</span>, <span class="number">255</span>, <span class="number">0</span>), <span class="number">2</span>)</span><br><span class="line">cv2.imshow(<span class="string">"Outline"</span>, image)</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br><span class="line"></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment"># 3 透视变换</span></span><br><span class="line"><span class="comment"># 将获得的文档轮廓进行透视变换，输出文档的鸟瞰图。</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment"># 将轮廓按比例缩放，并应用透视变换。</span></span><br><span class="line">warped = four_point_transform(orig, screenCnt.reshape(<span class="number">4</span>, <span class="number">2</span>) * ratio)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 将变换结果灰阶处理，设置阈值以制造出类似扫描仪的黑白效果。</span></span><br><span class="line">warped = cv2.cvtColor(warped, cv2.COLOR_BGR2GRAY)</span><br><span class="line">T = threshold_local(warped, <span class="number">11</span>, offset = <span class="number">10</span>, method = <span class="string">"gaussian"</span>)</span><br><span class="line">warped = (warped &gt; T).astype(<span class="string">"uint8"</span>) * <span class="number">255</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># 显示原图与处理后效果对比</span></span><br><span class="line">print(<span class="string">"STEP 3: Apply perspective transform"</span>)</span><br><span class="line">cv2.imshow(<span class="string">"Original"</span>, imutils.resize(orig, height = <span class="number">650</span>))</span><br><span class="line">cv2.imshow(<span class="string">"Scanned"</span>, imutils.resize(warped, height = <span class="number">650</span>))</span><br><span class="line">cv2.waitKey(<span class="number">0</span>)</span><br><span class="line">cv2.destroyAllWindows()</span><br></pre></td></tr></table></figure>
+<h2 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h2><p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_edge.png" alt="边缘检测"></p>
+<h2 id="轮廓查找"><a href="#轮廓查找" class="headerlink" title="轮廓查找"></a>轮廓查找</h2><p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_outline.png" alt="轮廓查找"></p>
+<h2 id="透视变换"><a href="#透视变换" class="headerlink" title="透视变换"></a>透视变换</h2><p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_scanned.png" alt="透视变换"></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2017/10/05/rbp3-pyopencv-camera/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://zlotus.github.io/2017/10/05/rbp3-pyopencv-camera/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/11/25/genocidal-organ/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    虐杀器官
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/10/01/rbp3-opencv3/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">在树莓派上安装Python3+OpenCV3</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/03/redhat-3/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/08/03/redhat-3/" class="title">Redhat Linux初体验（3）</a></p>
+                            <p class="item-date"><time datetime="2018-08-03T03:22:47.000Z" itemprop="datePublished">2018-08-03</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/07/28/redhat-2/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/07/28/redhat-2/" class="title">Redhat Linux初体验（2）</a></p>
+                            <p class="item-date"><time datetime="2018-07-28T03:22:47.000Z" itemprop="datePublished">2018-07-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/07/21/redhat-1/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/07/21/redhat-1/" class="title">Redhat Linux初体验（1）</a></p>
+                            <p class="item-date"><time datetime="2018-07-21T03:22:47.000Z" itemprop="datePublished">2018-07-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/03/19/install-xgboost/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/03/19/install-xgboost/" class="title">安装xgboost</a></p>
+                            <p class="item-date"><time datetime="2018-03-19T03:22:47.000Z" itemprop="datePublished">2018-03-19</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/02/15/rbp3-upgrade-raspbian.md/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/02/15/rbp3-upgrade-raspbian.md/" class="title">更新Raspbian及相关问题解决</a></p>
+                            <p class="item-date"><time datetime="2018-02-15T02:58:47.000Z" itemprop="datePublished">2018-02-15</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">14</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 11.25px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 16.25px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 12.5px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 13.75px;">编程</a> <a href="/tags/脚本/" style="font-size: 12.5px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fas fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 子实<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://zlotus.github.io/2017/10/05/rbp3-pyopencv-camera/';
+        
+        this.page.identifier = 'rbp3-pyopencv-camera';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'zlotus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

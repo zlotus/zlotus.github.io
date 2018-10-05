@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>树莓派上的科学准备 | 子实</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="在树莓派上构建并编译OpenCV3">
+<meta name="keywords" content="Linux,Raspberry Pi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派上的科学准备">
+<meta property="og:url" content="https://zlotus.github.io/2017/09/25/rbp3-aws-gateway/index.html">
+<meta property="og:site_name" content="子实">
+<meta property="og:description" content="在树莓派上构建并编译OpenCV3">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-09-25T04:06:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="树莓派上的科学准备">
+<meta name="twitter:description" content="在树莓派上构建并编译OpenCV3">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/avatar.png" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-brands.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-solid.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">子实</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fas fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fas fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">子实</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>Xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/zlotus/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                28
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/zlotus/" target="_blank" title="github" class=tooltip>
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/Zealot_uS" target="_blank" title="twitter" class=tooltip>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.facebook.com/qinzishi" target="_blank" title="facebook" class=tooltip>
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.linkedin.com/in/zishiqin/" target="_blank" title="linkedin" class=tooltip>
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://plus.google.com/u/0/+LotusQin" target="_blank" title="google-plus" class=tooltip>
+                            <i class="fab fa-google-plus"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-rbp3-aws-gateway" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            树莓派上的科学准备
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2017/09/25/rbp3-aws-gateway/">
+            <time datetime="2017-09-25T04:06:10.000Z" itemprop="datePublished">2017-09-25</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fas fa-folder"></i>
+        <a class="article-category-link" href="/categories/Programming/">Programming</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>树莓派上不论是raspbian的安装/更新，还是conda/pip的安装/更新，都因为科学原因不太稳定，因此可以先准备科学安装/更新环境。</p>
+<a id="more"></a>
+<h1 id="1-系统安装及配置"><a href="#1-系统安装及配置" class="headerlink" title="1 系统安装及配置"></a>1 系统安装及配置</h1><h1 id="1-1-Headless下的WiFi及ssh配置"><a href="#1-1-Headless下的WiFi及ssh配置" class="headerlink" title="1.1 Headless下的WiFi及ssh配置"></a>1.1 Headless下的WiFi及ssh配置</h1><p>因为要将树莓派当做网关用，所以用命令行就可以了，下载lite镜像。<br>按树莓派官方说明在SD卡上写入镜像，然后进行Headless配置：</p>
+<p>配置WIFI，需要在SD卡根目录下新建一个名为wpa_supplicant.conf的文件：<br>touch /Volumes/boot/wpa_supplicant.conf<br>写入WIFI配置：<br>country=US<br>ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev<br>update_config=1</p>
+<p>network={<br>    ssid=”NETWORK-NAME”<br>    psk=”NETWORK-PASSWORD”<br>}</p>
+<p>开启SSH，只需在SD卡根目录下新建一个名为ssh的空文件即可：<br>touch /Volumes/boot/ssh</p>
+<p>配置完成后正常启动树莓派即可自动连接WIFI，SSH可以正常登录<br>注：如果不知道设备IP，可以使用<code>ping raspberry.local</code>查找</p>
+<p>第一次用<code>pi</code>登录后默认密码为<code>raspberry</code>，应使用<code>sudo raspi-config</code>修改密码、主机名等信息。</p>
+<h1 id="1-2-伪科学加速升级"><a href="#1-2-伪科学加速升级" class="headerlink" title="1.2 伪科学加速升级"></a>1.2 伪科学加速升级</h1><p>固件升级：sudo rpi-update &amp;&amp; sudo reboot -h now<br>软件包升级：sudo apt-get update &amp;&amp; time sudo apt-get upgrade &amp;&amp; time sudo apt-get dist-upgrade<br>软件包清理：sudo apt-get clean</p>
+<p>解决升级慢或<code>Cannot initiate the connection to mirrors.opencas.cn</code>问题：<br>备份<code>sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak</code><br>注释sources.list第一行，再最后添加：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main contrib non-free rpi</span><br></pre></td></tr></table></figure></p>
+<p>备份<code>sudo cp /etc/apt/sources.list.d/raspi.list /etc/apt/sources.list.d/raspi.list.bak</code><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main ui</span><br></pre></td></tr></table></figure></p>
+<p>也可以使用其他镜像站，比如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 中国科学技术大学</span></span><br><span class="line">Raspbian http://mirrors.ustc.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 阿里云</span></span><br><span class="line">Raspbian http://mirrors.aliyun.com/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 清华大学</span></span><br><span class="line">Raspbian http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 华中科技大学</span></span><br><span class="line">Raspbian http://mirrors.hustunique.com/raspbian/raspbian/</span><br><span class="line">Arch Linux ARM http://mirrors.hustunique.com/archlinuxarm/</span><br><span class="line"><span class="comment"># 华南农业大学（华南用户）</span></span><br><span class="line">Raspbian http://mirrors.scau.edu.cn/raspbian/</span><br><span class="line"><span class="comment"># 大连东软信息学院源（北方用户）</span></span><br><span class="line">Raspbian http://mirrors.neusoft.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 重庆大学源（中西部用户）</span></span><br><span class="line">Raspbian http://mirrors.cqu.edu.cn/Raspbian/raspbian/</span><br><span class="line"><span class="comment"># 中山大学 已跳转至中国科学技术大学源</span></span><br><span class="line">Raspbian http://mirror.sysu.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 新加坡国立大学</span></span><br><span class="line">Raspbian http://mirror.nus.edu.sg/raspbian/raspbian</span><br></pre></td></tr></table></figure></p>
+<p>解决树莓派的locale问题：<br>sudo dpkg-reconfigure locales<br>选择生成<code>en_GB.UTF-8</code>、<code>en_US.UTF-8</code>、<code>zh_CN.UTF-8</code><br>设置空项：<br>sudo update-locale LANGUAGE=”en_GB.UTF-8”<br>sudo update-locale LC_ALL=”en_GB.UTF-8”</p>
+<h1 id="2-搭建科学工具"><a href="#2-搭建科学工具" class="headerlink" title="2 搭建科学工具"></a>2 搭建科学工具</h1><h1 id="2-1-安装SS"><a href="#2-1-安装SS" class="headerlink" title="2.1 安装SS"></a>2.1 安装SS</h1><p>安装shadowsocks命令行客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pip install shadowsocks</span><br><span class="line">sudo apt-get install shadowsocks-libev</span><br><span class="line"><span class="comment"># 更新CPAN</span></span><br><span class="line">sudo cpan install CPAN</span><br><span class="line"><span class="comment"># 重载CPAN</span></span><br><span class="line">sudo cpan reload CPAN</span><br><span class="line">sudo cpan Net::Shadowsocks</span><br></pre></td></tr></table></figure></p>
+<h1 id="2-2-配置防火墙"><a href="#2-2-配置防火墙" class="headerlink" title="2.2 配置防火墙"></a>2.2 配置防火墙</h1><p>安装UFW以方便调整防火墙策略，其实是我不会用<code>iptables</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install ufw</span><br></pre></td></tr></table></figure></p>
+<p>更新防火墙策略：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw <span class="built_in">enable</span></span><br><span class="line">sudo ufw allow proto tcp to 0.0.0.0/0 port 22 comment <span class="string">"sshd listen port"</span></span><br><span class="line">sudo ufw allow proto tcp to 0.0.0.0/0 port 5900 comment <span class="string">"vnc server listen port"</span></span><br><span class="line">sudo ufw allow proto tcp to 0.0.0.0/0 port 8388 comment <span class="string">"Shadowsocks server listen port"</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="2-3-socks5代理"><a href="#2-3-socks5代理" class="headerlink" title="2.3 socks5代理"></a>2.3 socks5代理</h1><p>在<code>/etc/shadowsocks-libev/xxx.json</code>下配置科学上网服务器：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"server"</span>: <span class="string">"&lt;your-remote-server&gt;"</span>,</span><br><span class="line">    <span class="attr">"server_port"</span>: &lt;your-remote-server-port&gt;,</span><br><span class="line">    <span class="attr">"timeout"</span>: <span class="number">60</span>,</span><br><span class="line">    <span class="attr">"password"</span>: <span class="string">"&lt;your-password&gt;"</span>,</span><br><span class="line">    <span class="attr">"method"</span>: <span class="string">"aes-256-cfb"</span>,</span><br><span class="line">    <span class="attr">"local_address"</span>: <span class="string">"0.0.0.0"</span>,</span><br><span class="line">    <span class="attr">"local_port"</span>: <span class="number">8388</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>检查默认端口占用，通常SS安装完成后会自动使用默认配置（<code>/etc/shadowsocks-libev/config.json</code>）启动ss-server进程，因此<code>8388</code>端口通常会被占用。<br>而我们在树莓派上使用SS仅仅是为了加速，因此不需要启动ss-server：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo netstat -nap | grep 8388</span><br></pre></td></tr></table></figure></p>
+<p>停止默认ss服务端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查ss默认系统服务</span></span><br><span class="line">systemctl list-unit-files <span class="comment"># 或 systemctl -a</span></span><br><span class="line">systemctl status shadowsocks-libev.service </span><br><span class="line">sudo systemctl stop shadowsocks-libev.service </span><br><span class="line">sudo systemctl <span class="built_in">disable</span> shadowsocks-libev.service </span><br><span class="line">systemctl status shadowsocks-libev.service</span><br></pre></td></tr></table></figure></p>
+<p>启动ss客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 后台</span></span><br><span class="line">nohup ss-local -v -c /etc/shadowsocks-libev/xxx.json &amp;</span><br><span class="line"><span class="comment"># 或前台</span></span><br><span class="line">ss-local -v -s &lt;your-remote-server&gt; -p &lt;your-remote-server-port&gt; -l 8388 -k &lt;your-password&gt; -m aes-256-cfb</span><br></pre></td></tr></table></figure></p>
+<p>测试ss客户端的socks5是否正常：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -I --socks5 localhost:8388 google.com</span><br></pre></td></tr></table></figure></p>
+<p>停止ss客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">kill</span> -TERM 5914 &amp;&amp; rm nohup.out</span><br></pre></td></tr></table></figure></p>
+<h1 id="2-4-http代理"><a href="#2-4-http代理" class="headerlink" title="2.4 http代理"></a>2.4 http代理</h1><p>有些程序并不像<code>curl</code>那样能够直接支持socks5代理，有时，按照情况需要配置http代理。<br>安装<code>privoxy</code>，开启全局http代理，其默认代理地址为<code>http://127.0.0.1:8118</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install privoxy</span><br><span class="line">sudo -s</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'forward-socks5 / 127.0.0.1:8388 .'</span> &gt;&gt;/etc/privoxy/config</span><br><span class="line">^D</span><br><span class="line">systemctl status privoxy.service</span><br><span class="line"><span class="comment">#systemctl enable privoxy.service</span></span><br><span class="line"><span class="comment">#systemctl start privoxy.service</span></span><br><span class="line"><span class="comment">#systemctl restart privoxy.service</span></span><br><span class="line">systemctl status privoxy.service</span><br></pre></td></tr></table></figure></p>
+<p>测试http代理：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO- -e use_proxy=yes -e http_proxy=127.0.0.1:8118 http://google.com</span><br></pre></td></tr></table></figure></p>
+<p><code>conda</code>可能存在科学安装问题，因此可以临时设置代理环境变量：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> HTTP_PROXY=<span class="string">"http://127.0.0.1:8118"</span> &amp;&amp; conda install -y scikit-image</span><br><span class="line"><span class="built_in">unset</span> HTTP_PROXY</span><br></pre></td></tr></table></figure></p>
+<p>或是配置<code>.condarc</code>的代理：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">proxy_servers:</span></span><br><span class="line"><span class="attr">  http:</span> <span class="attr">http://127.0.0.1:8118</span></span><br></pre></td></tr></table></figure></p>
+<h1 id="3-云科学（要钱）"><a href="#3-云科学（要钱）" class="headerlink" title="3 云科学（要钱）"></a>3 云科学（要钱）</h1><h2 id="3-1-在AWS上部署Streisand"><a href="#3-1-在AWS上部署Streisand" class="headerlink" title="3.1 在AWS上部署Streisand"></a>3.1 在AWS上部署Streisand</h2><p>在aws中新建用户administrator，放入新建组Administrators，附加超级管理员权限AdministratorAccess。<br>新建访问秘钥并下载，记住key id与key后删除秘钥。</p>
+<p>aws启动Ubuntu 16.04实例，在安装pip时出现”E: Unable to locate package python-pip”：<br>sudo apt-get install software-properties-common<br>sudo apt-add-repository universe<br>sudo apt-get update<br>sudo apt-get install python-pip<br>pip install –upgrade pip<br>软件包升级：sudo apt-get update &amp;&amp; time sudo apt-get upgrade &amp;&amp; time sudo apt-get dist-upgrade</p>
+<p>查看系统地区设置<code>locale</code>，添加中文支持<code>sudo locale-gen zh_CN.UTF-8</code><br>设置空项的值：<br>sudo update-locale LANGUAGE=”en_US.UTF-8”<br>sudo update-locale LC_ALL=”en_US.UTF-8”</p>
+<p>在树莓派上安装Streisand的准备工作：<br>生成秘钥对：<br>ssh-keygen<br>安装git：<br>sudo apt-get install git<br>安装vim：<br>sudo apt-get install vim<br>安装python依赖：<br>sudo apt install python-paramiko python-pip python-pycurl python-dev build-essential<br>安装ansible依赖：<br>sudo pip install ansible markupsafe<br>安装aws依赖：<br>sudo pip install boto boto3</p>
+<p>下载Streisand源码并安装：<br> git clone <a href="https://github.com/StreisandEffect/streisand.git" target="_blank" rel="noopener">https://github.com/StreisandEffect/streisand.git</a> &amp;&amp; cd streisand<br>./streisand<br>按要求填写aws的相关信息，等很久…部署完成…</p>
+<p>拷贝generated-docs到一个能看HTML网页的机器上：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r pi@&lt;raspberrypi-ip&gt;:streisand ~/Downloads</span><br></pre></td></tr></table></figure></p>
+<p>按照网页提示、按需求（iOS、Linux、Android等）一步一步操作。</p>
+<p>在树莓派上，按streisand生成的generated-docs中的提示信息，配置shadowsocks<code>/etc/shadowsocks-libev/aws.json</code>：<br>{<br>    “server”:”<your-server-ip>“,<br>    “server_port”:<your-server-port>,<br>    “timeout”:60,<br>    “password”:”<your-password>“,<br>    “method”:”chacha20-ietf-poly1305”,<br>    “local_address”:”0.0.0.0”,<br>    “local_port”:1080<br>}</your-password></your-server-port></your-server-ip></p>
+<h1 id="3-2-本机编译科学工具"><a href="#3-2-本机编译科学工具" class="headerlink" title="3.2 本机编译科学工具"></a>3.2 本机编译科学工具</h1><p>由于树莓派上直接安装的shadowsocks不支持<code>chacha20-ietf-poly1305</code>加密算法，因此，需要从源码编译shadowsocks：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Installation of basic build dependencies</span></span><br><span class="line">sudo apt-get install --no-install-recommends gettext build-essential autoconf libtool libpcre3-dev asciidoc xmlto libev-dev libc-ares-dev automake libmbedtls-dev libsodium-dev</span><br><span class="line"></span><br><span class="line"><span class="comment"># Installation of Libsodium</span></span><br><span class="line"><span class="built_in">export</span> LIBSODIUM_VER=1.0.16</span><br><span class="line">wget https://download.libsodium.org/libsodium/releases/libsodium-<span class="variable">$LIBSODIUM_VER</span>.tar.gz</span><br><span class="line">tar xvf libsodium-<span class="variable">$LIBSODIUM_VER</span>.tar.gz</span><br><span class="line"><span class="built_in">pushd</span> libsodium-<span class="variable">$LIBSODIUM_VER</span></span><br><span class="line">./configure --prefix=/usr &amp;&amp; make</span><br><span class="line">sudo make install</span><br><span class="line"><span class="built_in">popd</span></span><br><span class="line">sudo ldconfig</span><br><span class="line"></span><br><span class="line"><span class="comment"># Installation of MbedTLS</span></span><br><span class="line"><span class="built_in">export</span> MBEDTLS_VER=2.12.0</span><br><span class="line">wget https://tls.mbed.org/download/mbedtls-<span class="variable">$MBEDTLS_VER</span>-gpl.tgz</span><br><span class="line">tar xvf mbedtls-<span class="variable">$MBEDTLS_VER</span>-gpl.tgz</span><br><span class="line"><span class="built_in">pushd</span> mbedtls-<span class="variable">$MBEDTLS_VER</span></span><br><span class="line">make SHARED=1 CFLAGS=-fPIC</span><br><span class="line">sudo make DESTDIR=/usr install</span><br><span class="line"><span class="built_in">popd</span></span><br><span class="line">sudo ldconfig</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start building</span></span><br><span class="line">git submodule update --init --recursive</span><br><span class="line"><span class="comment"># ref: https://github.com/shadowsocks/shadowsocks-libev/issues/1177#issuecomment-319032195</span></span><br><span class="line">./autogen.sh &amp;&amp; ./configure --with-sodium-include=/usr/include --with-sodium-lib=/usr/<span class="built_in">local</span>/lib --with-mbedtls-include=/usr/include --with-mbedtls-lib=/usr/lib &amp;&amp; make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure></p>
+<p>现在使用<code>ss-local --help</code>会发现加密算法支持<code>chacha20-ietf-poly1305</code>。<br>使用<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动aws</span></span><br><span class="line">nohup ss-local -v -c /etc/shadowsocks-libev/aws.json&amp;</span><br><span class="line"><span class="comment"># 测试连接</span></span><br><span class="line">curl -I --socks5 localhost:1080 google.com</span><br><span class="line"><span class="comment"># 返回301，成功</span></span><br></pre></td></tr></table></figure></p>
+<p><strong>关于要钱</strong>：最便宜的EC2即可，一个月不到8刀吧……</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2017/09/25/rbp3-aws-gateway/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://zlotus.github.io/2017/09/25/rbp3-aws-gateway/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/10/01/rbp3-opencv3/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    在树莓派上安装Python3+OpenCV3
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/08/25/rbp3-weixin/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">在树莓派上部署微信机器人</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/03/redhat-3/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/08/03/redhat-3/" class="title">Redhat Linux初体验（3）</a></p>
+                            <p class="item-date"><time datetime="2018-08-03T03:22:47.000Z" itemprop="datePublished">2018-08-03</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/07/28/redhat-2/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/07/28/redhat-2/" class="title">Redhat Linux初体验（2）</a></p>
+                            <p class="item-date"><time datetime="2018-07-28T03:22:47.000Z" itemprop="datePublished">2018-07-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/07/21/redhat-1/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/07/21/redhat-1/" class="title">Redhat Linux初体验（1）</a></p>
+                            <p class="item-date"><time datetime="2018-07-21T03:22:47.000Z" itemprop="datePublished">2018-07-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/03/19/install-xgboost/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/03/19/install-xgboost/" class="title">安装xgboost</a></p>
+                            <p class="item-date"><time datetime="2018-03-19T03:22:47.000Z" itemprop="datePublished">2018-03-19</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/02/15/rbp3-upgrade-raspbian.md/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/02/15/rbp3-upgrade-raspbian.md/" class="title">更新Raspbian及相关问题解决</a></p>
+                            <p class="item-date"><time datetime="2018-02-15T02:58:47.000Z" itemprop="datePublished">2018-02-15</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">14</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 11.25px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 16.25px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 12.5px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 13.75px;">编程</a> <a href="/tags/脚本/" style="font-size: 12.5px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fas fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 子实<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://zlotus.github.io/2017/09/25/rbp3-aws-gateway/';
+        
+        this.page.identifier = 'rbp3-aws-gateway';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'zlotus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

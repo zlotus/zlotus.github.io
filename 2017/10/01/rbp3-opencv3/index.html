@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>在树莓派上安装Python3+OpenCV3 | 子实</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="在树莓派上构建并编译OpenCV3">
+<meta name="keywords" content="Python,Linux,Raspberry Pi,OpenCV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在树莓派上安装Python3+OpenCV3">
+<meta property="og:url" content="https://zlotus.github.io/2017/10/01/rbp3-opencv3/index.html">
+<meta property="og:site_name" content="子实">
+<meta property="og:description" content="在树莓派上构建并编译OpenCV3">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_compile.png">
+<meta property="og:updated_time" content="2017-10-01T04:06:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在树莓派上安装Python3+OpenCV3">
+<meta name="twitter:description" content="在树莓派上构建并编译OpenCV3">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_compile.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/avatar.png" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-brands.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-solid.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">子实</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fas fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fas fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">子实</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>Xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/zlotus/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                28
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/zlotus/" target="_blank" title="github" class=tooltip>
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://twitter.com/Zealot_uS" target="_blank" title="twitter" class=tooltip>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.facebook.com/qinzishi" target="_blank" title="facebook" class=tooltip>
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://www.linkedin.com/in/zishiqin/" target="_blank" title="linkedin" class=tooltip>
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="https://plus.google.com/u/0/+LotusQin" target="_blank" title="google-plus" class=tooltip>
+                            <i class="fab fa-google-plus"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-rbp3-opencv3" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            在树莓派上安装Python3+OpenCV3
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2017/10/01/rbp3-opencv3/">
+            <time datetime="2017-10-01T04:06:10.000Z" itemprop="datePublished">2017-10-01</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fas fa-folder"></i>
+        <a class="article-category-link" href="/categories/Programming/">Programming</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/OpenCV/">OpenCV</a>, <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>最近给树莓派买了一些传感器，感觉能做的事更多了，那就先抄一个机器视觉的玩具练练手吧~当然，怎么能少了OpenCV呢[奸笑]</p>
+<a id="more"></a>
+<p>参考：<a href="https://www.pyimagesearch.com/2017/09/04/raspbian-stretch-install-opencv-3-python-on-your-raspberry-pi/" target="_blank" rel="noopener">Raspbian Stretch: Install OpenCV 3 + Python on your Raspberry Pi</a></p>
+<h1 id="1-扩展存储卡空间"><a href="#1-扩展存储卡空间" class="headerlink" title="1 扩展存储卡空间"></a>1 扩展存储卡空间</h1><p>运行树莓派配置<code>sudo raspi-config</code>，选择”Advanced Options”，选择”Expand filesystem”，按提示重启。</p>
+<p>使用<code>df -h</code>检查存储空间。</p>
+<p>当然，如果空间仍然不够用，可以删点东西：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get purge wolfram-engine</span><br><span class="line">sudo apt-get purge libreoffice*</span><br><span class="line">sudo apt-get clean</span><br><span class="line">sudo apt-get autoremove</span><br></pre></td></tr></table></figure></p>
+<h1 id="2-安装依赖"><a href="#2-安装依赖" class="headerlink" title="2 安装依赖"></a>2 安装依赖</h1><h2 id="2-1-更新系统"><a href="#2-1-更新系统" class="headerlink" title="2.1 更新系统"></a>2.1 更新系统</h2><p>当然，安装依赖前先将系统更新至最新：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; time sudo apt-get upgrade &amp;&amp; time sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-2-安装编译-开发工具"><a href="#2-2-安装编译-开发工具" class="headerlink" title="2.2 安装编译/开发工具"></a>2.2 安装编译/开发工具</h2><p>安装包括<code>cmake</code>在内的开发工具，帮助我们配置并编译<code>opencv</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential cmake pkg-config</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-3-图片相关依赖"><a href="#2-3-图片相关依赖" class="headerlink" title="2.3 图片相关依赖"></a>2.3 图片相关依赖</h2><p>安装图片I/O相关包，包括常见的JPEG、PNG、TIFF等：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-4-视频相关依赖"><a href="#2-4-视频相关依赖" class="headerlink" title="2.4 视频相关依赖"></a>2.4 视频相关依赖</h2><p>安装读取视频、处理视频流的相关依赖：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev</span><br><span class="line">sudo apt-get install libxvidcore-dev libx264-dev</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-5-highgui相关依赖"><a href="#2-5-highgui相关依赖" class="headerlink" title="2.5 highgui相关依赖"></a>2.5 <code>highgui</code>相关依赖</h2><p>安装OpenCV时会附带一个叫做<code>highgui</code>的子模块，该模块使用GUI界面显示图片，要使得该模块能够正常编译，需要安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libgtk2.0-dev libgtk-3-dev</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-6-优化相关依赖"><a href="#2-6-优化相关依赖" class="headerlink" title="2.6 优化相关依赖"></a>2.6 优化相关依赖</h2><p>通过安装一些依赖可以优化OpenCV内部的矩阵运算过程，这些优化依赖对像树莓派这样计算资源受限的设备来说尤为重要：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libatlas-base-dev gfortran</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-7-Python头文件"><a href="#2-7-Python头文件" class="headerlink" title="2.7 Python头文件"></a>2.7 Python头文件</h2><p>为了通过Python使用OpenCV库，在编译时需要Python头文件等资源：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python2.7-dev python3-dev</span><br></pre></td></tr></table></figure></p>
+<h1 id="3-下载OpenCV源码"><a href="#3-下载OpenCV源码" class="headerlink" title="3 下载OpenCV源码"></a>3 下载OpenCV源码</h1><h2 id="3-1-OpenCV"><a href="#3-1-OpenCV" class="headerlink" title="3.1 OpenCV"></a>3.1 OpenCV</h2><p>我们从<a href="https://github.com/opencv/opencv" target="_blank" rel="noopener">OpenCV官网</a>下载<a href="https://opencv.org/releases.html" target="_blank" rel="noopener">最新版源码</a>（版本3.4.3），该版本带有深度神经网络模块，推荐从本机下载并上传树莓派，因为本机迅雷下器比较快🤦‍：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp ./Downloads/cv_3.4.3.zip pi@192.168.1.108:./</span><br><span class="line">unzip cv_3.4.3.zip</span><br></pre></td></tr></table></figure></p>
+<h2 id="3-2-OpenCV高级功能"><a href="#3-2-OpenCV高级功能" class="headerlink" title="3.2 OpenCV高级功能"></a>3.2 OpenCV高级功能</h2><p>我们希望能够使用OpenCV的所有功能（包括如SIFT、SURF在内的高级功能），需要下载相应版本的<a href="https://github.com/opencv/opencv_contrib/releases" target="_blank" rel="noopener">opencv_contrib</a>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp ./Downloads/cv_c_3.4.3.zip pi@192.168.1.108:./</span><br><span class="line">unzip cv_c_3.4.3.zip</span><br></pre></td></tr></table></figure></p>
+<h1 id="4-Python版本控制"><a href="#4-Python版本控制" class="headerlink" title="4 Python版本控制"></a>4 Python版本控制</h1><p>我习惯使用<code>conda</code>，因此下了个<a href="https://github.com/jjhelmus/berryconda" target="_blank" rel="noopener">berryconda</a>，上传树莓派（还是因为迅雷更快🤦‍）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp ./Downloads/Berryconda3-2.0.0-Linux-armv7l.sh pi@192.168.1.108:./</span><br></pre></td></tr></table></figure></p>
+<p>并安装：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chmod +x Berryconda3-2.0.0-Linux-armv7l.sh</span><br><span class="line">./Berryconda3-2.0.0-Linux-armv7l.sh</span><br></pre></td></tr></table></figure></p>
+<p>安装完成之后更新<code>conda</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda update --all</span><br></pre></td></tr></table></figure></p>
+<p>新建名叫<code>cv</code>的环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n cv python=3.5.3</span><br></pre></td></tr></table></figure></p>
+<p>激活环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> activate cv</span><br><span class="line"><span class="comment"># 退出环境</span></span><br><span class="line"><span class="comment">#source deactivate</span></span><br></pre></td></tr></table></figure></p>
+<p>安装Numpy，需要比较长的时间：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install numpy</span><br></pre></td></tr></table></figure></p>
+<p>关于原文使用<code>pip</code>而这里使用<code>conda</code>的参考<a href="https://github.com/numpy/numpy/issues/8415#issuecomment-269103493" target="_blank" rel="noopener">原因</a>（编译选项问题导致conda安装的Python与pip安装的Numpy不兼容）。</p>
+<h1 id="5-其他软件包"><a href="#5-其他软件包" class="headerlink" title="5 其他软件包"></a>5 其他软件包</h1><p>因为个人爱好和习惯，我又安装了TensorFlow以及tesseract：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install libatlas-base-dev</span><br><span class="line">pip install tensorflow</span><br><span class="line">sudo apt-get install tesseract-ocr</span><br><span class="line">pip install pytesseract</span><br></pre></td></tr></table></figure></p>
+<h1 id="6-构建"><a href="#6-构建" class="headerlink" title="6 构建"></a>6 构建</h1><h2 id="6-1-解压并构建"><a href="#6-1-解压并构建" class="headerlink" title="6.1 解压并构建"></a>6.1 解压并构建</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/opencv-3.4.3/</span><br><span class="line">mkdir build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">    -D CMAKE_INSTALL_PREFIX=/usr/<span class="built_in">local</span> \</span><br><span class="line">    -D INSTALL_PYTHON_EXAMPLES=ON \</span><br><span class="line">    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-3.4.3/modules \</span><br><span class="line">    -D BUILD_EXAMPLES=ON ..</span><br></pre></td></tr></table></figure>
+<h2 id="6-2-检查构建输出"><a href="#6-2-检查构建输出" class="headerlink" title="6.2 检查构建输出"></a>6.2 检查构建输出</h2><p>务必检查CMake构建输出中Python解释器/库等信息，正常构建完成的信息应包含类似：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">--   Python 3:</span><br><span class="line">--     Interpreter:                 /home/pi/berryconda3/envs/cv/bin/python3 (ver 3.5.3)</span><br><span class="line">--     Libraries:                   /usr/lib/arm-linux-gnueabihf/libpython3.5m.so (ver 3.5.3)</span><br><span class="line">--     numpy:                       /home/pi/berryconda3/envs/cv/lib/python3.5/site-packages/numpy/core/include (ver 1.15.1)</span><br><span class="line">--     packages path:               lib/python3.5/site-packages</span><br><span class="line">--</span><br></pre></td></tr></table></figure></p>
+<h2 id="6-3-修改SWAP配置"><a href="#6-3-修改SWAP配置" class="headerlink" title="6.3 修改SWAP配置"></a>6.3 修改SWAP配置</h2><p>在开始编译前，先调整一下虚拟内存大小，使得编译过程能够利用树莓派的全部四颗核心，避免编译过程因为内存不足而挂起：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/dphys-swapfile</span><br><span class="line"><span class="comment"># dphys-swapfile:</span></span><br><span class="line"><span class="comment"># CONF_SWAPSIZE=100</span></span><br><span class="line">CONF_SWAPSIZE=1024</span><br></pre></td></tr></table></figure></p>
+<p>再重启虚拟内存服务：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/dphys-swapfile stop</span><br><span class="line">sudo /etc/init.d/dphys-swapfile start</span><br></pre></td></tr></table></figure></p>
+<p><strong>注意</strong>：在完成所有编译、安装，且试验成功后，记得吧虚拟内存改回去，否则据说容易烧卡。</p>
+<h1 id="7-编译"><a href="#7-编译" class="headerlink" title="7 编译"></a>7 编译</h1><p>终于可以开始编译了，大约需要一个半小时：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j4</span><br></pre></td></tr></table></figure></p>
+<p>编译时树莓派会启用全部四颗核心，因此强烈建议开启散热风扇，编译时的<code>top</code> CPU利用率：<br><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2018/OpenCV_compile.png" alt="编译中的CPU利用率"></p>
+<h1 id="8-安装"><a href="#8-安装" class="headerlink" title="8 安装"></a>8 安装</h1><p>将编译完成的OpenCV安装在系统中：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure></p>
+<p>此时OpenCV及Python支持已经安装再<code>/usr/local/lib/python3.5/site-packages</code>目录下了：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ls -l /usr/<span class="built_in">local</span>/lib/python3.5/site-packages/</span><br><span class="line">总用量 4628</span><br><span class="line">-rw-r--r-- 1 root staff 4738076 9月  28 23:16 cv2.cpython-35m-arm-linux-gnueabihf.so</span><br></pre></td></tr></table></figure></p>
+<p>出于某种原因，编译完成的的<code>.so</code>文件叫做<code>cv2.cpython-35m-arm-linux-gnueabihf.so</code>，我们需要将其重命名：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/<span class="built_in">local</span>/lib/python3.5/site-packages/</span><br><span class="line">sudo mv cv2.cpython-35m-arm-linux-gnueabihf.so cv2.so</span><br></pre></td></tr></table></figure></p>
+<p>之后再将其链接在conda的<code>cv</code>环境中：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/berryconda3/envs/cv/lib/python3.5/site-packages/</span><br><span class="line">ln -s /usr/<span class="built_in">local</span>/lib/python3.5/site-packages/cv2.so cv2.so</span><br></pre></td></tr></table></figure></p>
+<h1 id="9-测试"><a href="#9-测试" class="headerlink" title="9 测试"></a>9 测试</h1><p>在<code>cv</code>环境中测试：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> activate cv</span><br><span class="line">python</span><br><span class="line">&gt;&gt;&gt; import cv2</span><br><span class="line">&gt;&gt;&gt; cv2.__version__</span><br><span class="line"><span class="string">'3.4.3'</span></span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure></p>
+<h1 id="10-一些问题"><a href="#10-一些问题" class="headerlink" title="10 一些问题"></a>10 一些问题</h1><p>一开始我使用python 3.6.6：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n cv python=3.6</span><br></pre></td></tr></table></figure></p>
+<p>然后编译：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/opencv-3.4.3/</span><br><span class="line">mkdir build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">    -D CMAKE_INSTALL_PREFIX=/usr/<span class="built_in">local</span> \</span><br><span class="line">    -D INSTALL_PYTHON_EXAMPLES=ON \</span><br><span class="line">    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-3.4.3/modules \</span><br><span class="line">    -D BUILD_EXAMPLES=ON ..</span><br></pre></td></tr></table></figure></p>
+<p>报错：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-- Found PythonInterp: /usr/bin/python2.7 (found suitable version <span class="string">"2.7.13"</span>, minimum required is <span class="string">"2.7"</span>)</span><br><span class="line">-- Found PythonLibs: /usr/lib/arm-linux-gnueabihf/libpython2.7.so (found suitable exact version <span class="string">"2.7.13"</span>)</span><br><span class="line">-- Found PythonInterp: /home/pi/berryconda3/envs/cv/bin/python3 (found suitable version <span class="string">"3.6.6"</span>, minimum required is <span class="string">"3.4"</span>)</span><br><span class="line">-- Could NOT find PythonLibs (missing:  PYTHON_LIBRARIES PYTHON_INCLUDE_DIRS) (Required is exact version <span class="string">"3.6.6"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>即树莓派上还没有python3.6-dev，仅有python3.5-dev（即python 3.5.3-0版本），于是我打算用<code>cmake -D</code>指定，或是export环境变量，发现报错依然存在：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/opencv-3.4.3/</span><br><span class="line">mkdir build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">    -D CMAKE_INSTALL_PREFIX=/usr/<span class="built_in">local</span> \</span><br><span class="line">    -D INSTALL_PYTHON_EXAMPLES=ON \</span><br><span class="line">    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-3.4.3/modules \</span><br><span class="line">    -D PYTHON_INCLUDE_DIR=$(python -c <span class="string">"from distutils.sysconfig import get_python_inc; print(get_python_inc())"</span>)  \</span><br><span class="line">    -D PYTHON_LIBRARY=$(python -c <span class="string">"import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))"</span>) \</span><br><span class="line">    -D BUILD_EXAMPLES=ON ..</span><br></pre></td></tr></table></figure></p>
+<p>参考<a href="https://github.com/opencv/opencv/issues/8174" target="_blank" rel="noopener">CMake cannot find PythonLibs #8174</a>的说明想修改cmake文件也不成功。</p>
+<p>通过<a href="https://packages.debian.org/search?keywords=python3.6-dev" target="_blank" rel="noopener">Debian软件包搜索</a>可知这个包在新版的buster中才有，scratch中是没有的……</p>
+<p>肝的太晚了实在懒得解决了……有知道的仁人志士麻烦邮箱我一下解决方案Orz。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+    <div class="bdsharebuttonbox">
+    <a href="#" class="bds_more" data-cmd="more">分享到：</a>
+    <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a>
+    <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a>
+    <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a>
+    <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a>
+    <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+</div>
+<script>
+window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<style>
+    .bdshare_popup_box {
+        border-radius: 4px;
+        border: #e1e1e1 solid 1px;
+    }
+    .bdshare-button-style0-16 a,
+    .bdshare-button-style0-16 .bds_more {
+        padding-left: 20px;
+        margin: 6px 10px 6px 0;
+    }
+    .bdshare_dialog_list a,
+    .bdshare_popup_list a,
+    .bdshare_popup_bottom a {
+        font-family: 'Microsoft Yahei';
+    }
+    .bdshare_popup_top {
+        display: none;
+    }
+    .bdshare_popup_bottom {
+        height: auto;
+        padding: 5px;
+    }
+</style>
+
+
+</div>
+
+            
+    
+        <a href="https://zlotus.github.io/2017/10/01/rbp3-opencv3/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://zlotus.github.io/2017/10/01/rbp3-opencv3/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2017/10/05/rbp3-pyopencv-camera/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    树莓派上的摄像头与OpenCV
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/09/25/rbp3-aws-gateway/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">树莓派上的科学准备</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/03/redhat-3/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/08/03/redhat-3/" class="title">Redhat Linux初体验（3）</a></p>
+                            <p class="item-date"><time datetime="2018-08-03T03:22:47.000Z" itemprop="datePublished">2018-08-03</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/07/28/redhat-2/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/07/28/redhat-2/" class="title">Redhat Linux初体验（2）</a></p>
+                            <p class="item-date"><time datetime="2018-07-28T03:22:47.000Z" itemprop="datePublished">2018-07-28</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/07/21/redhat-1/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/07/21/redhat-1/" class="title">Redhat Linux初体验（1）</a></p>
+                            <p class="item-date"><time datetime="2018-07-21T03:22:47.000Z" itemprop="datePublished">2018-07-21</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/03/19/install-xgboost/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/03/19/install-xgboost/" class="title">安装xgboost</a></p>
+                            <p class="item-date"><time datetime="2018-03-19T03:22:47.000Z" itemprop="datePublished">2018-03-19</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/02/15/rbp3-upgrade-raspbian.md/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/02/15/rbp3-upgrade-raspbian.md/" class="title">更新Raspbian及相关问题解决</a></p>
+                            <p class="item-date"><time datetime="2018-02-15T02:58:47.000Z" itemprop="datePublished">2018-02-15</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">14</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 11.25px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 16.25px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 12.5px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 13.75px;">编程</a> <a href="/tags/脚本/" style="font-size: 12.5px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fas fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 子实<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://zlotus.github.io/2017/10/01/rbp3-opencv3/';
+        
+        this.page.identifier = 'rbp3-opencv3';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'zlotus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
