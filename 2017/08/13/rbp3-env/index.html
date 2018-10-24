@@ -161,11 +161,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                28
+                30
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                15
+                16
                 <span>标签</span>
             </div>
         </div>
@@ -259,35 +259,35 @@
             <p>第二季度接了一个有意思的任务——用机器学习算法做数据拟合，算法本身没什么，但是如何让一个在python中的算法变成一个有界面的服务就比较有意思了。我刚好又买了一块树莓派3，于是打算把后端程序放在树莓派上运行。首先需要在新鲜出炉的树莓派上做一些环境准备……</p>
 <a id="more"></a>
 <h1 id="1-例行更新"><a href="#1-例行更新" class="headerlink" title="1. 例行更新"></a>1. 例行更新</h1><p>更新前最好用<code>df -h</code>确认一下存储卡剩余空间：</p>
-<p>固件升级并重启：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install rpi-update</div><div class="line">sudo rpi-update &amp;&amp; sudo reboot -h now</div></pre></td></tr></table></figure></p>
-<p>软件包升级<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update &amp;&amp; time sudo apt-get dist-upgrade</div></pre></td></tr></table></figure></p>
+<p>固件升级并重启：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install rpi-update</span><br><span class="line">sudo rpi-update &amp;&amp; sudo reboot -h now</span><br></pre></td></tr></table></figure></p>
+<p>软件包升级<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; time sudo apt-get upgrade &amp;&amp; time sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure></p>
 <blockquote>
-<p>参考<a href="https://askubuntu.com/questions/194651/why-use-apt-get-upgrade-instead-of-apt-get-dist-upgrade" target="_blank" rel="external">Why use apt-get upgrade instead of apt-get dist-upgrade?</a></p>
+<p>参考<a href="https://askubuntu.com/questions/194651/why-use-apt-get-upgrade-instead-of-apt-get-dist-upgrade" target="_blank" rel="noopener">Why use apt-get upgrade instead of apt-get dist-upgrade?</a></p>
 </blockquote>
-<p>另外，对于有洁癖的人，可以隔一段时间执行一下清理：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get clean</div></pre></td></tr></table></figure></p>
+<p>另外，对于有洁癖的人，可以隔一段时间执行一下清理：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get clean</span><br></pre></td></tr></table></figure></p>
 <h1 id="2-远程访问"><a href="#2-远程访问" class="headerlink" title="2. 远程访问"></a>2. 远程访问</h1><p>常用的几个远程访问方式有<code>ssh</code>、远程桌面协议、互联网访问。</p>
-<p><code>ssh</code>的配置参考<a href="https://www.raspberrypi.org/documentation/remote-access/ssh/README.md" target="_blank" rel="external">SSH (SECURE SHELL)</a></p>
-<p>远程桌面配置参考<a href="https://www.raspberrypi.org/documentation/remote-access/vnc/README.md" target="_blank" rel="external">VNC (VIRTUAL NETWORK COMPUTING)</a></p>
-<p>使用<a href="http://www.dataplicity.com/" target="_blank" rel="external">Dataplicity</a>配置互联网访问：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl https://www.dataplicity.com/fldsy1bm.py | sudo python</div></pre></td></tr></table></figure>
+<p><code>ssh</code>的配置参考<a href="https://www.raspberrypi.org/documentation/remote-access/ssh/README.md" target="_blank" rel="noopener">SSH (SECURE SHELL)</a></p>
+<p>远程桌面配置参考<a href="https://www.raspberrypi.org/documentation/remote-access/vnc/README.md" target="_blank" rel="noopener">VNC (VIRTUAL NETWORK COMPUTING)</a></p>
+<p>使用<a href="http://www.dataplicity.com/" target="_blank" rel="noopener">Dataplicity</a>配置互联网访问：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://www.dataplicity.com/fldsy1bm.py | sudo python</span><br></pre></td></tr></table></figure>
 <h1 id="3-配置VPN-Cisco-IPSec"><a href="#3-配置VPN-Cisco-IPSec" class="headerlink" title="3. 配置VPN(Cisco IPSec)"></a>3. 配置VPN(Cisco IPSec)</h1><p>有时网络环境不太好，应该提前准备个梯子（我买的泰坦加速器）：</p>
-<p>安装<code>vpnc</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install vpnc</div></pre></td></tr></table></figure></p>
-<p>配置vpnc，<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vi /etc/vpnc/default.conf</div></pre></td></tr></table></figure></p>
-<p>按下面的格式写入VPN配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">IPSec gateway &lt;VPN服务商提供的服务器地址&gt;</div><div class="line">IPSec ID &quot;&quot;</div><div class="line">IKE Authmode psk</div><div class="line">IPSec secret &lt;VPN服务商提供的共享秘钥&gt;</div><div class="line">Xauth username &lt;VPN服务商给出的用户名，通常是注册用户名&gt;</div><div class="line">Xauth password &lt;VPN服务商给出的密码，通常是注册密码&gt;</div></pre></td></tr></table></figure></p>
-<p>连接vpnc：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vpnc --<span class="built_in">local</span>-port 0</div></pre></td></tr></table></figure></p>
-<p>断开vpnc：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo vpnc-disconnect</div></pre></td></tr></table></figure></p>
+<p>安装<code>vpnc</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install vpnc</span><br></pre></td></tr></table></figure></p>
+<p>配置vpnc，<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/vpnc/default.conf</span><br></pre></td></tr></table></figure></p>
+<p>按下面的格式写入VPN配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">IPSec gateway &lt;VPN服务商提供的服务器地址&gt;</span><br><span class="line">IPSec ID &quot;&quot;</span><br><span class="line">IKE Authmode psk</span><br><span class="line">IPSec secret &lt;VPN服务商提供的共享秘钥&gt;</span><br><span class="line">Xauth username &lt;VPN服务商给出的用户名，通常是注册用户名&gt;</span><br><span class="line">Xauth password &lt;VPN服务商给出的密码，通常是注册密码&gt;</span><br></pre></td></tr></table></figure></p>
+<p>连接vpnc：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vpnc --<span class="built_in">local</span>-port 0</span><br></pre></td></tr></table></figure></p>
+<p>断开vpnc：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vpnc-disconnect</span><br></pre></td></tr></table></figure></p>
 <blockquote>
-<p>参见<a href="https://linux.die.net/man/8/vpnc" target="_blank" rel="external">vpnc</a></p>
+<p>参见<a href="https://linux.die.net/man/8/vpnc" target="_blank" rel="noopener">vpnc</a></p>
 </blockquote>
 <h1 id="4-部署Miniconda"><a href="#4-部署Miniconda" class="headerlink" title="4. 部署Miniconda"></a>4. 部署Miniconda</h1><p>这里就不仔细介绍这位conda家族成员了。</p>
-<p>下载并安装Miniconda：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-armv7l.sh</div><div class="line">sudo md5sum Miniconda3-latest-Linux-armv7l.sh</div><div class="line">sudo /bin/bash Miniconda3-latest-Linux-armv7l.sh</div></pre></td></tr></table></figure></p>
+<p>下载并安装Miniconda：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-armv7l.sh</span><br><span class="line">sudo md5sum Miniconda3-latest-Linux-armv7l.sh</span><br><span class="line">sudo /bin/bash Miniconda3-latest-Linux-armv7l.sh</span><br></pre></td></tr></table></figure></p>
 <blockquote>
 <p>安装过程会自动设置环境变量</p>
 </blockquote>
-<p>设置环境变量（自动设置的内容，无需手动配置）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo vi /home/pi/.bashrc</div><div class="line"><span class="comment"># 最后加入：</span></div><div class="line"><span class="built_in">export</span> PATH=<span class="string">"/home/pi/miniconda3/bin:<span class="variable">$PATH</span>”</span></div></pre></td></tr></table></figure></p>
-<p>新建python环境，使用<code>conda</code>管理python环境，类似与<code>virtualenv</code>，可以让我们独立管理各种用途的python环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda create -n webenv python=3.4</div></pre></td></tr></table></figure></p>
-<p>使用时激活环境<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">source</span> activate webenv</div></pre></td></tr></table></figure></p>
-<p>注销环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">source</span> deactivate</div></pre></td></tr></table></figure></p>
+<p>设置环境变量（自动设置的内容，无需手动配置）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /home/pi/.bashrc</span><br><span class="line"><span class="comment"># 最后加入：</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"/home/pi/miniconda3/bin:<span class="variable">$PATH</span>”</span></span><br></pre></td></tr></table></figure></p>
+<p>新建python环境，使用<code>conda</code>管理python环境，类似与<code>virtualenv</code>，可以让我们独立管理各种用途的python环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n webenv python=3.4</span><br></pre></td></tr></table></figure></p>
+<p>使用时激活环境<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> activate webenv</span><br></pre></td></tr></table></figure></p>
+<p>注销环境：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> deactivate</span><br></pre></td></tr></table></figure></p>
 
         
         </div>
@@ -412,6 +412,25 @@
                     <li>
                         
                         <div class="item-thumbnail">
+                            <a href="/2018/10/15/macOS-aria2/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/10/15/macOS-aria2/" class="title">Aria2上的BT下载加速</a></p>
+                            <p class="item-date"><time datetime="2018-10-15T13:09:11.000Z" itemprop="datePublished">2018-10-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
                             <a href="/2018/10/05/rbp3-pyopencv-camera/" class="thumbnail">
     
     
@@ -424,6 +443,25 @@
                         <div class="item-inner">
                             <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
                             <p class="item-title"><a href="/2018/10/05/rbp3-pyopencv-camera/" class="title">树莓派上的摄像头与OpenCV</a></p>
+                            <p class="item-date"><time datetime="2018-10-05T13:09:11.000Z" itemprop="datePublished">2018-10-05</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/10/05/rbp3-6mic-doa/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/10/05/rbp3-6mic-doa/" class="title">树莓派上的麦阵列定位</a></p>
                             <p class="item-date"><time datetime="2018-10-05T13:09:11.000Z" itemprop="datePublished">2018-10-05</time></p>
                         </div>
                     </li>
@@ -466,44 +504,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2018/08/03/redhat-3/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
-                            <p class="item-title"><a href="/2018/08/03/redhat-3/" class="title">Redhat Linux初体验（3）</a></p>
-                            <p class="item-date"><time datetime="2018-08-03T03:22:47.000Z" itemprop="datePublished">2018-08-03</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2018/07/28/redhat-2/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
-                            <p class="item-title"><a href="/2018/07/28/redhat-2/" class="title">Redhat Linux初体验（2）</a></p>
-                            <p class="item-date"><time datetime="2018-07-28T03:22:47.000Z" itemprop="datePublished">2018-07-28</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -513,7 +513,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -522,7 +522,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
         </div>
     </div>
 
@@ -531,7 +531,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">14</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macOS/">macOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -540,7 +540,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 11.25px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 16.25px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 12.5px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 13.75px;">编程</a> <a href="/tags/脚本/" style="font-size: 12.5px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12.5px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 17.5px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 15px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 16.25px;">Shell</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 15px;">编程</a> <a href="/tags/脚本/" style="font-size: 13.75px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
         </div>
     </div>
 
