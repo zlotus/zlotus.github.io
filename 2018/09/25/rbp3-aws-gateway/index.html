@@ -5,18 +5,18 @@
     
     <title>树莓派上的科学准备 | 子实</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="在树莓派上构建并编译OpenCV3">
+    <meta name="description" content="在树莓派上准备科学环境">
 <meta name="keywords" content="Linux,Raspberry Pi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="树莓派上的科学准备">
 <meta property="og:url" content="https://zlotus.github.io/2018/09/25/rbp3-aws-gateway/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="在树莓派上构建并编译OpenCV3">
+<meta property="og:description" content="在树莓派上准备科学环境">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2018-09-25T04:06:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="树莓派上的科学准备">
-<meta name="twitter:description" content="在树莓派上构建并编译OpenCV3">
+<meta name="twitter:description" content="在树莓派上准备科学环境">
     
 
     
@@ -161,7 +161,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                30
+                31
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -258,17 +258,20 @@
             
             <p>树莓派上不论是raspbian的安装/更新，还是conda/pip的安装/更新，都因为科学原因不太稳定，因此可以先准备科学安装/更新环境。</p>
 <a id="more"></a>
-<h1 id="1-系统安装及配置"><a href="#1-系统安装及配置" class="headerlink" title="1 系统安装及配置"></a>1 系统安装及配置</h1><h1 id="1-1-Headless下的WiFi及ssh配置"><a href="#1-1-Headless下的WiFi及ssh配置" class="headerlink" title="1.1 Headless下的WiFi及ssh配置"></a>1.1 Headless下的WiFi及ssh配置</h1><p>因为要将树莓派当做网关用，所以用命令行就可以了，下载lite镜像。<br>按树莓派官方说明在SD卡上写入镜像，然后进行Headless配置：</p>
+<h1 id="1-系统安装及配置"><a href="#1-系统安装及配置" class="headerlink" title="1 系统安装及配置"></a>1 系统安装及配置</h1><h2 id="1-1-Headless下的WiFi及ssh配置"><a href="#1-1-Headless下的WiFi及ssh配置" class="headerlink" title="1.1 Headless下的WiFi及ssh配置"></a>1.1 Headless下的WiFi及ssh配置</h2><p>因为要将树莓派当做网关用，所以用命令行就可以了，下载lite镜像。<br>按树莓派官方说明在SD卡上写入镜像，然后进行Headless配置：</p>
 <p>配置WIFI，需要在SD卡根目录下新建一个名为<code>wpa_supplicant.conf</code>的文件：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch /Volumes/boot/wpa_supplicant.conf</span><br></pre></td></tr></table></figure></p>
-<p>写入WIFI配置：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">country</span>=US</span><br><span class="line"><span class="attr">ctrl_interface</span>=DIR=/var/run/wpa_supplicant GROUP=netdev</span><br><span class="line"><span class="attr">update_config</span>=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">network</span>=&#123;</span><br><span class="line">    ssid="NETWORK-NAME"</span><br><span class="line">    psk="NETWORK-PASSWORD"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>写入WIFI配置：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">country</span>=US</span><br><span class="line"><span class="attr">ctrl_interface</span>=DIR=/var/run/wpa_supplicant GROUP=netdev</span><br><span class="line"><span class="attr">update_config</span>=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">network</span>=&#123;</span><br><span class="line">    ssid="&lt;YOUR-NETWORK-NAME&gt;"</span><br><span class="line">    psk="&lt;YOUR-NETWORK-PASSWORD&gt;"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>开启SSH，只需在SD卡根目录下新建一个名为ssh的空文件即可：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch /Volumes/boot/ssh</span><br></pre></td></tr></table></figure></p>
 <p>配置完成后正常启动树莓派即可自动连接WIFI，SSH可以正常登录。<br>注：如果不知道设备IP，可以使用<code>ping raspberry.local</code>查找。</p>
-<p>第一次用<code>pi</code>登录后默认密码为<code>raspberry</code>，应使用<code>sudo raspi-config</code>修改密码、主机名等信息。</p>
-<h1 id="1-2-换国内镜像源"><a href="#1-2-换国内镜像源" class="headerlink" title="1.2 换国内镜像源"></a>1.2 换国内镜像源</h1><p>解决升级慢或<code>Cannot initiate the connection to mirrors.opencas.cn</code>问题，<code>sudo vim /etc/apt/sources.list</code>：</p>
-<p>修改<code>sources.list</code>，注释第一行，在最后添加：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib</span><br><span class="line">deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib</span><br></pre></td></tr></table></figure></p>
-<p><code>sudo vim /etc/apt/sources.list.d/raspi.list</code>，修改<code>raspi.list</code>，注释第一行，在最后添加：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/raspbian/raspbian/ stretch main ui</span><br></pre></td></tr></table></figure></p>
+<p>如果这个IP上曾经还有过其他树莓派前辈，那么要先删除本机上的ssh信任主机，比如我的树莓派一直用固定IP配在108上：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -R 192.168.1.108</span><br></pre></td></tr></table></figure></p>
+<p>第一次用<code>pi</code>登录后默认密码为<code>raspberry</code>，应使用<code>sudo raspi-config</code>通过树莓派管理工具修改密码、主机名等信息，或是直接使用<code>passwd</code>修改密码。</p>
+<h2 id="1-2-换国内镜像源"><a href="#1-2-换国内镜像源" class="headerlink" title="1.2 换国内镜像源"></a>1.2 换国内镜像源</h2><p>解决升级慢或<code>Cannot initiate the connection to mirrors.opencas.cn</code>问题：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>修改<code>sources.list</code>，注释第一行，在最后添加国内镜像站：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/raspbian/raspbian/ stretch main non-free contrib</span><br><span class="line">deb-src http://mirrors.aliyun.com/raspbian/raspbian/ stretch main non-free contrib</span><br></pre></td></tr></table></figure></p>
+<p>同样的：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/apt/sources.list.d/raspi.list</span><br></pre></td></tr></table></figure></p>
+<p>修改<code>raspi.list</code>，注释第一行，在最后添加：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.aliyun.com/raspbian/raspbian/ stretch main ui</span><br></pre></td></tr></table></figure></p>
 <p>也可以使用其他镜像站，比如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 中国科学技术大学</span></span><br><span class="line">Raspbian http://mirrors.ustc.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 阿里云</span></span><br><span class="line">Raspbian http://mirrors.aliyun.com/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 清华大学</span></span><br><span class="line">Raspbian http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 华中科技大学</span></span><br><span class="line">Raspbian http://mirrors.hustunique.com/raspbian/raspbian/</span><br><span class="line">Arch Linux ARM http://mirrors.hustunique.com/archlinuxarm/</span><br><span class="line"><span class="comment"># 华南农业大学（华南用户）</span></span><br><span class="line">Raspbian http://mirrors.scau.edu.cn/raspbian/</span><br><span class="line"><span class="comment"># 大连东软信息学院源（北方用户）</span></span><br><span class="line">Raspbian http://mirrors.neusoft.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 重庆大学源（中西部用户）</span></span><br><span class="line">Raspbian http://mirrors.cqu.edu.cn/Raspbian/raspbian/</span><br><span class="line"><span class="comment"># 中山大学 已跳转至中国科学技术大学源</span></span><br><span class="line">Raspbian http://mirror.sysu.edu.cn/raspbian/raspbian/</span><br><span class="line"><span class="comment"># 新加坡国立大学</span></span><br><span class="line">Raspbian http://mirror.nus.edu.sg/raspbian/raspbian</span><br></pre></td></tr></table></figure></p>
-<p>固件升级：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo rpi-update &amp;&amp; sudo reboot -h now</span><br></pre></td></tr></table></figure></p>
+<p>固件升级，<strong>谨慎操作，可能会踩到奇怪的编译坑</strong>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo rpi-update &amp;&amp; sudo reboot -h now</span><br></pre></td></tr></table></figure></p>
 <p>软件包升级：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update &amp;&amp; time sudo apt-get upgrade &amp;&amp; time sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure></p>
 <p>软件包清理，顺便装个vim：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get clean</span><br><span class="line">sudo apt-get install -y vim</span><br></pre></td></tr></table></figure></p>
 <p>解决树莓派的<code>locale</code>警告：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg-reconfigure locales</span><br></pre></td></tr></table></figure></p>
@@ -284,7 +287,7 @@
 <p>测试ss客户端的socks5是否正常：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -I --socks5 localhost:1080 google.com</span><br></pre></td></tr></table></figure></p>
 <p>停止ss客户端：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">kill</span> -TERM 5914 &amp;&amp; rm nohup.out</span><br></pre></td></tr></table></figure></p>
 <h3 id="编写快捷脚本："><a href="#编写快捷脚本：" class="headerlink" title="编写快捷脚本："></a>编写快捷脚本：</h3><p>启动脚本<code>ss-s</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo touch /usr/<span class="built_in">local</span>/bin/ss<span class="_">-s</span></span><br><span class="line">sudo chmod +x /usr/<span class="built_in">local</span>/bin/ss<span class="_">-s</span></span><br></pre></td></tr></table></figure></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">nohup nohup ss-local -v -c /etc/shadowsocks-libev/xxx.json &gt; ~/nohup.log 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="built_in">echo</span> $! &gt; ~/ss-pid.txt</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">nohup ss-local -v -c /etc/shadowsocks-libev/xxx.json &gt; ~/nohup.log 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="built_in">echo</span> $! &gt; ~/ss-pid.txt</span><br></pre></td></tr></table></figure>
 <p>停止<code>ss-t</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo touch /usr/<span class="built_in">local</span>/bin/ss-t</span><br><span class="line">sudo chmod +x /usr/<span class="built_in">local</span>/bin/ss-t</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">kill</span> -s TERM `cat ~/ss-pid.txt`</span><br><span class="line">rm ~/ss-pid.txt</span><br></pre></td></tr></table></figure>
 <h2 id="2-4-proxychains-ng"><a href="#2-4-proxychains-ng" class="headerlink" title="2.4 proxychains-ng"></a>2.4 proxychains-ng</h2><p>ProxyChains是一个使用方便的代理工具，它只会代理指定的程序，下载：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/rofl0r/proxychains-ng</span><br></pre></td></tr></table></figure></p>
@@ -436,6 +439,25 @@
                     <li>
                         
                         <div class="item-thumbnail">
+                            <a href="/2018/12/01/rbp3-dev-env/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
+                            <p class="item-title"><a href="/2018/12/01/rbp3-dev-env/" class="title">树莓派开发环境准备汇总</a></p>
+                            <p class="item-date"><time datetime="2018-12-01T04:09:10.000Z" itemprop="datePublished">2018-12-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
                             <a href="/2018/10/25/rbp3-6mic-doa/" class="thumbnail">
     
     
@@ -509,25 +531,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2018/09/25/rbp3-aws-gateway/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Programming/">Programming</a></p>
-                            <p class="item-title"><a href="/2018/09/25/rbp3-aws-gateway/" class="title">树莓派上的科学准备</a></p>
-                            <p class="item-date"><time datetime="2018-09-25T04:06:10.000Z" itemprop="datePublished">2018-09-25</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -537,7 +540,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -546,7 +549,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
         </div>
     </div>
 
@@ -555,7 +558,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macOS/">macOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macOS/">macOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -564,7 +567,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12.5px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 17.5px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 15px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 16.25px;">Shell</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 15px;">编程</a> <a href="/tags/脚本/" style="font-size: 13.75px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+            <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12.5px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 17.5px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 16.25px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 16.25px;">Shell</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.25px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.5px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.75px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.25px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 15px;">编程</a> <a href="/tags/脚本/" style="font-size: 13.75px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
         </div>
     </div>
 
