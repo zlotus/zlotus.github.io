@@ -3,20 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>来自昨天的音轨 | 子实</title>
+    <title>使用Python代码进行树莓派上的麦阵列声源定位 | 子实</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="我心里记得的每一个人，都会让我变得更强，有几个人却能让我变得更好，然而我并不感谢你们，哈哈哈~">
-<meta name="keywords" content="杂谈,日记">
+    <meta name="description" content="使用Python代码，在树莓派上通过ReSpeaker圆形6麦阵列做DOA(Direction Of Arrival)">
+<meta name="keywords" content="Python,Linux,Raspberry Pi">
 <meta property="og:type" content="article">
-<meta property="og:title" content="来自昨天的音轨">
-<meta property="og:url" content="https://zlotus.github.io/2015/05/10/yesterday-yes-a-day/index.html">
+<meta property="og:title" content="使用Python代码进行树莓派上的麦阵列声源定位">
+<meta property="og:url" content="https://zlotus.github.io/2019/06/15/rbp3-6mic-py-doa/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="我心里记得的每一个人，都会让我变得更强，有几个人却能让我变得更好，然而我并不感谢你们，哈哈哈~">
+<meta property="og:description" content="使用Python代码，在树莓派上通过ReSpeaker圆形6麦阵列做DOA(Direction Of Arrival)">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2015-05-10T01:10:11.000Z">
+<meta property="og:updated_time" content="2019-06-15T12:13:11.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="来自昨天的音轨">
-<meta name="twitter:description" content="我心里记得的每一个人，都会让我变得更强，有几个人却能让我变得更好，然而我并不感谢你们，哈哈哈~">
+<meta name="twitter:title" content="使用Python代码进行树莓派上的麦阵列声源定位">
+<meta name="twitter:description" content="使用Python代码，在树莓派上通过ReSpeaker圆形6麦阵列做DOA(Direction Of Arrival)">
     
 
     
@@ -213,7 +213,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-yesterday-yes-a-day" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-rbp3-6mic-py-doa" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -221,7 +221,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            来自昨天的音轨
+            使用Python代码进行树莓派上的麦阵列声源定位
         </h1>
     
 
@@ -230,8 +230,8 @@
                         
     <div class="article-date">
         <i class="fas fa-calendar-alt"></i>
-        <a href="/2015/05/10/yesterday-yes-a-day/">
-            <time datetime="2015-05-10T01:10:11.000Z" itemprop="datePublished">2015-05-10</time>
+        <a href="/2019/06/15/rbp3-6mic-py-doa/">
+            <time datetime="2019-06-15T12:13:11.000Z" itemprop="datePublished">2019-06-15</time>
         </a>
     </div>
 
@@ -239,13 +239,13 @@
                         
     <div class="article-category">
     	<i class="fas fa-folder"></i>
-        <a class="article-category-link" href="/categories/Diary/">Diary</a>
+        <a class="article-category-link" href="/categories/Programming/">Programming</a>
     </div>
 
                         
     <div class="article-tag">
         <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/日记/">日记</a>, <a class="tag-link" href="/tags/杂谈/">杂谈</a>
+        <a class="tag-link" href="/tags/Linux/">Linux</a>, <a class="tag-link" href="/tags/Python/">Python</a>, <a class="tag-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
     </div>
 
                     </div>
@@ -256,53 +256,25 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h1 id="来自昨天"><a href="#来自昨天" class="headerlink" title="来自昨天"></a>来自昨天</h1><p>周日，变天，要上课，气温骤降。</p>
-<p>我穿的是短袖，挺冷的，早上上完没签到，白去了，下午要给一大堆母亲过节，课程什么的就翘了吧，反正他们最近也教不了我想学的东西ㄟ( ▔, ▔ )ㄏ。</p>
+            <p>偶然发现seeedstudio更新了他们的<a href="http://wiki.seeedstudio.com/ReSpeaker_6-Mic_Circular_Array_kit_for_Raspberry_Pi/#librespeaker-aduio-process" target="_blank" rel="noopener">英文版说明书</a>，然而中文版还没更新[捂脸]。关于DOA的部分，除了原来的使用<a href="https://github.com/introlab/odas" target="_blank" rel="noopener">ODAS Studio</a>的方法以外，又多加了一些使用Python代码直接进行DOA的章节。</p>
 <a id="more"></a>
-<p>12点准时和一大堆附中学生等公交，耳机里随机着歌曲。</p>
-<p>闲得无聊想要换playlist，就找了个名为halo的列表，当时我以为列表里是单曲——《If I Had A Heart》——来自维京传奇，相当爷们的一首歌，总能让我联想起《银翼杀手》那段经典的尾声，而我知道这首歌是通过坑叔讲解的美国国民游戏《光晕：致远星》。这也就是这个playlist的由来。</p>
-<p>一曲结束，本来想着是单曲循环，结果跳出了另一首，《Yesterday Yes a Day》。这首歌是从凤凰卫视2013年夏的一期气象站节目里听到的。</p>
-<p>当时的我凭借巅峰的英语听力和巅峰的搜索能力找到了这首歌。那阵子正值暗恋到深处自怨自艾之时，负能量爆掉的水表足够绕地球七圈半。情窦初开，真诚而滚烫，就像路边爆米花爷爷手中熟练旋转着的的大米放大器——里面又闷又热，看似有出口却不能随意打开，而且还有个神出鬼没的压力表，时刻提醒你距离“快不行了”还有多远，那是相当中二的一段时光，中二总是来得早去的迟。</p>
-<p>可惜的是，我喜欢的姑娘并不是爆米花爷爷，她并不想要处理这突如其来的压力和滚烫。</p>
-<h1 id="的"><a href="#的" class="headerlink" title="的"></a>的</h1><p>的确，我对旋律非常敏感，我经常依赖旋律进行场景重建。《It’s My Life》用来还原WOW私服的日子、《外面的世界》用来还原呆在怒江的日子、《生如夏花》用来还原跑去西藏的日子、《平凡之路》用来还原自驾去新疆的日子……iTunes里装满了各种电影、游戏音轨，这样我就可以经历一遍之后，靠着音轨不停的重复体验，即有礼貌又很高效。</p>
-<p>旋律对我来说更像是记忆的索引，对，就是数据库里的index，查询起回忆时就特别的稳准狠。每一段熟悉的旋律都是一段匆匆的时光，仿佛生老病死爱别离怨憎會求不得色受想行识都写在了乐谱上，柔板、重音、反复、休止。愚公告诉我“子子孙孙无穷无尽”，我默默回复到“再不关火鸡汤就干了”，于是，记忆和故事一样，都是骗人的T^T。</p>
-<p>颇具讽刺意味的是，我现在已经基本看不懂五线谱了&lt;(￣▽￣)&gt; 。</p>
-<h1 id="音轨"><a href="#音轨" class="headerlink" title="音轨"></a>音轨</h1><script type="text/javascript" src="http://www.xiami.com/widget/player-single?uid=0&sid=1459459&mode=js"></script>
-
-<p>Yesterday Yes a Day - Jane Birkin</p>
-<p>Yesterday，yes a day，like any day</p>
-<p>Alone again for every day</p>
-<p>Seemed the same sad way to pass the day</p>
-<p>The sun went down without me</p>
-<p>Suddenly someone else has touched my shadow</p>
-<p>He said “Hello”</p>
-<p>Yesterday，yes a day，like any day</p>
-<p>Alone again for every day</p>
-<p>Seemed the same sad way</p>
-<p>He tried to say</p>
-<p>What did you do without me</p>
-<p>Why are you crying alone on your shadow</p>
-<p>He said &quot;I know&quot;</p>
-<p>Yesterday，yes a day，like any day</p>
-<p>Alone again for every day</p>
-<p>Seemed the same sad way to pass the day</p>
-<p>The sun went down without you</p>
-<p>Folling me in his arms because his shadow</p>
-<p>He said “Let’s go”</p>
-<p>Yesterday，yes a day，like any day</p>
-<p>Alone again for every day</p>
-<p>Seemed the same sad way to pass the day</p>
-<p>Living my life without him</p>
-<p>Don’t let him go away</p>
-<p>He’s found my shadow</p>
-<p>Don’t let him go</p>
-<p>Yesterday，yes a day</p>
-<p>But today…</p>
-<p>No I don’t care if others say</p>
-<p>It’s the same sad way to pass the day</p>
-<p>Cause they all live without it</p>
-<p>Without making love in the shadows</p>
-<p>Today I know</p>
+<h1 id="0-安装驱动"><a href="#0-安装驱动" class="headerlink" title="0 安装驱动"></a>0 安装驱动</h1><p>别忘了用<code>source activate doa</code>切到专门的环境里，或者<code>conda create -n doa python=3.6</code>现造一个环境。</p>
+<p>安装驱动：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 git <span class="built_in">clone</span> https://github.com/respeaker/seeed-voicecard.git</span><br><span class="line"><span class="built_in">cd</span> seeed-voicecard</span><br><span class="line">sudo proxychains4 ./install.sh</span><br><span class="line">sudo reboot -h now</span><br></pre></td></tr></table></figure></p>
+<p>检查驱动：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">arecord -L <span class="comment"># 输入驱动，即录制</span></span><br><span class="line">null</span><br><span class="line">    Discard all samples (playback) or generate zero samples (capture)</span><br><span class="line">default</span><br><span class="line">ac108</span><br><span class="line">dmixer</span><br><span class="line">ac101</span><br><span class="line">sysdefault:CARD=seeed8micvoicec</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Default Audio Device</span><br><span class="line">dmix:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Direct sample mixing device</span><br><span class="line">dsnoop:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Direct sample snooping device</span><br><span class="line">hw:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Direct hardware device without any conversions</span><br><span class="line">plughw:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Hardware device with all software conversions</span><br><span class="line"></span><br><span class="line">aplay -L <span class="comment"># 输出驱动，即播放</span></span><br><span class="line">null</span><br><span class="line">    Discard all samples (playback) or generate zero samples (capture)</span><br><span class="line">default</span><br><span class="line">ac108</span><br><span class="line">dmixer</span><br><span class="line">ac101</span><br><span class="line">sysdefault:CARD=ALSA</span><br><span class="line">    bcm2835 ALSA, bcm2835 ALSA</span><br><span class="line">    Default Audio Device</span><br><span class="line">dmix:CARD=ALSA,DEV=0</span><br><span class="line">    bcm2835 ALSA, bcm2835 ALSA</span><br><span class="line">    Direct sample mixing device</span><br><span class="line">dmix:CARD=ALSA,DEV=1</span><br><span class="line">    bcm2835 ALSA, bcm2835 IEC958/HDMI</span><br><span class="line">    Direct sample mixing device</span><br><span class="line">dsnoop:CARD=ALSA,DEV=0</span><br><span class="line">    bcm2835 ALSA, bcm2835 ALSA</span><br><span class="line">    Direct sample snooping device</span><br><span class="line">dsnoop:CARD=ALSA,DEV=1</span><br><span class="line">    bcm2835 ALSA, bcm2835 IEC958/HDMI</span><br><span class="line">    Direct sample snooping device</span><br><span class="line">hw:CARD=ALSA,DEV=0</span><br><span class="line">    bcm2835 ALSA, bcm2835 ALSA</span><br><span class="line">    Direct hardware device without any conversions</span><br><span class="line">hw:CARD=ALSA,DEV=1</span><br><span class="line">    bcm2835 ALSA, bcm2835 IEC958/HDMI</span><br><span class="line">    Direct hardware device without any conversions</span><br><span class="line">plughw:CARD=ALSA,DEV=0</span><br><span class="line">    bcm2835 ALSA, bcm2835 ALSA</span><br><span class="line">    Hardware device with all software conversions</span><br><span class="line">plughw:CARD=ALSA,DEV=1</span><br><span class="line">    bcm2835 ALSA, bcm2835 IEC958/HDMI</span><br><span class="line">    Hardware device with all software conversions</span><br><span class="line">sysdefault:CARD=seeed8micvoicec</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Default Audio Device</span><br><span class="line">dmix:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Direct sample mixing device</span><br><span class="line">dsnoop:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Direct sample snooping device</span><br><span class="line">hw:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Direct hardware device without any conversions</span><br><span class="line">plughw:CARD=seeed8micvoicec,DEV=0</span><br><span class="line">    seeed-8mic-voicecard,</span><br><span class="line">    Hardware device with all software conversions</span><br></pre></td></tr></table></figure></p>
+<h1 id="1-测试LED"><a href="#1-测试LED" class="headerlink" title="1 测试LED"></a>1 测试LED</h1><p>说实话，自打买了这个麦阵列，我还从来没试过这12个LED灯[捂脸]，试试吧要不感觉对不起这个板子，另外，运行demo需要<code>gpiozero</code>、<code>spidev</code>、<code>pyusb</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 git <span class="built_in">clone</span> --depth 1 https://github.com/respeaker/pixel_ring.git</span><br><span class="line"><span class="built_in">cd</span> pixel_ring</span><br><span class="line">proxychains4 pip install -U -e .</span><br><span class="line">proxychains4 pip install gpiozero RPi.GPIO</span><br><span class="line">python examples/respeaker_4mic_array.py</span><br></pre></td></tr></table></figure>
+<p>控制LED的主要代码其实就在函数<code>show()</code>，直接在Python交互环境中输入下面的代码，就可以打开12点方向的灯，并渲染为白色，也就是ARGB(0, 64, 64, 64)。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pixel_ring <span class="keyword">import</span> pixel_ring</span><br><span class="line"><span class="keyword">from</span> gpiozero <span class="keyword">import</span> LED</span><br><span class="line"></span><br><span class="line">power = LED(<span class="number">5</span>)</span><br><span class="line">power.on()</span><br><span class="line"></span><br><span class="line">pixel_ring.set_brightness(<span class="number">10</span>) <span class="comment"># 0-100，其实会被转换为`APA102.dev.global_brightness`的0-31</span></span><br><span class="line">pixel_ring.pattern.show([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">64</span>, <span class="number">64</span>, <span class="number">64</span>])</span><br></pre></td></tr></table></figure>
+<p>用于控制的数组是一个48位的<code>list</code>，从1点钟方向开始，到12点钟方向结束，每四位控制一个LED灯，非常好操作。</p>
+<h1 id="2-装DOA相关库"><a href="#2-装DOA相关库" class="headerlink" title="2 装DOA相关库"></a>2 装DOA相关库</h1><p>添加seeed提供的<code>apt</code>源。（靠谱的公司啊）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"deb https://seeed-studio.github.io/pi_repo/ stretch main"</span> | sudo tee /etc/apt/sources.list.d/seeed.list</span><br><span class="line">proxychains4 curl https://seeed-studio.github.io/pi_repo/public.key | sudo apt-key add -</span><br><span class="line">proxychains4 sudo apt update</span><br></pre></td></tr></table></figure></p>
+<p>安装<code>numpy</code>和<code>pyaudio</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 conda install -y numpy</span><br><span class="line">proxychains4 sudo apt-get install -y portaudio19-dev </span><br><span class="line">proxychains4 pip install pyaudio</span><br></pre></td></tr></table></figure></p>
+<p>安装编译工具：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo proxychains4 apt-get install -y swig python-dev libatlas-base-dev build-essential make</span><br></pre></td></tr></table></figure></p>
+<p>安装<code>snowboy</code>（热词检测DOA）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 git <span class="built_in">clone</span> --depth 1 https://github.com/Kitt-AI/snowboy.git</span><br><span class="line"><span class="built_in">cd</span> snowboy</span><br><span class="line">python setup.py build</span><br><span class="line">python setup.py bdist_wheel</span><br><span class="line">pip install dist/snowboy*.whl</span><br></pre></td></tr></table></figure></p>
+<p>安装seeed的<code>voice-engin</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 git <span class="built_in">clone</span> https://github.com/voice-engine/voice-engine.git</span><br><span class="line"><span class="built_in">cd</span> voice-engine</span><br><span class="line">python setup.py bdist_wheel</span><br><span class="line">pip install dist/*.whl</span><br></pre></td></tr></table></figure></p>
+<p>测试ok~：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python ~/doa/voice-engine/examples/respeaker_6mic_array_for_pi/kws_doa.py</span><br></pre></td></tr></table></figure></p>
+<p>如果只是想用DOA功能，可以试试seeed的老项目<a href="https://github.com/respeaker/mic_array" target="_blank" rel="noopener">mic_array</a>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 git <span class="built_in">clone</span> https://github.com/respeaker/mic_array.git</span><br><span class="line">python ./mic_array/mic_array.py</span><br></pre></td></tr></table></figure>
+<p>对比了一下，跟人家<a href="https://github.com/introlab/odas.git" target="_blank" rel="noopener">introlab/odas</a>项目差的还是比较远的。直观上看就是我们简单的靠<code>fft</code>实现的DOA仅仅能做到平面范围内的方位判断，仅输出一个角度（平面offset），速度慢且不支持声源跟踪等功能。而odas的声源定位项目输出两个值，一个平面offset一个法向offset，还能进行声源分辨，多声源跟踪跟踪。odas项目的理论收录在<a href="https://arxiv.org/pdf/1812.00115.pdf" target="_blank" rel="noopener">Lightweight and Optimized Sound Source Localization and Tracking Methods for Opened and Closed Microphone Array Configurations</a>中，值得一读。</p>
 
         
         </div>
@@ -313,7 +285,7 @@
 
 </div>
 
-    <a data-url="https://zlotus.github.io/2015/05/10/yesterday-yes-a-day/" data-id="cj56zp2mn0010ldwot7bmm8x7" class="article-share-link"><i class="fas fa-share"></i>分享到</a>
+    <a data-url="https://zlotus.github.io/2019/06/15/rbp3-6mic-py-doa/" data-id="cjxfu55200000urwo82f83bxm" class="article-share-link"><i class="fas fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -388,19 +360,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2015/05/29/novel-and-logic/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    小说の逻辑
-                
-            </div>
-        </a>
     
-    
-        <a href="/2015/04/17/first-farewell/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2019/01/19/init-2019/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">第一次告别</div>
+            <div class="article-nav-title">我是不是得写个2018年终总结啊</div>
         </a>
     
 </nav>
