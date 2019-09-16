@@ -478,37 +478,48 @@
     <div class="article-inner">
         
         
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/08/01/rbp3-doa-paper/">轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/08/01/rbp3-doa-paper/">
+            <time datetime="2019-08-01T15:40:11.000Z" itemprop="datePublished">2019-08-01</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fas fa-folder"></i>
+        <a class="article-category-link" href="/categories/Diary/">Diary</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/Japanese/">Japanese</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
         
         <div class="article-entry" itemprop="articleBody">
         
-            
-            <h1 id="优化的轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法"><a href="#优化的轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法" class="headerlink" title="优化的轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法"></a>优化的轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>自然环境中的人机交互需要对环境中的不同的声源进行过滤。这种功能通常需要使用麦阵列，实时的对声源进行定位、追踪，并对不同声源进行分解。同时收集多个麦克风信号并处理分析可以提高对噪音的健壮性，但是麦克风数目的增加也会增加更多的计算量，这限制了响应时间，也限制了机器人的应用场景。声源定位算法会扫描广阔的三维空间以确定声源方位，这需要较多的算力，因此，减少声源定位算法的计算量将能够有效帮助声源定位机器人的场景推广及实施应用。不过，机器人的外形也会限制麦阵列的几何形状。此外，声源定位方法通常会返回一些环境噪音，而这些噪音应该通过声源追踪进行平滑和过滤。本文提出了一种名为SRP-PHAT-HSDA的新的声源定位方法，该方法将结合使用低分辨率和高分辨率的网格以节省扫描空间时对内存的访问。文章将使用一种麦克风指向性模型以减少方位扫描的数目，并忽略掉不重要的麦克风。本文还将引入一种新的麦阵列配置方法，用以自动调整那些平常需要参考麦阵列形状通过经验调试的参数。本文提出了一种对三维卡尔曼方法的改进（简写为M3K），用于生源追踪，该方法可以在三维空间中同时追踪多个声源。本文通过使用包含16个麦克风的阵列和低功耗硬件进行测试，结果显示SRP-PHAT-HSDA和M3K方法仅使用传统算法的1/30到1/4的算力，却能够达到不低于传统声源定位、追踪方法的效果。</p>
-<p>关键词：声源定位，声源追踪，麦阵列，实时计算，嵌入式系统，移动机器人，机器人听觉。</p>
-<h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h2><p>当发言者离（一个或多个）麦克风较远时进行的语音识别称为远距离语音识别（简称DSR），而远距离会使得背景噪音和反射回响与语音叠加[1, 2]，给识别带来困难。不过，DSR可以让发言者在不佩戴手持或头带式麦克风的场景中进行语音识别。尽管，远距离语音识别的健壮性依然是个挑战[3]。麦阵列这种硬件可以在人机交互（简称HRI）中实现DSR。这需要在机器人平台上安装多个麦克风，以处理远距离感知音频，通过过滤机器人平台的风扇、驱动机构，以及环境中不稳定的背景反射声源，在处理速度应当足够快时，实现实时的人机交互交互。这一过程首先需要对感知到的声源进行定位和追踪，然后才能对不同的声源进行分离[4]，以进行下一阶段的操作，比如对分离出来的特定语音进行识别[5, 6]。在实现声源定位及追踪方法时，对环境噪音的健壮性以及对计算量的控制十分关键[7]，因为这仅仅是实现基于语音的人机交互（HRI）的第一步。在自然环境下实现基于语音的人机交互需要让机器人避免环境中的各种噪音干扰，从嘈杂的背景音中分辨出并识别语音指令。</p>
-<center><br>    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" src="https://raw.githubusercontent.com/zlotus/imagebed/master/2019/odas-paper-figure-1.png"><br>    <br><br>    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">图1 声源追踪及定位模块示意图</div><br></center>
-
-<p>如图1所示，声源定位（简称SSL）以及声源追踪（简称SST）是按顺序依次进行计算的。对于每一帧$l$，SSL使用来自包括$M$个麦克风的麦阵列的音频数据$\mathbf{X}^l=\left{\mathbf{X}^l_1, \mathbf{X}^l_2, \ldots, \mathbf{X}^l_M\right}$生成$V$个潜在声源$\mathbf{\Psi}^l=\left{\psi^l_1, \psi^l_2, \ldots, \psi^l_V\right}$，其中的每个潜在声源$\psi^l_V$由一组表示波达方向（DoA）的笛卡尔坐标$\lambda^l_v$和一个表示可控波束能级组成的$\Lambda^l_v$组成。SSL方法给出由零星的声源（比如稀疏的语音）引起的带噪声源的波达方向，并且同一时间可能存在多个竞争声源。接着，SST利用潜在声源给出$I$个过滤掉噪音的被追踪声源$\mathbf{\Phi}^l=\left{\phi^l_1, \phi^l_2, \ldots, \phi^l_I\right}$，以提供声源的平滑轨迹。改进的SSL和SST方法的功能与所使用的麦克风数量直接相关，而麦克风数量会影响到计算量。</p>
-<p>在这一过程中，SSL是最消耗算力的操作，现有不少算法可用于声源定位。Rascon等人[9]提供了一种轻量级的对内存和CPU消耗较低的SSL方法，但是仅支持3个麦克风，而且只能在一个2维平面内进行波达方向计算。Nesta与Omologo[10]提供了一种使用通用状态相干变换实现的声源定位，这一定位方法在多声源场景中尤为有效，但是这一方法中涉及独立成分分析运算（ICA），需要较长时间才能收敛。Drude等人[11]使用基于相位和电平差异的核函数方法，但是这一方法会增加计算量。Loesch和Yang[12]提供了一直基于时域-频域稀疏的定位方法，但这一方法对高混响水平较为敏感。基于标准特征值分解的多信号分类（SEVD-MUSIC）使SSL对加性噪声具有较好的鲁棒性[13]。SEVD-MUSIC最初用于窄带信号[14]，不过目前已经可以适用于宽带声源，例如语音[15]，并且只要噪音没有被定位信号（如语言）强，这一方法就可以对噪声具有较强的健壮性。基于广义特征值分解（GEVD-MUSIC）方法[16]的多信号分类也用于处理该问题，但这一种方法增加了计算量。基于广义奇异值分解（GSVD-MUSIC）的多信号分类降低了GEVD-MUSIC的计算量，同时提高了定位精度[17]，但这一方法仍涉及矩阵特征分解运算。其他方法利用麦阵列的几何特性（线性，圆形或球形）来提高鲁棒性并降低计算量[18,19,20]。尽管这些几何形状产生了有趣的特性，但由于其特定的几何形状也带来了一些物理约束，这些麦阵列配置对于移动机器人的体积限制来说并不太实用。还可以使用具有相位变换的转向响应功率（SRP-PHAT）来实现声源定位。SRP-PHAT通常使用来自成对麦克风的带有相位变换的加权广义互相关（GCC-PHAT）来计算[4,8]。SRP-PHAT比基于MUSIC的方法的计算量更少，但在通过大量麦克风数据扫描3D空间时仍需要大量的计算。随机区域收缩[21]、层次搜索[22,23,24]和矢量化[25]也被研究用SRP-PHAT加速扫描，但通常局限于2维平面和单个资源搜索。Marti[26]等人还提出一种同时在粗网格和细网格上进行递归搜索的方法。这一方法将空间划分为矩形小块，然后将细网格中的多点映射在粗网格的一个点中。不过，这一方法也忽略了麦克风的方向性，并在GCC值上使用了平均窗口，这可能在临近值为负时削减一个峰值的效果。</p>
-<p>我们可以把声源追踪方法分为以下四类：</p>
-<ul>
-<li><p>维特比搜索：Anguera等人[27]提出了一种后处理Viterbi方法来追踪时序中的声源。在实时处理数据时，这一方法将引入显著的延迟，因此仅适用于非实时分析。这一方法实现的追踪仅限于离散状态空间，因此该方法仅适用于固定网格中的声源追踪。</p>
-</li>
-<li><p>顺序蒙特卡罗（SMC）滤波：SMC方法，也称为粒子滤波，能够对单个声源执行低延迟追踪[28,29,30]。 Valin等人[4,8]采用SMC方法来跟踪多个声源。这一方法通过用有限粒子对空间进行采样，以模拟出非高斯的状态分布。SMC可以用来追踪连续空间轨迹，不过这一方法需要大量计算，而且因为使用了随机生成的粒子而不够确定。</p>
-</li>
-<li><p>卡尔曼滤波：Rascon等人[9]提出了一种基于卡尔曼滤波器的轻量级方法，该方法能够追踪连续轨迹，同时显著减少计算量。然而，该方法仅限于球面坐标中的波达方向，输出高度和方位角，不过，当方位角分辨率随高度变化时，会产生畸变，即引入了方位角隐藏现象。Marković等人[31]提出了一个在李群上的扩展卡尔曼滤波器（LG-EKF），用8麦克风阵列进行方向追踪。LG-EKF解决了方位角隐藏现象，但仅限在2维圆环上进行追踪，因此并不适合追踪3维球面上的声源。</p>
-</li>
-<li><p>联合概率数据关联过滤（JPDA）：Marković等[32]提出了一种可用于3维球面声源追踪的，基于von Mises-Fisher分布上的贝叶斯估计。然而，该方法需要事先知道声源数量，并且忽略各跟踪源的运动模型，这导致当两个声源交叉时会被当做轨迹的切换或融合。</p>
-</li>
-</ul>
-<p>为了改进声源定位和声源追踪，本文提出了一种称为SRP-PHAT-HSDA的SRP-PHAT方法，即按层级搜索指向性模型并自动校准，以及一种使用笛卡尔坐标的改进的3D卡尔曼滤波（M3K）的追踪方法。SRP-PHAT-HSDA首先在粗分辨率网格上扫描3D空间，然后优化特定区域的搜索。该方法利用到达时间差（TDOA）的不确定性模型，通过开放和闭合麦阵列配置，使用多种分辨率水平的网格来优化扫描精度。此方法还使用了麦克风指向性模型，以减少扫描方向的数量，并忽略不重要的麦克风对。M3K用卡尔曼滤波器取代了Valin等人[8]使用的SMC滤波器，并引入了三个新概念：1) 归一化状态以将空间限制为单位球体；2) 推导出计算相干声源的解析解表达式，以加速计算；3) 用于同时跟踪多个声源的卡尔曼均值向量和协方差矩阵的加权更新。这些改进形成了高效的对多个声源的跟踪方法，使之能够嵌入低算力硬件。改进的方法不仅比SMC更节省算力，还解决了卡尔曼滤波在球面座标中的畸变和隐藏。</p>
-<p>文章的结构如下：首先，第2节描述了SRP-PHAT与SEVD-MUSIC的计算要求对比，以证明和确定SRP-PHAT-HSDA带来的改进。然后，第3节和第4节分别对SRP-PHAT-HSDA方法和M3K方法进行描述。第5节介绍了在移动机器人上实现8和16圆形麦阵列以及闭合立方麦阵列的实验设置，在3代树莓派上实现了SSL和SST方法。第6节给出了将SRP-PHAT与SRP-PHAT-HSDA方法，以及M3K与SMC方法的对比的实验结果。最后，第7节对文章进行总结，并说明未来工作。</p>
-<h2 id="2-SRP-PHAT与SEVD-MUSIC的算力需求"><a href="#2-SRP-PHAT与SEVD-MUSIC的算力需求" class="headerlink" title="2 SRP-PHAT与SEVD-MUSIC的算力需求"></a>2 SRP-PHAT与SEVD-MUSIC的算力需求</h2><p>声源定位通常被分为两个子任务：1) 达到时间差估计；2) 在麦阵列周围的3维空间中搜索波达方向。而SRP-PHAT与SEVD-MUSIC方法的主要区别就在于子任务1：SRP-PHAT基于带有相位变换的加权广义互相关（GCC-PHAT）方法，而SEVD-MUSIC基于奇异特征值分解。</p>
-<p>The main difference between SRP- PHAT and SEVD-MUSIC lies in Task 1: SRP-PHAT relies on the Generalized Cross-Correlation with Phase Transform method (GCC-PHAT), while SEVD-MUSIC uses Singular Eigenvalue Decomposition (SEVD). </p>
-
+            <p><p>翻译论文 <a href="https://arxiv.org/abs/1812.00115" target="_blank" rel="noopener">Lightweight and Optimized Sound Source Localization and Tracking Methods for Open and Closed Microphone Array Configurations</a> ，先坑着……</p></p>
+            <p class="article-more-link">
+                <a href="/2019/08/01/rbp3-doa-paper/#more">查看更多</a>
+            </p>
         
         </div>
         <footer class="article-footer">
@@ -518,7 +529,7 @@
 
 </div>
 
-    <a data-url="https://zlotus.github.io/2019/07/25/rbp3-doa-paper/" data-id="ck0m7956t0003awwoggrg22gj" class="article-share-link"><i class="fas fa-share"></i>分享到</a>
+    <a data-url="https://zlotus.github.io/2019/08/01/rbp3-doa-paper/" data-id="ck0m7956t0003awwoggrg22gj" class="article-share-link"><i class="fas fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1566,7 +1577,7 @@
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2019/07/25/rbp3-doa-paper/" class="thumbnail">
+                            <a href="/2019/08/01/rbp3-doa-paper/" class="thumbnail">
     
     
         <span class="thumbnail-image thumbnail-none"></span>
@@ -1576,9 +1587,9 @@
                         </div>
                         
                         <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/07/25/rbp3-doa-paper/" class="title"></a></p>
-                            <p class="item-date"><time datetime="2019-07-25T10:44:23.443Z" itemprop="datePublished">2019-07-25</time></p>
+                            <p class="item-category"><a class="article-category-link" href="/categories/Diary/">Diary</a></p>
+                            <p class="item-title"><a href="/2019/08/01/rbp3-doa-paper/" class="title">轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法</a></p>
+                            <p class="item-date"><time datetime="2019-08-01T15:40:11.000Z" itemprop="datePublished">2019-08-01</time></p>
                         </div>
                     </li>
                 
@@ -1629,7 +1640,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">分类</h3>
         <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Movie/">Movie</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Programming/">Programming</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Shell/">Shell</a><span class="category-list-count">3</span></li></ul>
         </div>
     </div>
 
@@ -1638,7 +1649,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">四月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">十一月 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">十月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/09/">九月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">八月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">七月 2014</a><span class="archive-list-count">5</span></li></ul>
         </div>
     </div>
 
@@ -1647,7 +1658,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Japanese/">Japanese</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TensorFlow/">TensorFlow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ZMQ/">ZMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctpn/">ctpn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macOS/">macOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Japanese/">Japanese</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCV/">OpenCV</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/">Python</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Raspberry-Pi/">Raspberry Pi</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/">Shell</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TensorFlow/">TensorFlow</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ZMQ/">ZMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctpn/">ctpn</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/macOS/">macOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/做饭/">做饭</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/旅行/">旅行</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/日记/">日记</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/电影/">电影</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/算法/">算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程/">编程</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/脚本/">脚本</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/趣事/">趣事</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/音乐/">音乐</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -1656,7 +1667,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Japanese/" style="font-size: 10px;">Japanese</a> <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 19px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 16px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/TensorFlow/" style="font-size: 10px;">TensorFlow</a> <a href="/tags/ZMQ/" style="font-size: 10px;">ZMQ</a> <a href="/tags/ctpn/" style="font-size: 10px;">ctpn</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11px;">旅行</a> <a href="/tags/日记/" style="font-size: 17px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 14px;">编程</a> <a href="/tags/脚本/" style="font-size: 13px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+            <a href="/tags/Japanese/" style="font-size: 11px;">Japanese</a> <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12px;">OpenCV</a> <a href="/tags/Python/" style="font-size: 19px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 16px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/TensorFlow/" style="font-size: 10px;">TensorFlow</a> <a href="/tags/ZMQ/" style="font-size: 10px;">ZMQ</a> <a href="/tags/ctpn/" style="font-size: 10px;">ctpn</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11px;">旅行</a> <a href="/tags/日记/" style="font-size: 17px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 14px;">编程</a> <a href="/tags/脚本/" style="font-size: 13px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
         </div>
     </div>
 
