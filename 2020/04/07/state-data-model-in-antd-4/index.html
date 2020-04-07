@@ -7,20 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>子实</title>
+<title>Ant Design 4.0中的新版`connect`函数 - 子实</title>
 
 
-    <meta name="description" content="观察-尝试-记录">
-<meta property="og:type" content="website">
-<meta property="og:title" content="子实">
-<meta property="og:url" content="https://zlotus.github.io/page/2/index.html">
+    <meta name="description" content="关于新版Ant Design中`connect`函数及修饰器的示例">
+<meta name="keywords" content="杂谈">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ant Design 4.0中的新版`connect`函数">
+<meta property="og:url" content="https://zlotus.github.io/2020/04/07/state-data-model-in-antd-4/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="观察-尝试-记录">
+<meta property="og:description" content="关于新版Ant Design中`connect`函数及修饰器的示例">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://zlotus.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-04-07T03:39:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="子实">
-<meta name="twitter:description" content="观察-尝试-记录">
+<meta name="twitter:title" content="Ant Design 4.0中的新版`connect`函数">
+<meta name="twitter:description" content="关于新版Ant Design中`connect`函数及修饰器的示例">
 <meta name="twitter:image" content="https://zlotus.github.io/images/og_image.png">
 <meta name="twitter:creator" content="@Zealot_uS">
 <meta name="twitter:site" content="Zealot_uS">
@@ -84,7 +86,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/opm_sq.png" alt="子实" height="28">
+                <img src="/images/opm_sq.png" alt="Ant Design 4.0中的新版`connect`函数" height="28">
             
             </a>
         </div>
@@ -134,494 +136,13 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
-    
 <div class="card">
     
     <div class="card-content article ">
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-10-15T13:09:11.000Z">2018-10-15</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    2 分钟 读完 (大约 244 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/10/15/macOS-aria2/">Aria2上的BT下载加速</a>
-            
-        </h1>
-        <div class="content">
-            <p>最近迅雷反盗版确实很厉害……</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/10/15/macOS-aria2/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-10-05T13:09:11.000Z">2018-10-05</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    18 分钟 读完 (大约 2768 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/10/05/rbp3-pyopencv-camera/">树莓派上的摄像头与OpenCV</a>
-            
-        </h1>
-        <div class="content">
-            <p>树莓派上都有OpenCV了，是不是再装个摄像头玩[奸笑]</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/10/05/rbp3-pyopencv-camera/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-10-01T04:06:10.000Z">2018-10-01</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    12 分钟 读完 (大约 1735 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/10/01/rbp3-opencv3/">在树莓派上安装Python3+OpenCV3</a>
-            
-        </h1>
-        <div class="content">
-            <p>最近给树莓派买了一些传感器，感觉能做的事更多了，那就先抄一个机器视觉的玩具练练手吧~当然，怎么能少了OpenCV呢[奸笑]</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/10/01/rbp3-opencv3/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-09-25T04:06:10.000Z">2018-09-25</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    15 分钟 读完 (大约 2200 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/09/25/rbp3-aws-gateway/">树莓派上的科学上网</a>
-            
-        </h1>
-        <div class="content">
-            <p>树莓派上不论是raspbian的安装/更新，还是conda/pip的安装/更新，都因为科学原因不太稳定，因此可以先准备科学安装/更新环境。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/09/25/rbp3-aws-gateway/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-08-03T03:22:47.000Z">2018-08-03</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    41 分钟 读完 (大约 6194 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/08/03/redhat-3/">Redhat Linux初体验（3）</a>
-            
-        </h1>
-        <div class="content">
-            <p>这三周都被拐卖到成都培训RHCE，讲真，还是当学生好啊~哈哈哈~把学习笔记搬上来，关键时刻能做个速查~</p>
-<p>献上第三周的笔记。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/08/03/redhat-3/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-07-28T03:22:47.000Z">2018-07-28</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    1 小时 读完 (大约 9348 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/07/28/redhat-2/">Redhat Linux初体验（2）</a>
-            
-        </h1>
-        <div class="content">
-            <p>这三周都被拐卖到成都培训RHCE，讲真，还是当学生好啊~哈哈哈~把学习笔记搬上来，关键时刻能做个速查~</p>
-<p>献上第二周的笔记。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/07/28/redhat-2/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-07-21T03:22:47.000Z">2018-07-21</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    38 分钟 读完 (大约 5668 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/07/21/redhat-1/">Redhat Linux初体验（1）</a>
-            
-        </h1>
-        <div class="content">
-            <p>这三周都被拐卖到成都培训RHCE，讲真，还是当学生好啊~哈哈哈~把学习笔记搬上来，关键时刻能做个速查~</p>
-<p>献上第一周的笔记。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/07/21/redhat-1/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-03-19T03:22:47.000Z">2018-03-19</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    2 分钟 读完 (大约 305 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/03/19/install-xgboost/">安装xgboost</a>
-            
-        </h1>
-        <div class="content">
-            <p>这两天做模型集成需要用到xgboost，记录一下自己本机编译时Google到的小坑。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/03/19/install-xgboost/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-02-15T02:58:47.000Z">2018-02-15</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    7 分钟 读完 (大约 1039 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/02/15/rbp3-upgrade-raspbian.md/">更新Raspbian及相关问题解决</a>
-            
-        </h1>
-        <div class="content">
-            <p>最近注意到树莓派的新版系统放出来一段时间了，就打算给树莓派升级。（虽然高级功能我也用不上，但是怎奈强迫症晚期……）</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/02/15/rbp3-upgrade-raspbian.md/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    
-<div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2017-11-25T14:45:12.000Z">2017-11-25</time>
+                <time class="level-item has-text-grey" datetime="2020-04-07T03:39:00.000Z">2020-04-07</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/Diary/">Diary</a>
@@ -631,7 +152,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    10 分钟 读完 (大约 1502 个字)
+                    2 分钟 读完 (大约 342 个字)
                 </span>
                 
                 
@@ -640,56 +161,88 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2017/11/25/genocidal-organ/">虐杀器官</a>
+                Ant Design 4.0中的新版`connect`函数
             
         </h1>
         <div class="content">
-            <p>刚看完《虐杀器官》，个人感觉这部科幻动画和《来自新世界》的背景设置有些类似——当改造现实的成本降低后，世界会变成什么样？</p>
+            <p>Ant Design最近推出了4.0版本，其中我最喜欢的改动是<code>connect</code>函数/装饰器的语法糖，极大的降低了我这种智商欠费者的认知成本……</p>
+<a id="more"></a>
+<h1 id="1-老版本中的connect"><a href="#1-老版本中的connect" class="headerlink" title="1 老版本中的connect"></a>1 老版本中的<code>connect</code></h1><p>我们先看看旧版<a href="https://dvajs.com/guide/getting-started.html#connect-%E8%B5%B7%E6%9D%A5" target="_blank" rel="noopener"><code>connect</code></a>函数的官方示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connect &#125; <span class="keyword">from</span> <span class="string">'dva'</span>;</span><br><span class="line"><span class="keyword">import</span> ProductList <span class="keyword">from</span> <span class="string">'../components/ProductList'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Products = <span class="function">(<span class="params">&#123; dispatch, products &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">handleDelete</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">        dispatch(&#123;</span><br><span class="line">            type: <span class="string">'products/delete'</span>,</span><br><span class="line">            payload: id,</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        &lt;div&gt;</span><br><span class="line">            &lt;h2&gt;List <span class="keyword">of</span> Products&lt;<span class="regexp">/h2&gt;</span></span><br><span class="line"><span class="regexp">            &lt;ProductList onDelete=&#123;handleDelete&#125; products=&#123;products&#125; /</span>&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    );</span></span><br><span class="line"><span class="regexp">&#125;;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">/</span><span class="regexp">/ export default Products;</span></span><br><span class="line"><span class="regexp">export default connect((&#123; products &#125;) =&gt; (&#123;</span></span><br><span class="line"><span class="regexp">  products,</span></span><br><span class="line"><span class="regexp">&#125;))(Products);</span></span><br></pre></td></tr></table></figure>
+<p>最后三行的<code>connect</code>函数，第一个参数是<code>mapStateToProps</code>函数，用于将需要的部分<code>state</code>传递进组件<code>Products</code>。示例中虽然没写，但是<code>connect</code>还可以再传递一个参数<code>mapDispatchToProps</code>，用于将封装好的<code>dispatch</code>传递给组件<code>Products</code>。</p>
+<p>我原来经常被那一堆括号，和最后的<code>(Products)</code>搞晕，导致忘记最后的那一对括号……</p>
+<h1 id="2-新版的connect装饰器"><a href="#2-新版的connect装饰器" class="headerlink" title="2 新版的connect装饰器"></a>2 新版的<code>connect</code>装饰器</h1><p>上面的代码就变成了这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; connect &#125; <span class="keyword">from</span> <span class="string">'dva'</span>;</span><br><span class="line"><span class="keyword">import</span> ProductList <span class="keyword">from</span> <span class="string">'../components/ProductList'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> mapStateToProps = <span class="function">(<span class="params">state</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">products</span>: state.products &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> mapDispatchToProps = <span class="function">(<span class="params">dispatch</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        handleDelete: <span class="function">(<span class="params">id</span>) =&gt;</span> &#123;</span><br><span class="line">            dispatch(&#123; <span class="attr">type</span>: <span class="string">'products/delete'</span>, <span class="attr">payload</span>: id &#125;);</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">@connect(mapStateToProps, mapDispatchToProps)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Products</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div&gt;</span><br><span class="line">                &lt;h2&gt;List <span class="keyword">of</span> Products&lt;<span class="regexp">/h2&gt;</span></span><br><span class="line"><span class="regexp">                &lt;ProductList onDelete=&#123;this.props.handleDelete&#125; products=&#123;this.props.products&#125; /</span>&gt;</span><br><span class="line">            &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        );</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><code>mapStateToProps</code>和<code>mapDispatchToProps</code>也都通过装饰器传入了组件的<code>props</code>属性，但是这样的写法确实极大的降低了认知负担。</p>
+
         </div>
         
-        
-        <div class="level is-mobile">
+        <div class="level is-size-7 is-uppercase">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2017/11/25/genocidal-organ/#more">阅读更多</a>
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/杂谈/">杂谈</a>
                 </div>
             </div>
         </div>
         
+        
+        
+        <div class="social-share"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css">
+<script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script>
         
     </div>
 </div>
 
 
 
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/images/alipay.jpg" alt="支付宝"></div>
+</a>
 
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/images/wechatpay.jpg" alt="微信"></div>
+</a>
 
-
-
-
-
-    
-<div class="card card-transparent">
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <div class="pagination-previous">
-            <a class="is-flex-grow has-text-black-ter" href="/">上一页</a>
+                
         </div>
-        <div class="pagination-next">
-            <a class="is-flex-grow has-text-black-ter" href="/page/3/">下一页</a>
-        </div>
-        <ul class="pagination-list is-hidden-mobile">
-            
-            <li><a class="pagination-link has-text-black-ter" href="/">1</a></li>
-            
-            <li><a class="pagination-link is-current" href="/page/2/">2</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/page/3/">3</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/page/4/">4</a></li>
-            
-        </ul>
-    </nav>
+    </div>
 </div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/03/15/about-shared-future-for-mankind/">
+                <span class="level-item">写在庚子年初的春天</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
 </div>
                 
 
@@ -2032,7 +1585,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/opm_sq.png" alt="子实" height="28">
+                    <img src="/images/opm_sq.png" alt="Ant Design 4.0中的新版`connect`函数" height="28">
                 
                 </a>
                 <p class="is-size-7">
