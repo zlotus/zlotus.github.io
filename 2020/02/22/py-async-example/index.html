@@ -152,7 +152,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    5 分钟 读完 (大约 795 个字)
+                    5 分钟 读完 (大约 797 个字)
                 </span>
                 
                 
@@ -173,7 +173,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">make_requests</span><span class="params">()</span>:</span></span><br><span class="line">    loop = asyncio.get_event_loop()</span><br><span class="line">    future_list = []</span><br><span class="line">    url = <span class="string">'http://www.baidu.com'</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>): </span><br><span class="line"></span><br><span class="line">        future = loop.run_in_executor(<span class="keyword">None</span>, requests.get, url)</span><br><span class="line">        future_list.append(future)</span><br><span class="line">    </span><br><span class="line">    response_list = <span class="keyword">await</span> asyncio.gather(*future_list)</span><br><span class="line">    <span class="keyword">return</span> response_list</span><br><span class="line"></span><br><span class="line">rps_list = asyncio.run(make_requests())</span><br><span class="line">print(rps_list)</span><br></pre></td></tr></table></figure>
 <p>主要就是将普通函数放入<code>loop.run_in_executor</code>中生成一个<code>future</code>对象，然后把这些<code>future</code>交给<code>asyncio.gather</code>去统一执行，并返回结果。</p>
 <ul>
-<li>注意，<code>requests</code>的复杂请求，如<code>post</code>请求或通过<code>requests.Session</code>设置<code>header</code>等熟悉再<code>session.send</code>的请求，使用<code>asyncio.gather</code>执行会报<code>requests.exceptions.InvalidSchema</code>异常，我猜测可能因为复杂请求调用了线程相关的适配器。</li>
+<li>注意，<code>requests</code>的复杂请求，如<code>post</code>请求或通过<code>requests.Session</code>设置<code>header</code>后再通过<code>session.send</code>发送的请求，使用<code>asyncio.gather</code>执行会报<code>requests.exceptions.InvalidSchema</code>异常，我猜测可能因为复杂请求调用了线程相关的适配器。</li>
 </ul>
 <p>代码异步请求了5次百度页面，结果如下，用<code>timeit</code>测试比同步请求快了4倍左右，还是符合期望的：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&lt;Response [<span class="number">200</span> OK]&gt;, &lt;Response [<span class="number">200</span> OK]&gt;, &lt;Response [<span class="number">200</span> OK]&gt;, &lt;Response [<span class="number">200</span> OK]&gt;, &lt;Response [<span class="number">200</span> OK]&gt;]</span><br></pre></td></tr></table></figure></p>
 <h2 id="2-异步执行协程"><a href="#2-异步执行协程" class="headerlink" title="2 异步执行协程"></a>2 异步执行协程</h2><p>这个就更简单了，依然用上面的例子，<code>requests</code>这个库通常是用在同步场景中的。如果希望既要使用异步还要享受<code>requests</code>的友好API，可以试试<a href="https://www.python-httpx.org/" target="_blank" rel="noopener"><code>httpx</code></a>，这个库包含了异步调用的请求支持，API与同步版的几乎没有差别，十分方便：</p>
@@ -306,7 +306,7 @@
                     </p>
                     <a href="/archives">
                         <p class="title has-text-weight-normal">
-                            40
+                            41
                         </p>
                     </a>
                 </div>
@@ -330,7 +330,7 @@
                     </p>
                     <a href="/tags">
                         <p class="title has-text-weight-normal">
-                            21
+                            22
                         </p>
                     </a>
                 </div>
@@ -424,7 +424,7 @@
                 <span class="level-item">Diary</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">15</span>
+                <span class="level-item tag">14</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Movie/">
@@ -440,7 +440,7 @@
                 <span class="level-item">Programming</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">19</span>
+                <span class="level-item tag">21</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Python/">
@@ -469,7 +469,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/Coroutines/" style="font-size: 10px;">Coroutines</a> <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12px;">OpenCV</a> <a href="/tags/Paper/" style="font-size: 10px;">Paper</a> <a href="/tags/Python/" style="font-size: 18px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 16px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/TensorFlow/" style="font-size: 10px;">TensorFlow</a> <a href="/tags/ZMQ/" style="font-size: 10px;">ZMQ</a> <a href="/tags/ctpn/" style="font-size: 10px;">ctpn</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11px;">旅行</a> <a href="/tags/日记/" style="font-size: 17px;">日记</a> <a href="/tags/杂谈/" style="font-size: 19px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 14px;">编程</a> <a href="/tags/脚本/" style="font-size: 13px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
+        <a href="/tags/Coroutines/" style="font-size: 10px;">Coroutines</a> <a href="/tags/JavaScript/" style="font-size: 11.11px;">JavaScript</a> <a href="/tags/Linux/" style="font-size: 20px;">Linux</a> <a href="/tags/OpenCV/" style="font-size: 12.22px;">OpenCV</a> <a href="/tags/Paper/" style="font-size: 10px;">Paper</a> <a href="/tags/Python/" style="font-size: 18.89px;">Python</a> <a href="/tags/Raspberry-Pi/" style="font-size: 16.67px;">Raspberry Pi</a> <a href="/tags/Shell/" style="font-size: 15.56px;">Shell</a> <a href="/tags/TensorFlow/" style="font-size: 10px;">TensorFlow</a> <a href="/tags/ZMQ/" style="font-size: 10px;">ZMQ</a> <a href="/tags/ctpn/" style="font-size: 10px;">ctpn</a> <a href="/tags/macOS/" style="font-size: 10px;">macOS</a> <a href="/tags/做饭/" style="font-size: 10px;">做饭</a> <a href="/tags/旅行/" style="font-size: 11.11px;">旅行</a> <a href="/tags/日记/" style="font-size: 17.78px;">日记</a> <a href="/tags/杂谈/" style="font-size: 18.89px;">杂谈</a> <a href="/tags/电影/" style="font-size: 11.11px;">电影</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/编程/" style="font-size: 14.44px;">编程</a> <a href="/tags/脚本/" style="font-size: 13.33px;">脚本</a> <a href="/tags/趣事/" style="font-size: 10px;">趣事</a> <a href="/tags/音乐/" style="font-size: 10px;">音乐</a>
     </div>
 </div>
     
@@ -484,6 +484,25 @@
         
         <article class="media">
             
+            <a href="/2020/04/09/umi-dynamic-routing/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="在Ant Design中写动态路由">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-09T10:54:00.000Z">2020-04-09</time></div>
+                    <a href="/2020/04/09/umi-dynamic-routing/" class="title has-link-black-ter is-size-6 has-text-weight-normal">在Ant Design中写动态路由</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2020/04/07/connect-in-antd-4/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/images/thumbnail.svg" alt="Ant Design 4.0中的新版connect函数">
@@ -495,7 +514,7 @@
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-07T03:39:00.000Z">2020-04-07</time></div>
                     <a href="/2020/04/07/connect-in-antd-4/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ant Design 4.0中的新版connect函数</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Diary/">Diary</a>
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
                     </p>
                 </div>
             </div>
@@ -558,25 +577,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/08/01/rbp3-doa-paper/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-01T15:40:11.000Z">2019-08-01</time></div>
-                    <a href="/2019/08/01/rbp3-doa-paper/" class="title has-link-black-ter is-size-6 has-text-weight-normal">轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Diary/">Diary</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
         
@@ -594,7 +594,7 @@
                     <span class="level-item">四月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -884,6 +884,13 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/JavaScript/">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Linux/">
                         <span class="tag">Linux</span>
                         <span class="tag is-grey">19</span>
@@ -977,7 +984,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/杂谈/">
                         <span class="tag">杂谈</span>
-                        <span class="tag is-grey">15</span>
+                        <span class="tag is-grey">14</span>
                     </a>
                 </div>
                 
@@ -1047,6 +1054,25 @@
         
         <article class="media">
             
+            <a href="/2020/04/09/umi-dynamic-routing/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="在Ant Design中写动态路由">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-09T10:54:00.000Z">2020-04-09</time></div>
+                    <a href="/2020/04/09/umi-dynamic-routing/" class="title has-link-black-ter is-size-6 has-text-weight-normal">在Ant Design中写动态路由</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2020/04/07/connect-in-antd-4/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/images/thumbnail.svg" alt="Ant Design 4.0中的新版connect函数">
@@ -1058,7 +1084,7 @@
                     <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-04-07T03:39:00.000Z">2020-04-07</time></div>
                     <a href="/2020/04/07/connect-in-antd-4/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Ant Design 4.0中的新版connect函数</a>
                     <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Diary/">Diary</a>
+                        <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
                     </p>
                 </div>
             </div>
@@ -1121,25 +1147,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/08/01/rbp3-doa-paper/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/images/thumbnail.svg" alt="轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-01T15:40:11.000Z">2019-08-01</time></div>
-                    <a href="/2019/08/01/rbp3-doa-paper/" class="title has-link-black-ter is-size-6 has-text-weight-normal">轻量级的用于开放或闭合麦阵列中的声源定位与追踪方法</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Diary/">Diary</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
     
@@ -1157,7 +1164,7 @@
                     <span class="level-item">四月 2020</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1447,6 +1454,13 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/JavaScript/">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Linux/">
                         <span class="tag">Linux</span>
                         <span class="tag is-grey">19</span>
@@ -1540,7 +1554,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/杂谈/">
                         <span class="tag">杂谈</span>
-                        <span class="tag is-grey">15</span>
+                        <span class="tag is-grey">14</span>
                     </a>
                 </div>
                 
