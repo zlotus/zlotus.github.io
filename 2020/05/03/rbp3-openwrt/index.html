@@ -152,7 +152,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    11 分钟 读完 (大约 1632 个字)
+                    12 分钟 读完 (大约 1850 个字)
                 </span>
                 
                 
@@ -203,10 +203,14 @@
 <p>如果<code>vim</code>时报错遇到<code>&quot;E437: terminal capability &quot;cm&quot; required&quot;</code>，需要执行一下<code>export TERM=xterm</code>。</p>
 <p>继续，在openwrt管理页面中配置“ShadowSocksR Plus+”-&gt;“服务器节点”，添加一个类型为“ShadowSocksR”的服务器就可以了，我的情况，主机名、端口、密码、加密方式填上，其他默认就可以直接联通了。</p>
 <p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2020/rbp3-openwrt-2.png" alt="最终测试"></p>
-<h1 id="github免密推送"><a href="#github免密推送" class="headerlink" title="github免密推送"></a>github免密推送</h1><p>临时想到的，最近是不是要更新博客，总是让我输入用户名密码，很烦。因为我的github是双因子认证的，总要输入用户名，然后复制粘贴那个巨长的push key。</p>
-<p>github特定仓库的免密推送设置也很简单。</p>
-<h2 id="本机git仓库"><a href="#本机git仓库" class="headerlink" title="本机git仓库"></a>本机git仓库</h2><p>在仓库中使用<code>git config -e</code>命令修改配置文件，只有使用<code>git</code>协议是才可以免密，<code>https</code>不行。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="github免密push"><a href="#github免密push" class="headerlink" title="github免密push"></a>github免密push</h1><p>临时想到的，最近是不是要更新博客，push的时候总是让我输入用户名密码，很烦。因为我的github是双因子认证的，总要输入用户名，然后复制粘贴那个巨长的push key。</p>
+<p>github特定仓库的免密push设置也很简单，最关键的是注意<strong>协议</strong>。</p>
+<h2 id="本机git仓库"><a href="#本机git仓库" class="headerlink" title="本机git仓库"></a>本机git仓库</h2><p>在仓库中使用<code>git config -e</code>命令修改配置文件，只有使用<code>git</code>协议是才可以免密，<code>https</code>不行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  [remote &quot;origin&quot;]</span><br><span class="line">-         url = https://github.com/your-gh/your-repo.git</span><br><span class="line">+         url = git@github.com:your-gh/your-repo.git</span><br><span class="line">          fetch = +refs/heads/*:refs/remotes/origin/*</span><br></pre></td></tr></table></figure>
+<p>如果是hexo之类的博客，cli工具自动集成push功能，那么修改其配置文件的repo目标即可，比如我用的hexo，那么修改<code>_config.yml</code>即可：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">  deploy:</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">git</span> </span><br><span class="line"><span class="attr">-   repo:</span> <span class="attr">https://github.com/your-gh/your-repo.git</span> </span><br><span class="line"><span class="string">+</span>   <span class="attr">repo:</span> <span class="string">git@github.com:your-gh/your-repo.git</span> </span><br><span class="line"><span class="attr">    branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="github配置"><a href="#github配置" class="headerlink" title="github配置"></a>github配置</h2><p>可以在你的某个特定github-repo下的“settings”-&gt;“deploy key”里写一个公钥，然后允许写权限。不过一个库会占一个key，下一个库就不能再用这个key了。</p>
+<p>也可以直接在github账号配置的“settings”-&gt;“SSH and GPG keys”里写一个SSH公钥，这个方法更简单，推荐。</p>
+
         </div>
         
         <div class="level is-size-7 is-uppercase">
