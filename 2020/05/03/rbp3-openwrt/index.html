@@ -7,20 +7,22 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<title>归档 - 子实</title>
+<title>在树莓派上部署Openwrt - 子实</title>
 
 
-    <meta name="description" content="观察-尝试-记录">
-<meta property="og:type" content="website">
-<meta property="og:title" content="子实">
-<meta property="og:url" content="https://zlotus.github.io/archives/page/2/index.html">
+    <meta name="description" content="尝试在树莓派3B上部署openwrt">
+<meta name="keywords" content="Python,Linux,Raspberry Pi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在树莓派上部署Openwrt">
+<meta property="og:url" content="https://zlotus.github.io/2020/05/03/rbp3-openwrt/index.html">
 <meta property="og:site_name" content="子实">
-<meta property="og:description" content="观察-尝试-记录">
+<meta property="og:description" content="尝试在树莓派3B上部署openwrt">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://zlotus.github.io/images/og_image.png">
+<meta property="og:updated_time" content="2020-05-03T11:49:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="子实">
-<meta name="twitter:description" content="观察-尝试-记录">
+<meta name="twitter:title" content="在树莓派上部署Openwrt">
+<meta name="twitter:description" content="尝试在树莓派3B上部署openwrt">
 <meta name="twitter:image" content="https://zlotus.github.io/images/og_image.png">
 <meta name="twitter:creator" content="@Zealot_uS">
 <meta name="twitter:site" content="Zealot_uS">
@@ -84,7 +86,7 @@
         <div class="navbar-brand is-flex-center">
             <a class="navbar-item navbar-logo" href="/">
             
-                <img src="/images/opm_sq.png" alt="子实" height="28">
+                <img src="/images/opm_sq.png" alt="在树莓派上部署Openwrt" height="28">
             
             </a>
         </div>
@@ -134,234 +136,145 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main">
-<div class="card widget">
+<div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2020-05-03T11:49:00.000Z">2020-05-03</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    11 分钟 读完 (大约 1632 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                在树莓派上部署Openwrt
+            
+        </h1>
+        <div class="content">
+            <p>这个五一，我想在家里弄个各种设备都能用的梯子……</p>
+<a id="more"></a>
+<p>打算按照<a href="https://mlapp.cn/369.html" target="_blank" rel="noopener">mlapp</a>帖子里的固件和方法整，当然，有关树（Li）莓（nu）派（x）的任何东西都不会那么一帆风顺的……</p>
+<h1 id="使用macOS向SD卡写镜像"><a href="#使用macOS向SD卡写镜像" class="headerlink" title="使用macOS向SD卡写镜像"></a>使用macOS向SD卡写镜像</h1><p><strong>失败</strong>：用balenaEtcher写镜像直接报错，不管是<a href="https://github.com/coolsnowwolf/lede" target="_blank" rel="noopener">lean</a>官方的，还是<a href="https://mlapp.cn/369.html" target="_blank" rel="noopener">mlapp</a>提供的都说“镜像损坏”。</p>
+<p><strong>失败</strong>：用macOS的<code>dd</code>强行写，虽然能写进去，但返回值是错误的（bash返回错误，红箭头），插入树莓派启动失败：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">(base) ➜  ~ sudo dd bs=1m <span class="keyword">if</span>=/Users/zealot/Downloads/openwrt-bcm27xx-bcm2710-rpi-3-squashfs-factory.img of=/dev/rdisk2</span><br><span class="line">Password:</span><br><span class="line">dd: /dev/rdisk2: Invalid argument</span><br><span class="line">247+1 records <span class="keyword">in</span></span><br><span class="line">247+0 records out</span><br><span class="line">258998272 bytes transferred <span class="keyword">in</span> 19.296779 secs (13421839 bytes/sec)</span><br></pre></td></tr></table></figure></p>
+<p>网上搜了一下，推荐用Windows下的分区工具或者Linux下的<code>dd</code>。</p>
+<h1 id="用虚拟机向SD卡写镜像"><a href="#用虚拟机向SD卡写镜像" class="headerlink" title="用虚拟机向SD卡写镜像"></a>用虚拟机向SD卡写镜像</h1><p>用以前在virtualbox建好的里的win7，不论怎么设置苹果内置的sdcard reader（虚拟机里显示为一个USB设备，不论mount状态、如何重启虚拟机都不行），都报设备busy的错误：</p>
+<p>查看sdcard：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(base) ➜  ~ df -lh</span><br><span class="line">Filesystem     Size   Used  Avail Capacity iused      ifree %iused  Mounted on</span><br><span class="line">/dev/disk1s5  465Gi   11Gi   30Gi    26%  487852 4876640268    0%   /</span><br><span class="line">/dev/disk1s1  465Gi  420Gi   30Gi    94% 2976908 4874151212    0%   /System/Volumes/Data</span><br><span class="line">/dev/disk1s4  465Gi  4.0Gi   30Gi    12%       5 4877128115    0%   /private/var/vm</span><br><span class="line">/dev/disk1s3  465Gi  504Mi   30Gi     2%      41 4877128079    0%   /Volumes/Recovery</span><br><span class="line">/dev/disk2s1   64Mi   17Mi   47Mi    26%     512          0  100%   /Volumes/NO NAME</span><br></pre></td></tr></table></figure></p>
+<p>或是卸载sdcard：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">diskutil umount /dev/disk2s1</span><br></pre></td></tr></table></figure></p>
+<p>查<a href="https://superuser.com/questions/373463/how-to-access-an-sd-card-from-a-virtual-machine" target="_blank" rel="noopener">帖子</a>说是因为后来的MBP不把读卡器暴露为USB设备了，按这个帖子做：</p>
+<ol>
+<li><p>插入SDcard，在终端里用<code>mount</code>查看分区，确定设备名称。在我的电脑上，显示为“NO NAME”的卷就是SD卡，其对应的设备叫做<code>/dev/disk2s1</code>，而这个<code>s1</code>表示<code>/dev/disk2</code>上的第一个分区，因此设备名其实应该叫做<code>/dev/disk2</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(base) ➜  ~ mount</span><br><span class="line">/dev/disk1s5 on / (apfs, <span class="built_in">local</span>, <span class="built_in">read</span>-only, journaled)</span><br><span class="line">devfs on /dev (devfs, <span class="built_in">local</span>, nobrowse)</span><br><span class="line">/dev/disk1s1 on /System/Volumes/Data (apfs, <span class="built_in">local</span>, journaled, nobrowse)</span><br><span class="line">/dev/disk1s4 on /private/var/vm (apfs, <span class="built_in">local</span>, journaled, nobrowse)</span><br><span class="line">map auto_home on /System/Volumes/Data/home (autofs, automounted, nobrowse)</span><br><span class="line">/dev/disk1s3 on /Volumes/Recovery (apfs, <span class="built_in">local</span>, journaled, nobrowse)</span><br><span class="line">/dev/disk2s1 on /Volumes/NO NAME (msdos, <span class="built_in">local</span>, nodev, nosuid, noowners)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开电脑上“Disk Utility.app”，也就是“磁盘工具.app”，找到SD卡然后<strong>卸载</strong>它，要注意是<strong>卸载</strong>，而不是<strong>推出</strong>。另外，可能在做完下一步后还需要在卸载一次，因为macOS有可能自动把SD卡装载回来。</p>
+</li>
+<li><p>使用下面的命令，要注意的是，<code>-rawdisk</code>后面跟的参数是<code>/dev/disk2</code>，不是<code>/dev/disk2s1</code>。另外，<code>/Users/zealot/VirtualBox\ VMs/WIN7/sdcard.vmdk</code>这个路径写哪都行，图方便我直接放在我的WIN7虚拟机文件夹下了。：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(base) ➜  ~ sudo VBoxManage internalcommands createrawvmdk -filename /Users/zealot/VirtualBox\ VMs/WIN7/sdcard.vmdk -rawdisk /dev/disk2</span><br><span class="line">RAW host disk access VMDK file /Users/zealot/VirtualBox VMs/WIN7/sdcard.vmdk created successfully.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新配置虚拟机：</p>
+<ol>
+<li>确定虚拟机已关闭；</li>
+<li>打开“设置”-&gt;“存储”，点控制器旁边的“添加虚拟磁盘”，并选择“使用现有的虚拟磁盘”；</li>
+<li>点击“注册”，选择上一步中生成的<code>/Users/zealot/VirtualBox\ VMs/WIN7/sdcard.vmdk</code>；此处如果报权限错误，我试了<code>chmod</code>和<code>chown</code>改<code>.vmdk</code>和<code>disk2s1</code>的权限是没用的，我也试了关掉macOS的SIP同样是没用的，必须命令行管理员权限运行<code>sudo VirtualBox</code>才可以。真的不太懂系统权限问题[捂脸]。</li>
+<li>双击列表中的<code>sdcard.vmdk</code>，然后就会返回“存储”界面并看到这个设备。</li>
+<li>启动虚拟机，看到该设备显示为一个本地磁盘。</li>
+</ol>
+</li>
+<li><p>这一套做下来，我们的SD卡在win7里就挂载为了一个ATA设备，也就是硬盘，很不幸的是“Win32 Disk Imager”是不认硬盘的。于是，把上一步的2修改一下：打开“设置”-&gt;“存储”，点控下方的“添加存储控制器”，选择菜单项“添加USB控制器”，这时候列表里多出来一个“USB控制器”，然后再按照上一步中2、3操作添加虚拟磁盘，再选上为“热插拔|固态驱动器”，这样就真的把SD卡伪装成USB设备了。此时Win7里出现两块硬盘，一个是ATA设备，一个是USB设备。再打开“Win32 Disk Imager”时，就可以选择这个盘了：</p>
+</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2020/rbp3-openwrt-1.png" alt="配置为USB设备"></p>
+<p>开机搜索名为“openwrt”的无线SSID，连接，进入<a href="http://192.168.1.1" target="_blank" rel="noopener">http://192.168.1.1</a>，用“root/password”登录配置界面。</p>
+<h1 id="等Openwrt配置"><a href="#等Openwrt配置" class="headerlink" title="等Openwrt配置"></a>等Openwrt配置</h1><h2 id="先让自己能上网"><a href="#先让自己能上网" class="headerlink" title="先让自己能上网"></a>先让自己能上网</h2><p>我家用的TP-LINK的猫，LAN口接树莓派，而这个TP-LINK默认是在192.168.1.1上的，所以先在openwrt配置界面中“网络”-&gt;“接口”里改个IP，默认网关写在192.168.1.1上，然后写上俩TP-LINK里用的DNS就可以访问互联网了。</p>
+<h2 id="配置SS"><a href="#配置SS" class="headerlink" title="配置SS"></a>配置SS</h2><p>先把本机的公钥先传到openwrt上，方便ssh登录，然后直接root登录吧，懒得弄用户了。</p>
+<p>如果<code>vim</code>时报错遇到<code>&quot;E437: terminal capability &quot;cm&quot; required&quot;</code>，需要执行一下<code>export TERM=xterm</code>。</p>
+<p>继续，在openwrt管理页面中配置“ShadowSocksR Plus+”-&gt;“服务器节点”，添加一个类型为“ShadowSocksR”的服务器就可以了，我的情况，主机名、端口、密码、加密方式填上，其他默认就可以直接联通了。</p>
+<p><img src="https://raw.githubusercontent.com/zlotus/imagebed/master/2020/rbp3-openwrt-2.png" alt="最终测试"></p>
+<h1 id="github免密推送"><a href="#github免密推送" class="headerlink" title="github免密推送"></a>github免密推送</h1><p>临时想到的，最近是不是要更新博客，总是让我输入用户名密码，很烦。因为我的github是双因子认证的，总要输入用户名，然后复制粘贴那个巨长的push key。</p>
+<p>github特定仓库的免密推送设置也很简单。</p>
+<h2 id="本机git仓库"><a href="#本机git仓库" class="headerlink" title="本机git仓库"></a>本机git仓库</h2><p>在仓库中使用<code>git config -e</code>命令修改配置文件，只有使用<code>git</code>协议是才可以免密，<code>https</code>不行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/Linux/">Linux</a>, <a class="has-link-grey -link" href="/tags/Python/">Python</a>, <a class="has-link-grey -link" href="/tags/Raspberry-Pi/">Raspberry Pi</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="social-share"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css">
+<script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
     <div class="card-content">
-        <h3 class="tag is-link">
-        2018
-        </h3>
-        <div class="timeline">
-        
-            <article class="media">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
                 
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-12-01T04:09:10.000Z">2018-12-01</time>
-                        <a href="/2018/12/01/rbp3-dev-env/" class="title has-link-black-ter is-size-6 has-text-weight-normal">树莓派开发环境准备汇总</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="/images/alipay.jpg" alt="支付宝"></div>
+</a>
+
                 
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-10-25T13:09:11.000Z">2018-10-25</time>
-                        <a href="/2018/10/25/rbp3-6mic-doa/" class="title has-link-black-ter is-size-6 has-text-weight-normal">树莓派上的麦阵列定位</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
                 
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-10-15T13:09:11.000Z">2018-10-15</time>
-                        <a href="/2018/10/15/macOS-aria2/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Aria2上的BT下载加速</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="/images/wechatpay.jpg" alt="微信"></div>
+</a>
+
                 
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-10-05T13:09:11.000Z">2018-10-05</time>
-                        <a href="/2018/10/05/rbp3-pyopencv-camera/" class="title has-link-black-ter is-size-6 has-text-weight-normal">树莓派上的摄像头与OpenCV</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
-                
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-10-01T04:06:10.000Z">2018-10-01</time>
-                        <a href="/2018/10/01/rbp3-opencv3/" class="title has-link-black-ter is-size-6 has-text-weight-normal">在树莓派上安装Python3+OpenCV3</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
-                
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-09-25T04:06:10.000Z">2018-09-25</time>
-                        <a href="/2018/09/25/rbp3-aws-gateway/" class="title has-link-black-ter is-size-6 has-text-weight-normal">树莓派上的科学上网</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
-                
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-08-03T03:22:47.000Z">2018-08-03</time>
-                        <a href="/2018/08/03/redhat-3/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Redhat Linux初体验（3）</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
-                
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-07-28T03:22:47.000Z">2018-07-28</time>
-                        <a href="/2018/07/28/redhat-2/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Redhat Linux初体验（2）</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
-                
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-07-21T03:22:47.000Z">2018-07-21</time>
-                        <a href="/2018/07/21/redhat-1/" class="title has-link-black-ter is-size-6 has-text-weight-normal">Redhat Linux初体验（1）</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
-            <article class="media">
-                
-                <div class="media-content">
-                    <div class="content">
-                        <time class="has-text-grey is-size-7 is-block is-uppercase" datetime="2018-03-19T03:22:47.000Z">2018-03-19</time>
-                        <a href="/2018/03/19/install-xgboost/" class="title has-link-black-ter is-size-6 has-text-weight-normal">安装xgboost</a>
-                        <div class="level article-meta is-mobile">
-                            <div class="level-left">
-                                
-                                <div class="level-item is-size-7 is-uppercase">
-                                <a class="has-link-grey -link" href="/categories/Programming/">Programming</a>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        
         </div>
     </div>
 </div>
 
-        
-    
 
-    
+
 <div class="card card-transparent">
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <div class="pagination-previous">
-            <a class="is-flex-grow has-text-black-ter" href="/archives/">上一页</a>
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2020/04/09/umi-dynamic-routing/">
+                <span class="level-item">在Ant Design中写动态路由</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
         </div>
-        <div class="pagination-next">
-            <a class="is-flex-grow has-text-black-ter" href="/archives/page/3/">下一页</a>
-        </div>
-        <ul class="pagination-list is-hidden-mobile">
-            
-            <li><a class="pagination-link has-text-black-ter" href="/archives/">1</a></li>
-            
-            <li><a class="pagination-link is-current" href="/archives/page/2/">2</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/archives/page/3/">3</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/archives/page/4/">4</a></li>
-            
-            <li><a class="pagination-link has-text-black-ter" href="/archives/page/5/">5</a></li>
-            
-        </ul>
-    </nav>
+        
+    </div>
 </div>
+
+
 </div>
                 
 
@@ -1740,7 +1653,7 @@
             <div class="level-start has-text-centered-mobile">
                 <a class="footer-logo is-block has-mb-6" href="/">
                 
-                    <img src="/images/opm_sq.png" alt="子实" height="28">
+                    <img src="/images/opm_sq.png" alt="在树莓派上部署Openwrt" height="28">
                 
                 </a>
                 <p class="is-size-7">
