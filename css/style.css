@@ -10788,6 +10788,10 @@ article.article .content .message.message-immersive {
 article.article .content .message.message-immersive .message-body {
   border: none;
 }
+article.article .content a img {
+  margin: auto;
+  display: block;
+}
 .rtl {
   direction: rtl;
 }
