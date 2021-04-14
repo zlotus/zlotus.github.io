@@ -10834,8 +10834,9 @@ article.article .content pre {
   font-size: 0.85em;
 }
 article.article .content code {
-  padding: 0;
+  padding: 1;
   background: transparent;
+  background-color: #f9f9f9;
   overflow-wrap: break-word;
 }
 article.article .content blockquote.pullquote {
@@ -10857,6 +10858,10 @@ article.article .content .message.message-immersive .message-body {
 article.article a img {
   margin: auto;
   display: block;
+}
+article.article a code {
+  color: inherit;
+  background-color: #f9f9f9;
 }
 .rtl {
   direction: rtl;
