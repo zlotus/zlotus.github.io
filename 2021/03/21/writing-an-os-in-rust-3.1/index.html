@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>使用Rust编写操作系统 - 3.1 - 内存分页简介 - 子实</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="子实"><meta name="msapplication-TileImage" content="/img/avatar-o.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="子实"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="使用Rust编写操作系统 - 3.1 - 内存分页简介"><meta property="og:type" content="article"><meta property="og:title" content="使用Rust编写操作系统 - 3.1 - 内存分页简介"><meta property="og:url" content="https://zlotus.github.io/2021/03/21/writing-an-os-in-rust-3.1/"><meta property="og:site_name" content="子实"><meta property="og:description" content="使用Rust编写操作系统 - 3.1 - 内存分页简介"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/segmentation-same-program-twice.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/segmentation-fragmentation.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/segmentation-fragmentation-compacted.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/paging-fragmentation.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/paging-page-tables.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/single-level-page-table.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/multilevel-page-table.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/x86_64-table-indices-from-address.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation-addresses.png"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation-steps.svg"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/qemu-page-fault.png"><meta property="og:image" content="https://os.phil-opp.com/paging-introduction/qemu-page-fault-protection.png"><meta property="article:published_time" content="2021-03-21T13:30:00.000Z"><meta property="article:modified_time" content="2021-03-21T13:30:00.000Z"><meta property="article:author" content="子实"><meta property="article:tag" content="Rust"><meta property="article:tag" content="Operating System"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://os.phil-opp.com/paging-introduction/segmentation-same-program-twice.svg"><meta property="twitter:creator" content="@Zealot_uS"><meta property="twitter:site" content="Zealot_uS"><link rel="publisher" href="+LotusQin"><meta property="fb:admins" content="qinzishi"><meta property="fb:app_id" content="qinzishi"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zlotus.github.io/2021/03/21/writing-an-os-in-rust-3.1/"},"headline":"使用Rust编写操作系统 - 3.1 - 内存分页简介","image":["https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation-addresses.png","https://os.phil-opp.com/paging-introduction/qemu-page-fault.png","https://os.phil-opp.com/paging-introduction/qemu-page-fault-protection.png"],"datePublished":"2021-03-21T13:30:00.000Z","dateModified":"2021-03-21T13:30:00.000Z","author":{"@type":"Person","name":"子实"},"publisher":{"@type":"Organization","name":"子实","logo":{"@type":"ImageObject","url":"https://zlotus.github.io/img/opm_sq.png"}},"description":"使用Rust编写操作系统 - 3.1 - 内存分页简介"}</script><link rel="icon" href="/img/avatar-o.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><!--!--><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/2014/07/09/about-me/">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-9-tablet is-9-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2021-03-21T13:30:00.000Z" title="3/21/2021, 9:30:00 PM">2021-03-21</time>发表</span><span class="level-item"><time dateTime="2021-03-21T13:30:00.000Z" title="3/21/2021, 9:30:00 PM">2021-03-21</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Programming/">Programming</a></span><span class="level-item">1 小时读完 (大约8524个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">使用Rust编写操作系统 - 3.1 - 内存分页简介</h1><div class="content"><article class="message message-immersive is-warning">
+<div class="message-body">
+<i class="fas fa-exclamation-triangle mr-2"></i>本文所有内容均为翻译，原文：<a target="_blank" rel="noopener" href="https://os.phil-opp.com/paging-introduction/">Introduction to Paging</a>；原项目：<a target="_blank" rel="noopener" href="https://os.phil-opp.com/">Writing an OS in Rust</a>
+</div>
+</article>
+
+<p>在这篇文章中，我们将介绍分页机制，这是一种非常常见的内存管理方案，我们还将会在操作系统中实现它。本文还将解释为什么需要内存隔离、分段如何工作、什么是虚拟内存以及分页如何解决内存分段问题。此外，还探讨了x86_64架构上的多级页表的布局。</p>
+<span id="more"></span>
+
+<p>这个博客是在<a target="_blank" rel="noopener" href="https://github.com/phil-opp/blog_os">GitHub</a>上公开开发的。如果你有任何问题或疑问，请在那里开一个issue。你也可以在<a target="_blank" rel="noopener" href="https://os.phil-opp.com/paging-introduction/#comments">底部</a>留言。这篇文章的完整源代码可以在<a target="_blank" rel="noopener" href="https://github.com/phil-opp/blog_os/tree/post-08">post-08</a>分支中找到。</p>
+<h2 id="内存保护"><a href="#内存保护" class="headerlink" title="内存保护"></a>内存保护</h2><p>操作系统的一项主要任务是将程序彼此隔离。例如，你的网络浏览器不应该干扰你的文本编辑器。为了实现此目标，操作系统利用硬件功能来确保一个进程的内存区域不能被其他进程访问。内存保护有多种的方法，具体取决于硬件和操作系统实现。</p>
+<p>例如，某些ARM Cortex-M处理器（用于嵌入式系统）具有<a target="_blank" rel="noopener" href="https://developer.arm.com/docs/ddi0337/e/memory-protection-unit/about-the-mpu"><em>内存保护单元</em></a>(MPU)，可让用户定义少量（例如8个）具有不同访问权限（例如，无权访问、只读、读写等）的内存区域。在每次内存访问中，MPU会确保该地址位于具有正确访问权限的区域中，否则将抛出异常。通过在每次进程切换时更改区域和访问权限，操作系统可以确保每个进程仅访问它自己的内存，从而使进程彼此隔离。</p>
+<p>在x86上，硬件支持两种不同的内存保护方法：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/X86_memory_segmentation">分段</a>和<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Virtual_memory#Paged_virtual_memory">分页</a>。</p>
+<h2 id="内存分段"><a href="#内存分段" class="headerlink" title="内存分段"></a>内存分段</h2><p>分段早在1978年就已出现，最初是为了增加可寻址内存的数量。当时的情况是CPU仅使用16位地址，这将可寻址内存量限制在了64KiB。为了能够访问大于64KiB的内存，于是引入了附加的段寄存器，每个段寄存器都包含一个偏移地址。CPU会在每次访问内存时自动添加此偏移量，从而使可访问内存最多增加到1MiB。</p>
+<p>CPU会根据内存访问的类型自动选择不同的段寄存器：对于获取指令，将使用代码段<code>CS</code>；对于栈操作（压栈/弹栈），将使用栈段<code>SS</code>。其他指令使用数据段<code>DS</code>或额外段<code>ES</code>。之后又添加了两个额外的段寄存器<code>FS</code>和<code>GS</code>，可供自由使用。</p>
+<p>在内存分段的首个版本中，段寄存器直接包含偏移量，而且也不进行访问控制。这一点后来随着<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/X86_memory_segmentation#Protected_mode">保护模式</a>的引入而改变。当CPU在该模式下运行时，段描述符包含访问本地或全局<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Global_Descriptor_Table">描述符表</a>的索引，该表除偏移地址外还包含段大小和访问权限。通过为每个进程加载单独的全局/本地描述符表，从而将对内存的访问限制在该进程自己的内存区域，操作系统也因此能够将进程彼此隔离。</p>
+<p>通过在实际访问之前修改内存地址，内存分段也不知不觉的引入了一种在今天几乎到处使用的技术：<em>虚拟内存</em>。</p>
+<h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>虚拟内存的思路是将内存地址从底层物理存储设备中抽象出来。不同于直接访问存储设备，这里会先执行一个转换步骤。对于内存分段，转换步骤是添加活动分段中的偏移地址。假设一个程序在偏移量为<code>0x1111000</code>的段中访问内存地址<code>0x1234000</code>：实际访问的地址为<code>0x2345000</code>。</p>
+<p>为了区分这两种地址类型，转换前的地址称为虚拟地址，转换后的地址称为物理地址。这两种地址之间的一个重要区别是物理地址是唯一的，相同的物理地址始终指向相同且确定的内存空间。而虚拟地址则取决于转换。两个完全不同的虚拟地址可能指向相同的物理地址。同样，当相同的虚拟地址使用不同的转换时，它们可以指向不同的物理地址。</p>
+<p>举个例子：并行执行同一个程序两次，就可以很好的解释这一行为：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/segmentation-same-program-twice.svg" alt="一个程序同时执行两次的内存分段"></p>
+<p>例子中的同一程序运行两次，但具有不同的转换。第一个实例的段偏移量为100，因此其虚拟地址0–150转换为物理地址100–250。而第二个实例的偏移量为300，它将其虚拟地址0–150转换为物理地址300–450。这使两个程序都可以运行相同的代码并使用相同的虚拟地址，而不会互相干扰。</p>
+<p>另一个优点是，即使程序使用完全不同的虚拟地址，现在也可以将它们放置在任意期望的物理内存中。因此，OS可以利用全部的可用内存，而无需重新编译程序。</p>
+<h3 id="内存碎片"><a href="#内存碎片" class="headerlink" title="内存碎片"></a>内存碎片</h3><p>内存分段强大的地方就在于虚拟地址和物理地址之间的区别。但是，它也具有碎片化的问题。例如，假设我们要运行上面看到的程序的第三份副本：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/segmentation-fragmentation.svg" alt="内存分段中的碎片"></p>
+<p>虽然仍有足够的可用内存空间，但我们也无法在不覆盖前两个实例的情况下，将程序的第三个实例映射到虚拟内存。问题在于，内存分段需要<em>连续的</em>内存，而不能有效利用小的空闲块。</p>
+<p>解决这种碎片的一种方法是暂停执行，将内存中已使用的部分移到更近的位置，更新转换偏移量，然后恢复执行：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/segmentation-fragmentation-compacted.svg" alt="内存分段中碎片整理"></p>
+<p>现在就有足够的连续空间来启动程序的第三个实例了。</p>
+<p>这种碎片整理过程的缺点是需要复制大量内存，从而降低了性能。还需要定期进行整理，以免造成内存碎片过多。由于程序在随机时间暂停并且可能变得无响应，因此这使得系统行为不可预测。</p>
+<p>这些问题是大多数系统不再使用内存分段的原因之一。实际上，x86上的64位模式甚至都不再支持分段，而是使用<em>分页</em>，这可以完全避免碎片问题。</p>
+<h2 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h2><p>这个思路是将虚拟和物理内存空间都分成固定大小的小块。虚拟内存空间的块称为<em>页</em>，物理地址空间的块称为<em>帧</em>。每个页可以单独映射到一个帧，这使得我们可以在不连续的物理帧之间划出更大的内存区域。</p>
+<p>如果我们回顾一下碎片化内存空间的例子，而这次使用分页而不是分段，就可以看到这样做的优点：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/paging-fragmentation.svg" alt="内存分页中的碎片"></p>
+<p>上图中的页面大小为50字节，这意味着我们的每个内存区域都分为三个页面。每个页面分别映射到一个帧，因此连续的虚拟内存区域可以映射到非连续的物理帧。这使我们可以在不执行任何碎片整理的情况下启动程序的第三个实例。</p>
+<h3 id="潜在碎片"><a href="#潜在碎片" class="headerlink" title="潜在碎片"></a>潜在碎片</h3><p>与分段相比，分页使用许多固定大小的小块内存区域，而不是一些可变大小的大块区域。由于每个帧都具有相同的大小，因此不会存在太小而无法使用的帧，也就不会发生碎片了。</p>
+<p>这样做看起来<em>似乎</em>没有碎片。不过确实仍存在着某些潜在碎片，即所谓的<em>内部碎片</em>。发生内部碎片是因为并非每个内存区域都正好是页面大小的整数倍。想象一下在上面的示例中，一个大小为101的程序：它仍将需要三个大小为50的页面，也就是比程序所需多占了49个字节。为了区分两种类型的碎片，使用分段时发生的碎片类型称为<em>外部碎片</em>。</p>
+<p>内部碎片是不好，但通常要好于分段时发生的外部碎片。它仍然会浪费内存，不过好在不需要碎片整理，并使碎片量可预测（平均每个内存区域约半页）。</p>
+<h3 id="页表"><a href="#页表" class="headerlink" title="页表"></a>页表</h3><p>可以看到这数以百万计的页面中的每一个都可以映射到一个单独的帧，而这套映射信息应当被记录在某处。内存分段为每个活动内存区域配置了一个单独的段选择器寄存器，这显然不能用于分页，因为页面数量远多于寄存器。相反，分页使用称为<em>页表</em>的表结构来记录映射信息。</p>
+<p>对于我们上面的例子，页表如下所示：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/paging-page-tables.svg" alt="分页页表"></p>
+<p>我们看到每个程序实例都有自己的页表。指向当前活动页表的指针存储在特殊的CPU寄存器中。在x86上，此寄存器称为<code>CR3</code>。 在运行每个程序实例之前，操作系统的工作是将指向正确页表的指针加载到该寄存器。</p>
+<p>在每次访问存储器时，CPU将会从寄存器读取页表指针，并为被访问页面查找其对应的映射帧。这个过程完全由硬件完成，且对运行中的程序完全透明。为了加快转换过程，许多CPU架构都有一个特殊的缓存，用以记住上一次转换的结果。</p>
+<p>对于一些硬件架构，页表条目还可以存储诸如访问权限一类的标志字段属性。在上面的示例中，具有“r/w”标志说明页面可读可写。</p>
+<h3 id="多级页表"><a href="#多级页表" class="headerlink" title="多级页表"></a>多级页表</h3><p>我们刚刚看到的简单页表在较大的地址空间中存在一个问题：浪费内存。例如，假设有一个程序使用四个虚拟页面<code>0</code>、<code>1_000_000</code>、<code>1_000_050</code>和<code>1_000_100</code>（<code>_</code>为千位分隔符）：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/single-level-page-table.svg" alt="单级页表"></p>
+<p>它仅需要4个物理帧，但是页表有超过一百万个条目。我们不能省略空条目，因为如果省略空条目，翻译过程就无法继续保证CPU能够直接跳转到正确的条目了（例如，并不能保证第四页使用第四个条目。译注：翻译过程应保证低计算复杂度，如O(1)，因为几乎所欲操作都会涉及内存页表，所以保证CPU能够直接跳转非常重要。）。</p>
+<p>为了减少浪费的内存，我们可以使用<strong>两级页表</strong>。思路是我们对不同的地址区域使用不同的页表。另一个称为<em>2级</em>页表的额外表包含了地址区域和（1级）页表之间的映射。</p>
+<p>最好用一个例子来解释。让我们定义每个1级页面表负责一个大小为<code>10_000</code>的区域。对于上面的例子，则有下表：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/multilevel-page-table.svg" alt="多级页表"></p>
+<p>第0页属于前<code>10_000</code>字节区域，因此它将使用2级页表的第一个条目。此条目指向1级页表T1，该页表指出第0页指向第0帧。</p>
+<p>页<code>1_000_000</code>、<code>1_000_050</code>和<code>1_000_100</code>都属于第100个<code>10_000</code>字节区域，因此它们使用了2级页表的第100个条目。该条目指向另一个1级页表T2，该表将这三个页面分布映射到第<code>100</code>、<code>150</code>和<code>200</code>帧。注意，在1级表中的页面地址不包括区域偏移量，因此页面<code>1_000_050</code>在1级页表中的条目应为<code>50</code>。</p>
+<p>虽然在2级表中仍有100个空条目，但比以前的百万个空条目要少得多。节约的空间就在于，我们并不需要为从<code>10_000</code>到<code>1_000_000</code>之间的未映射内存区域创建1级页表。</p>
+<p>两级页表的原理可以扩展到三级、四级或更多级。然后，页表寄存器指向最高级的表，该表指向下一个较低级的表，再指向下一个较低级的表，依此类推。最后，1级页表指向映射的帧。通常，该原理称为<em>多级页表</em>或<em>分层页表</em>。</p>
+<p>现在我们知道分页和多级页表是如何工作的，接下来可以看看x86_64架构中的分页是如何实现的（后文假设CPU在64位模式下运行）。</p>
+<h2 id="x86-64的分页"><a href="#x86-64的分页" class="headerlink" title="x86_64的分页"></a>x86_64的分页</h2><p>x86_64架构使用4级页面表，每个页面大小为4KiB。每个页表无论层级，均为具有512个条目的固定大小。每个条目的大小为8个字节，因此每个表的大小为512 * 8B = 4KiB，也正好为一页。</p>
+<p>每级的页表索引能够直接用虚拟地址算出：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/x86_64-table-indices-from-address.svg" alt="x86_64地址中的页表索引"></p>
+<p>每个表索引有9位，因为每个表都有2^9=512个条目。最低的12位是4KiB页中的偏移量（2^12字节=4KiB）。第48到64位将被忽略，可以看出x86_64其实并不是真正的64位，因为它仅支持48位地址。</p>
+<p>即使第48至64位将被忽略，也不能将这些位设为任意值。而是将这些位都赋上第位47的值，以保持地址唯一，并允许将来的扩展（如5级页表）。这被称为<em>符号扩展</em>，因为它与<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Two's_complement#Sign_extension">二进制补码中的符号扩展</a>非常相似。如果地址未正确进行符号扩展，会引发CPU异常。</p>
+<p>值得注意的是，最近Intel的“Ice Lake” CPU可选地支持<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Intel_5-level_paging">5级页表</a>，并将虚拟地址从48位扩展到57位。在当前阶段，为特定CPU优化我们的内核没有意义，因此本文仅使用标准的4级页表。</p>
+<h3 id="地址转换示例"><a href="#地址转换示例" class="headerlink" title="地址转换示例"></a>地址转换示例</h3><p>让我们看一个例子，以详细了解转换过程的原理：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation.svg" alt="x86_64页表转换"></p>
+<p>当前活动的4级页表的物理地址，也就是该4级页表的根，存放在CR3寄存器中。然后，每个页表条目都指向下一级表的物理帧。最后，1级页表的条目指向地址映射的帧。请注意，页表中的所有地址都是物理地址，而不是虚拟地址，否则CPU也需要转换这些地址（而这可能导致无限递归）。</p>
+<p>上面的页面表层次结构映射了两个页面（蓝色）。从页表索引中，我们可以推断出这两个页的虚拟地址为<code>0x803FE7F000</code>和<code>0x803FE00000</code>。现在，让我们看看当程序尝试读取地址<code>0x803FE7F5CE</code>时会发生什么。首先，我们将地址转换为二进制，并确定该地址的页表索引和页偏移量：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation-addresses.png" alt="x86_64页表地址转换"></p>
+<p>有了这些索引，我们现在可以遍历页表层次，确定该地址映射的物流帧：</p>
+<ul>
+<li>我们首先从<code>CR3</code>寄存器中读取第4级页表地址。</li>
+<li>4级页表索引为1，于是我们查看表中索引为1的条目，该条目告诉我们3级页表存储在地址16KiB中。</li>
+<li>我们从该地址加载3级表，然后查看索引为0的条目，该条目告诉我们2级页表存储在地址24KiB中。</li>
+<li>2级页表的索引为511，于是我们查看该表的最后一个条目，以查找1级表的地址。</li>
+<li>通过1级页表中索引为127的条目，最终找到页面映射到12KiB帧，即十六进制的0x3000。</li>
+<li>最后一步，将页面偏移量添加到帧地址上，获取的物理地址为0x3000 + 0x5ce = 0x35ce。</li>
+</ul>
+<p><img src="https://os.phil-opp.com/paging-introduction/x86_64-page-table-translation-steps.svg" alt="x86_64页表转换步骤"></p>
+<p>1级页表中页面的权限为<code>r</code>，即只读。硬件会强制执行这些权限，如果我们尝试对该页面写入，将会引发异常。较高级别页面中的权限限制了较低级别中的可能权限，因此，如果我们将3级页面条目设置为只读，则即使较低级页面指定了读/写权限，使用该条目的页面也将无法执行写入。</p>
+<p>需要注意，此示例使用了每级表仅有单个实例，但在实际中，通常地址空间中的每级表都有多个实例。最多有：</p>
+<ul>
+<li>一个4级页表，</li>
+<li>512个3级表（因为4级表有512个条目），</li>
+<li>512 * 512个2级表（因为512个3级表中的每个表都有512个条目），并且还有</li>
+<li>512 * 512 * 512个1级表（每个2级表都有512个条目）。</li>
+</ul>
+<h3 id="页表格式"><a href="#页表格式" class="headerlink" title="页表格式"></a>页表格式</h3><p>x86_64架构上的页表基本上是具有512个条目的数组。使用Rust语法就是：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[repr(align(4096))]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">PageTable</span></span> &#123;</span><br><span class="line">    entries: [PageTableEntry; <span class="number">512</span>],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如<code>repr</code>属性所示，页表需要进行页对齐，即在4KiB边界上对齐。此要求确保页表恰好能填满一页，同时允许优化以使条目更紧凑。</p>
+<p>每个条目的大小为8个字节（64位），并具有以下格式：</p>
+<table>
+<thead>
+<tr>
+<th>位</th>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>present</td>
+<td>本页是否存在于内存中</td>
+</tr>
+<tr>
+<td>1</td>
+<td>writable</td>
+<td>本页是否可写</td>
+</tr>
+<tr>
+<td>2</td>
+<td>user accessible</td>
+<td>如果未设置，则只有内核模式的代码可以访问本页</td>
+</tr>
+<tr>
+<td>3</td>
+<td>write through caching</td>
+<td>对本页的写入是否能够直接进入内存，而无需经过缓存</td>
+</tr>
+<tr>
+<td>4</td>
+<td>disable cache</td>
+<td>本页不使用缓存</td>
+</tr>
+<tr>
+<td>5</td>
+<td>accessed</td>
+<td>当本页正在使用中，CPU将自动设置此位</td>
+</tr>
+<tr>
+<td>6</td>
+<td>dirty</td>
+<td>当本页正被写入时，CPU将自动设置此位</td>
+</tr>
+<tr>
+<td>7</td>
+<td>huge page/null</td>
+<td>此位在1级和4级页表中必须置为0，置为1时，在3级页表中会创建1GiB的页面，在2级页表中会创建2MiB的页面</td>
+</tr>
+<tr>
+<td>8</td>
+<td>global</td>
+<td>地址空间切换时，本页不会被换出缓存 (必须将CR4寄存器的PGE位置为1)</td>
+</tr>
+<tr>
+<td>9-11</td>
+<td>available</td>
+<td>此位供OS自由使用</td>
+</tr>
+<tr>
+<td>12-51</td>
+<td>physical address</td>
+<td>页面对齐52位物理地址的帧地址或下一个页表的地址</td>
+</tr>
+<tr>
+<td>52-62</td>
+<td>available</td>
+<td>此位供OS自由使用</td>
+</tr>
+<tr>
+<td>63</td>
+<td>no execute</td>
+<td>禁止将本页数据当做代码执行（必须将EFER寄存器中的NXE位置为1）</td>
+</tr>
+</tbody></table>
+<p>我们看到只有第12-51位用于存储物理帧地址，其余位用作标志或由操作系统自由使用。这是可行的，因为我们总是指向一个4096字节对齐的地址，这可能指向一个页面对齐的页表，也可能指向映射帧的开头。这意味着位0-11始终为零，也没必要存储这些位，因为硬件会在使用地址之前将它们设置为零。第52-63位同样如此，因为x86_64架构仅支持52位物理地址（类似于它仅支持48位虚拟地址的方式）。</p>
+<p>让我们仔细看看可用的标志：</p>
+<ul>
+<li><code>present</code>标志将被映射页面与未被映射页面区别开来。当主内存已满时，它可用于临时将页面换出到磁盘。当随后访问到该页面时，将会发生称为<em>页面错误</em>的特殊异常，操作系统将对此做出反应——从磁盘重新加载缺失的页面——然后继续执行程序。</li>
+<li><code>writable</code>和<code>no execute</code>标志分别控制页面的内容是可写，还是包含可执行指令。</li>
+<li>当对页面被读取或写入时，CPU会自动设置<code>accessed</code>或<code>dirty</code>标志。该信息可以被操作系统利用，例如，在决定换出哪些页面时，或者确定自上次保存到磁盘以来内容是否已被修改。</li>
+<li><code>write through caching</code>和<code>disable cache</code>标志允许控制每个页面的缓存。</li>
+<li><code>user accessible</code>标志使页面可用于用户空间代码，否则仅当CPU处于内核模式时才可被访问。该特性使得CPU可以在运行用户空间程序时保持内核映射，该功能用于加快<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/System_call">系统调用</a>的速度。但是，<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Spectre_(security_vulnerability)">Spectre</a>漏洞仍然能够允许用户空间程序读取这些页面。</li>
+<li><code>global</code>标志向硬件发出信号，表明该页在所有地址空间中都可用，因此不需要在地址空间切换时将其从转换缓存中删除（请参阅下文中有关TLB的部分）。该标志通常与被置为0的<code>user accessible</code>标志一起使用，用以将内核代码映射到所有地址空间。</li>
+<li><code>huge page</code>标志允许通过使2级或3级页表的条目直接指向映射的帧，来创建更大尺寸的页面。设置此位后，对于第2级条目，页面大小将增加512倍，达到2MiB = 512 * 4KiB，对于第3级条目，甚至能够达到1GiB = 512 * 2MiB。使用较大页面的优点是需要更少的地址转换缓存行和更少的页表。</li>
+</ul>
+<p><code>x86_64</code>crate提供了<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/paging/page_table/struct.PageTable.html">页表</a>及其<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/paging/page_table/struct.PageTableEntry.html">条目</a>的类型，因此我们不需要自己创建这些结构。</p>
+<h3 id="转换后备缓冲区"><a href="#转换后备缓冲区" class="headerlink" title="转换后备缓冲区"></a>转换后备缓冲区</h3><p>4级页表使虚拟地址的转换变得耗时，因为每次转换都需要4次内存访问。为了提高性能，x86_64架构将最后的几个转换缓存在所谓的<em>转换后备缓冲区</em>（TLB）中。当转换仍被缓存时，这允许跳过转换。</p>
+<p>与其他CPU缓存不同，TLB不是完全透明的，而且在页表内容更改时也不会更新或删除转换。这意味着，每当内核修改页面表时，都必须手动更新TLB。为此，有一条特殊的CPU指令叫做<code>invlpg</code>（即“无效页面”），该指令从TLB中删除指定页面的转换，以便在下次访问时再次从页表中加载该转换。也可以通过重新加载<code>CR3</code>寄存器来模拟地址空间切换，从而完全清空TLB。<code>x86_64</code>crate为<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/instructions/tlb/index.html"><code>tlb</code>模块</a>为这两种更新方法都提供了Rust函数。</p>
+<p>需要注意的是，在每次页表被修改时都需要刷新TLB，这一点很重要，否则CPU可能会继续使用旧的转换，这可能会导致难以调试的错误。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>有一个事实还没有提及：我们的内核已经在分页上运行了。在<a target="_blank" rel="noopener" href="https://os.phil-opp.com/minimal-rust-kernel/#creating-a-bootimage">“最小化Rust内核”</a>一文中添加的bootloader已经建立了一个4级分页层次结构，将内核的每个页面映射到一个物理帧。bootloader执行此操作是因为分页在x86_64的64位模式下是强制的。</p>
+<p>这意味着我们在内核中使用的每个内存地址都是一个虚拟地址。我们之所以可以访问VGA缓冲区地址<code>0xb8000</code>，就是因为bootloader对该页面进行了恒等映射，即将虚拟页面<code>0xb8000</code>映射至物理帧<code>0xb8000</code>。</p>
+<p>分页使我们的内核已经相对安全，因为每次超出范围的内存访问都会导致页面错误异常，而不是写入随机物理内存。bootloader甚至为每个页面设置了正确的访问权限，这意味着只有包含代码的页面才是可执行的，只有包含数据的页面才是可写的。</p>
+<h3 id="页面错误"><a href="#页面错误" class="headerlink" title="页面错误"></a>页面错误</h3><p>让我们尝试通过访问内核外的某些内存来诱发页面错误。首先，创建一个页面错误处理程序并将其注册到IDT中，以便我们看到一个页面错误异常，而不是一个通用的<a target="_blank" rel="noopener" href="https://os.phil-opp.com/double-fault-exceptions/">双重故障</a>：</p>
+<figure class="highlight rust"><figcaption><span>in src/interrupts.rs</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">lazy_static! &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">ref</span> IDT: InterruptDescriptorTable = &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut</span> idt = InterruptDescriptorTable::new();</span><br><span class="line"></span><br><span class="line">        […]</span><br><span class="line"></span><br><span class="line">        idt.page_fault.set_handler_fn(page_fault_handler); <span class="comment">// new</span></span><br><span class="line"></span><br><span class="line">        idt</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> x86_64::structures::idt::PageFaultErrorCode;</span><br><span class="line"><span class="keyword">use</span> crate::hlt_loop;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;x86-interrupt&quot;</span> <span class="function"><span class="keyword">fn</span> <span class="title">page_fault_handler</span></span>(</span><br><span class="line">    stack_frame: &amp;<span class="keyword">mut</span> InterruptStackFrame,</span><br><span class="line">    error_code: PageFaultErrorCode,</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">use</span> x86_64::registers::control::Cr2;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;EXCEPTION: PAGE FAULT&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Accessed Address: &#123;:?&#125;&quot;</span>, Cr2::read());</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Error Code: &#123;:?&#125;&quot;</span>, error_code);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:#?&#125;&quot;</span>, stack_frame);</span><br><span class="line">    hlt_loop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CPU会在发生页面错误时自动设置<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Control_register#CR2"><code>CR2</code></a>寄存器，其中包含导致页面错误的访问的虚拟地址。我们使用<code>x86_64</code>crate的<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/registers/control/struct.Cr2.html#method.read"><code>Cr2::read</code></a>函数读取和打印该虚拟地址。<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/idt/struct.PageFaultErrorCode.html"><code>PageFaultErrorCode</code></a>类能够提供关于诱发页面错误的内存访问的类型的更多信息，例如，该错误是由读取还是写入操作引起的。因此，我们也应打印该信息。不过，不能在不解决页面错误的情况下继续执行程序，因此我们在最后添加一个<a target="_blank" rel="noopener" href="https://os.phil-opp.com/hardware-interrupts/#the-hlt-instruction"><code>hlt_loop</code></a>。</p>
+<p>现在我们可以尝试访问内核外的一些内存：</p>
+<figure class="highlight rust"><figcaption><span>in src/main.rs</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function"><span class="keyword">fn</span> <span class="title">_start</span></span>() -&gt; ! &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello World&#123;&#125;&quot;</span>, <span class="string">&quot;!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    blog_os::init();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// new</span></span><br><span class="line">    <span class="keyword">let</span> ptr = <span class="number">0xdeadbeaf</span> <span class="keyword">as</span> *<span class="keyword">mut</span> <span class="built_in">u32</span>;</span><br><span class="line">    <span class="keyword">unsafe</span> &#123; *ptr = <span class="number">42</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// as before</span></span><br><span class="line">    <span class="meta">#[cfg(test)]</span></span><br><span class="line">    test_main();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;It did not crash!&quot;</span>);</span><br><span class="line">    blog_os::hlt_loop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行内核，可以看到页面错误处理程序被调用：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/qemu-page-fault.png" alt="QEMU页面错误"></p>
+<p><code>CR2</code>寄存器确实包含了<code>0xdeadbeaf</code>，也就是我们尝试访问的地址。错误代码通过<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/idt/struct.PageFaultErrorCode.html#associatedconstant.CAUSED_BY_WRITE"><code>CAUSED_BY_WRITE</code></a>告诉我们，尝试执行写操作时发生了错误。通过<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/idt/struct.PageFaultErrorCode.html"><em>未设置</em>的位</a>，我们还能了解更多信息。例如，<code>PROTECTION_VIOLATION</code>位未设置，意味着由于目标页面不存在而导致了页面错误。</p>
+<p>我们看到当前指令指针是<code>0x2031b2</code>，因此我们知道该地址指向代码页。bootloader将代码页映射为只读，因此从该地址读取是允许的，但写入会导致页面错误。您可以通过将<code>0xdeadbeaf</code>指针更改为<code>0x2031b2</code>来尝试此操作：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意：代码中的地址可能与你实际运行中得到的地址不同，</span></span><br><span class="line"><span class="comment">// 这里应使用你实际运行中产生的页面错误所打印的地址进行替换。</span></span><br><span class="line"><span class="keyword">let</span> ptr = <span class="number">0x2031b2</span> <span class="keyword">as</span> *<span class="keyword">mut</span> <span class="built_in">u32</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 从代码页读取</span></span><br><span class="line"><span class="keyword">unsafe</span> &#123; <span class="keyword">let</span> x = *ptr; &#125;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;read worked&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 向代码页写入</span></span><br><span class="line"><span class="keyword">unsafe</span> &#123; *ptr = <span class="number">42</span>; &#125;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;write worked&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到读取访问有效，但是写入访问导致页面错误：</p>
+<p><img src="https://os.phil-opp.com/paging-introduction/qemu-page-fault-protection.png" alt="QEMU页面错误保护"></p>
+<p>我们看到了“read worked”，这表明读操作没有引起任何错误。但是，并没有看到“write worked”，就发生页面错误。这次除了设置了<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/idt/struct.PageFaultErrorCode.html#associatedconstant.CAUSED_BY_WRITE"><code>CAUSED_BY_WRITE</code></a>标志外，还设置了<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/idt/struct.PageFaultErrorCode.html#associatedconstant.PROTECTION_VIOLATION"><code>PROTECTION_VIOLATION</code></a>标志，该标志说明被访问的页面存在，但对该页面进行的操作却并不被允许。在上面的例子中，由于代码页被映射为只读，因此对该页进行的写操作不会被允许。</p>
+<h3 id="访问页表"><a href="#访问页表" class="headerlink" title="访问页表"></a>访问页表</h3><p>尝试观察一下定义我们内核如何进行映射的页表：</p>
+<figure class="highlight rust"><figcaption><span>in src/main.rs</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[no_mangle]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="function"><span class="keyword">fn</span> <span class="title">_start</span></span>() -&gt; ! &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Hello World&#123;&#125;&quot;</span>, <span class="string">&quot;!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    blog_os::init();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">use</span> x86_64::registers::control::Cr3;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> (level_4_page_table, _) = Cr3::read();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;Level 4 page table at: &#123;:?&#125;&quot;</span>, level_4_page_table.start_address());</span><br><span class="line"></span><br><span class="line">    […] <span class="comment">// test_main(), println(…), and hlt_loop()</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>x86_64</code>中的<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/registers/control/struct.Cr3.html#method.read"><code>Cr3::read</code></a>函数返回<code>CR3</code>寄存器中的当前活动的4级页表。函数返回一个由<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/structures/paging/frame/struct.PhysFrame.html"><code>PhysFrame</code></a>和<a target="_blank" rel="noopener" href="https://docs.rs/x86_64/0.13.2/x86_64/registers/control/struct.Cr3Flags.html"><code>Cr3Flags</code></a>类型组成的元组。 我们只对这个帧感兴趣，于是忽略了元组的第二个元素。</p>
+<p>运行后可以看到以下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Level 4 page table at: PhysAddr(0x1000)</span><br></pre></td></tr></table></figure>
+
+<p>所以当前活动的第4级页表存储在<em>物理</em>内存的<code>0x1000</code>中，如其封装类型<code>PhysAddr</code>所示。现在的问题是：如何从内核访问该表？</p>
+<p>当分页处于活动状态时，无法直接访问物理内存，不然的话程序将很容易避开内存保护去访问其他程序的内存。因此，访问该表的唯一方法是通过某些虚拟页面，该虚拟页面映射到地址为<code>0x1000</code>的物理帧。为页表帧创建映射这个问题是个普遍的问题，因为内核需要定期访问页面表，例如在为新线程分配栈时。</p>
+<p>在下一篇文章中将详细说明该问题的解决方案。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文介绍了两种内存保护技术：分段和分页。前者使用可变大小的内存区域但存在外部碎片的问题，而后者使用固定大小的页面同时允许对访问权限进行更细粒度的控制。</p>
+<p>分页将页面的映射信息存储在具有一计或多级页表中。x86_64架构使用4级页表，页面大小为4KiB。硬件会自动遍历页表，并将生成的地址转换缓存在转换后备缓冲区（TLB）中。此缓冲区不是透明更新的，需要在页表更改时手动刷新。</p>
+<p>我们了解到现在的内核已经在内存分页上运行了，而且非法的内存访问将会导致页面错误异常。我们试图访问当前活动的页表，但是由于CR3寄存器存储了我们无法直接从内核直接访问到的物理地址，所以我们并不能执行此操作。</p>
+<h2 id="下期预告"><a href="#下期预告" class="headerlink" title="下期预告"></a>下期预告</h2><p>下一篇文章将解释如何在内核中实现对分页的支持，并提供从内核访问物理内存的不同方法，这使得访问内核运行中的页表成为可能。至此，我们能够实现将虚拟地址转换为物理地址并在页表中创建新映射的功能。</p>
+<h2 id="支持本项目"><a href="#支持本项目" class="headerlink" title="支持本项目"></a>支持本项目</h2><p>创建和<a target="_blank" rel="noopener" href="https://os.phil-opp.com/status-update/">维护</a>这个博客和相关库是一项繁重的工作，但我真的很喜欢。通过支持我，您可以让我在新内容、新功能和持续维护上投入更多时间。</p>
+<p>支持我的最好方式是<a target="_blank" rel="noopener" href="https://github.com/sponsors/phil-opp">在GitHub上赞助我</a>，因为他们不收取任何中间费用。如果你喜欢其他平台，我也有<a target="_blank" rel="noopener" href="https://www.patreon.com/phil_opp">Patreon</a>和<a target="_blank" rel="noopener" href="https://donorbox.org/phil-opp">Donorbox</a>账户。后者是最灵活的，因为它支持多种货币和一次性捐款。</p>
+<p>感谢您的支持！</p>
+</div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Rust/">Rust</a><a class="link-muted mr-2" rel="tag" href="/tags/Operating-System/">Operating System</a></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><div class="social-share"></div><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.jpg" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2021/03/26/writing-an-os-in-rust-3.2/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">使用Rust编写操作系统 - 3.2 - 内存分页实现</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/03/18/writing-an-os-in-rust-2.3/"><span class="level-item">使用Rust编写操作系统 - 2.3 - 硬件中断</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><script src="https://utteranc.es/client.js" repo="zlotus/comment" issue-term="pathname" label="some-issue-label" theme="github-light" crossorigin="anonymous" async></script></div></div></div><div class="column column-left is-3-tablet is-3-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/opm_sq.png" alt="子实"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">子实</p><p class="is-size-6 is-block">程序员</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>陕西/西安</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">78</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">22</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zlotus" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com/qinzishi"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/Zealot_uS"><i class="fab fa-twitter"></i></a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://www.zhihu.com/people/zlotus" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">知乎</span></span><span class="level-right"><span class="level-item tag">www.zhihu.com</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Diary/"><span class="level-start"><span class="level-item">Diary</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/categories/Programming/"><span class="level-start"><span class="level-item">Programming</span></span><span class="level-end"><span class="level-item tag">64</span></span></a></li><li><a class="level is-mobile" href="/categories/Python/"><span class="level-start"><span class="level-item">Python</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/Shell/"><span class="level-start"><span class="level-item">Shell</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Coroutines/"><span class="tag">Coroutines</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JavaScript/"><span class="tag">JavaScript</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Javascript/"><span class="tag">Javascript</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">30</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenCV/"><span class="tag">OpenCV</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Operating-System/"><span class="tag">Operating System</span><span class="tag">21</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Paper/"><span class="tag">Paper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">17</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Raspberry-Pi/"><span class="tag">Raspberry Pi</span><span class="tag">20</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Rust/"><span class="tag">Rust</span><span class="tag">29</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Shell/"><span class="tag">Shell</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TensorFlow/"><span class="tag">TensorFlow</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tokio/"><span class="tag">Tokio</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ZMQ/"><span class="tag">ZMQ</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ctpn/"><span class="tag">ctpn</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/macOS/"><span class="tag">macOS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/obsidion/"><span class="tag">obsidion</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%97%A5%E8%AE%B0/"><span class="tag">日记</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%82%E8%B0%88/"><span class="tag">杂谈</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95/"><span class="tag">算法</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/"><span class="tag">编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%84%9A%E6%9C%AC/"><span class="tag">脚本</span><span class="tag">4</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a><p class="is-size-7"><span>&copy; 2023 子实</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

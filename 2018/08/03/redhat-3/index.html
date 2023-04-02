@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>Redhat Linux初体验（3） - 子实</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="子实"><meta name="msapplication-TileImage" content="/img/avatar-o.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="子实"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Redhat系Linux基础学习"><meta property="og:type" content="article"><meta property="og:title" content="Redhat Linux初体验（3）"><meta property="og:url" content="https://zlotus.github.io/2018/08/03/redhat-3/"><meta property="og:site_name" content="子实"><meta property="og:description" content="Redhat系Linux基础学习"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://zlotus.github.io/img/og_image.png"><meta property="article:published_time" content="2018-08-03T03:22:47.000Z"><meta property="article:modified_time" content="2018-08-03T03:22:47.000Z"><meta property="article:author" content="子实"><meta property="article:tag" content="Shell"><meta property="article:tag" content="Linux"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><meta property="twitter:creator" content="@Zealot_uS"><meta property="twitter:site" content="Zealot_uS"><link rel="publisher" href="+LotusQin"><meta property="fb:admins" content="qinzishi"><meta property="fb:app_id" content="qinzishi"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zlotus.github.io/2018/08/03/redhat-3/"},"headline":"Redhat Linux初体验（3）","image":["https://zlotus.github.io/img/og_image.png"],"datePublished":"2018-08-03T03:22:47.000Z","dateModified":"2018-08-03T03:22:47.000Z","author":{"@type":"Person","name":"子实"},"publisher":{"@type":"Organization","name":"子实","logo":{"@type":"ImageObject","url":"https://zlotus.github.io/img/opm_sq.png"}},"description":"Redhat系Linux基础学习"}</script><link rel="icon" href="/img/avatar-o.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><!--!--><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/2014/07/09/about-me/">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-9-tablet is-9-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2018-08-03T03:22:47.000Z" title="8/3/2018, 11:22:47 AM">2018-08-03</time>发表</span><span class="level-item"><time dateTime="2018-08-03T03:22:47.000Z" title="8/3/2018, 11:22:47 AM">2018-08-03</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Programming/">Programming</a></span><span class="level-item">41 分钟读完 (大约6194个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">Redhat Linux初体验（3）</h1><div class="content"><p>这三周都被拐卖到成都培训RHCE，讲真，还是当学生好啊<del>哈哈哈</del>把学习笔记搬上来，关键时刻能做个速查~</p>
+<p>献上第三周的笔记。</p>
+<span id="more"></span>
+
+<h1 id="2018-07-30"><a href="#2018-07-30" class="headerlink" title="2018-07-30"></a>2018-07-30</h1><h2 id="防火墙"><a href="#防火墙" class="headerlink" title="防火墙"></a>防火墙</h2><ol>
+<li>通常使用Firewall Configuration图形界面进行配置更方便；</li>
+</ol>
+<ol start="2">
+<li>Ports、Sources等普通规则（单规则）添加时应注意，这些规则的生效是取并集；Rich Rules（富语言规则）用来配置复杂规则，常用语配置交集过滤；</li>
+</ol>
+<ol start="3">
+<li>iptables等旧命令使用直接语言规则，在Redhat 7中已经不提倡使用，具体参考<code>man 1 firewall-cmd</code>和<code>man 5 firewalld.direct</code>；</li>
+</ol>
+<ol start="4">
+<li>Redhat 7推荐使用富语言规则，参考<code>man 5 firewalld.richlanguage</code><ul>
+<li>查看服务<code>firewall-cmd --get-services</code></li>
+<li>查看区域已经添加或生效的策略<code>firewall-cmd --list-all</code></li>
+<li>查看富语言规则<code>firewall-cmd --list-rich-rules</code></li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>实验：仅允许desktop4访问server4的web服务，要求日志具有前缀<code>NEW HTTP </code>，日志限速每秒3条：<ul>
+<li>安装httpd服务：<code>yum -y install httpd</code>；</li>
+<li>添加内容：<code>echo &#39;&lt;h1&gt;hello world&lt;/h1&gt;&#39; &gt; index.html</code>；</li>
+<li>启动服务：<code>systemctl start httpd.service &amp;&amp; systemctl enable httpd.service</code>；查看服务<code>netstat -tnlp</code></li>
+<li>图形化界面添加：<code>Family: ipv4</code>、<code>Element: service: http</code>、<code>Action</code>、<code>Source: 172.25.4.10/32</code>、<code>Log: Prifix: NEW HTTP; With limit: 3/second</code></li>
+<li>查看日志在系统挑日志：<code>tail /var/log/message</code>；</li>
+<li>查看已生效策略：<code>firewall-cmd --list-all</code></li>
+<li>使用命令行重新实验，重载配置：<code>firewall-cmd --reload</code>；</li>
+<li>参考<code>man 5 firewalld.direct</code>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 运行时生效</span></span><br><span class="line">firewall-cmd --add-rich-rule <span class="string">&#x27;rule family=&quot;ipv4&quot; source address=&quot;172.25.4.10/32&quot; service name=&quot;http&quot; log prefix=&quot;NEW HTTP&quot; limit value=&quot;3/s&quot; accept&#x27;</span></span><br><span class="line"><span class="comment"># 永久生效</span></span><br><span class="line">firewall-cmd --add-rich-rule <span class="string">&#x27;rule family=&quot;ipv4&quot; source address=&quot;172.25.4.10/32&quot; service name=&quot;http&quot; log prefix=&quot;NEW HTTP&quot; limit value=&quot;3/s&quot; accept&#x27;</span> --permanent</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>伪装功能<code>Masquerading</code>用来改“发件人”信息（通常用于保护内部网络结构），端口转发<code>Port Forwarding</code>用来改“收件人”信息；<ul>
+<li>伪装，发送包时，内网使用<code>10.0.0.1-3...</code>，伪装为<code>1.2.3.4:10001-3</code>转发去外网；接受包时将<code>1.2.3.4:10001-3</code>转换为内网IP<code>10.0.0.1-3</code>；（NAT转换）</li>
+<li>富语言规则可以指定网段进行伪装，但规则伪装只能对所有包进行伪装，无法指定网段；</li>
+<li>端口转发，服务器使用私有IP，外部请求为<code>1.2.3.4:80</code>，防火墙转发为<code>10.0.0.1:8080</code>，通常用于保护内网服务安全；</li>
+<li>伪装不需要配置伪装前后的规则，防火墙自动转换；而端口转发需要配置转发前后的规则；</li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>实验：服务器server4（172.25.4.11）是一个在防火墙desktop4（172.25.4.10）后面的运行web服务（8080/TCP）的服务器，配置过程如下：<ul>
+<li>重置虚拟机：<code>rht-vmctl reset all</code></li>
+<li>server4安装httpd：<code>yum install -y httpd</code>；配置<code>vim /etc/httpd/conf/httpd.conf</code>监听<code>8080</code>；</li>
+<li>启动服务：<code>systemctl start httpd.service &amp;&amp; systemctl enable httpd.service</code>；查看服务<code>netstat -tnlp</code>，<code>8080</code>启动；</li>
+<li>为server4添加允许来自desktop4的流量：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-rich-rule <span class="string">&#x27;rule family=&quot;ipv4&quot; source address=&quot;172.25.4.10/32&quot; port port=&quot;8080&quot; portocol=&quot;tcp&quot; accept&#x27;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<ul>
+<li>为desktop4添加端口转发并开启伪装：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启伪装</span></span><br><span class="line">firewall-cmd --add-masquerade</span><br><span class="line"><span class="comment"># 开启端口转发</span></span><br><span class="line">firewall-cmd --add-rich-rule <span class="string">&#x27;rule family=&quot;ipv4&quot; forward-port port=&quot;80&quot; protocol=&quot;tcp&quot; to-port=&quot;8080&quot; to-addr=&quot;172.25.0.11&quot;&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li>从物理机访问防火墙desktop4的80端口，会转发至server4的8080端口；</li>
+<li><strong>注意</strong>：从desktop4直接访问desktop4的80端口是不可以的，牵扯到用户态到内核态的数据转换，只能通过外部（如物理机）访问desktop4进行测试，详情Google “<strong>iptables四表五链</strong>”；</li>
+</ul>
+</li>
+</ol>
+<h2 id="SELinux端口控制"><a href="#SELinux端口控制" class="headerlink" title="SELinux端口控制"></a>SELinux端口控制</h2><ol>
+<li>SELinux检查进程和端口的标签间的权限：<ul>
+<li>查看进程标签：<code>ps Z 1757</code>，即SELinux标签的源；</li>
+<li>查看80端口的标签：<code>semanage port -l | egrep&quot;\b80\b&quot;</code>，即SELinux标签的目的；</li>
+<li>查看规则：<code>sesearch -A -s httpd_t -t http_port_t</code></li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>配置SELinux端口权限：<ul>
+<li>修改端口为8800：<code>vim /etc/httpd/conf/httpd.conf</code></li>
+<li>重启<code>systemctl restart httpd</code>报错，具体情况查看<code>systemctl status -l httpd</code>；</li>
+<li>为8800新增http访问的标签：<code>semanage port -a -t http_port_t -p tcp 8800</code>；</li>
+<li>删除原来的标签：<code>semanage port -d -p tcp 8080</code></li>
+<li>修改原来的标签：<code>semanage port -m -t ftp_port_t -p tcp 8800</code></li>
+<li>注意：SELinux的默认标签是无法删除的，而对默认标签的修改也仅是新增一条相应的标签策略；</li>
+</ul>
+</li>
+</ol>
+<h2 id="DNS管理"><a href="#DNS管理" class="headerlink" title="DNS管理"></a>DNS管理</h2><ol>
+<li>静态授权DNS位于<code>/etc/hosts</code>；</li>
+</ol>
+<ol start="2">
+<li>DNS缓存</li>
+</ol>
+<ol start="3">
+<li>DNS服务器位于<code>/etc/resolv.conf</code></li>
+</ol>
+<ol start="4">
+<li>解析过程为：先找DNS静态授权数据，再找本地缓存，最后远程DNS缓存服务器（查找条件转发器forward，最后查找rootDNS服务器)；</li>
+</ol>
+<ol start="5">
+<li>查找DNS：<ul>
+<li>显示简要信息：<code>nslookup www.example.com</code>；</li>
+<li>显示详细的查询过程过程（IPv4）：<code>host -vt A desktop4.example.com</code></li>
+<li>显示详细的查询过程过程（IPv6）：<code>host -vt AAAA desktop4.example.com</code></li>
+<li>主DNS服务器可以修改数据；辅助DNS服务器不能直接修改，只能同步主DNS服务器，主/辅DNS是授权DNS，有负责的区域，即与跟域呈树形结构；缓存服务器缓存的是任意值，即二维表型结构；</li>
+<li>别名是由主机名指向主机名的记录，A、AAAA与别名都是存在正向DNS记录中；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>搭建缓存名称服务：<ul>
+<li>安装unbound：<code>yum install -y unbound</code>；</li>
+<li>修改配置文件：<code>vim /etc/unbound/</code>；<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">interface: 172.25.4.11</span><br><span class="line">access-control: 172.25.4.0/24 allow</span><br><span class="line">domian-insecure: &quot;example.com&quot;</span><br><span class="line">forward-zone:</span><br><span class="line">        name: &quot;example.com&quot;</span><br><span class="line">        forward-addr: 172.25.254.254</span><br></pre></td></tr></table></figure></li>
+<li>启动服务：<code>systemctl start unbound</code>；查看服务启动情况：<code>netstat -tnlp</code>；</li>
+<li>允许防火墙通过：<code>firewall-cmd --add-service=dns</code>；</li>
+<li>检查配置文件语法错误：<code>unbound-checkconf</code>；</li>
+<li>从desktop4上测试<code>dig @server4.example.com A server6.example.com</code>；</li>
+<li>导出配置：<code>unbound-control dump_cache &gt; dump.out</code>；</li>
+<li>导入配置：<code>unbound-control load_cache &lt; dump.out</code>；</li>
+<li>清除缓存：<code>unbound-control flush server4.example.com</code>；</li>
+<li>清楚域信息：<code>unbound-control flush_zone example.com</code>；</li>
+</ul>
+</li>
+</ol>
+<h2 id="邮件服务"><a href="#邮件服务" class="headerlink" title="邮件服务"></a>邮件服务</h2><ol>
+<li>邮件是所有Linux自带的服务，因为<code>crond</code>等服务都是依赖邮件服务的；</li>
+</ol>
+<ol start="2">
+<li>发送邮件：<code>mail -s &#39;hello student&#39;</code></li>
+</ol>
+<ol start="3">
+<li>空客户端：禁用本地邮件投递能力，将邮箱投递全部转发到指定服务器中；</li>
+</ol>
+<ol start="4">
+<li>配置postfix邮件服务器：<code>/etc/postfix/mail.cf</code>，可以使用<code>postconf</code>工具，也可以直接编辑；<ul>
+<li>在desktop4上：重置服务器，<code>lab smtp-nullclient setup</code></li>
+<li>修改邮件服务器配置：<code>vim /etc/postfix/main.cf</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">myorigin</span>        = desktop4.example.com</span><br><span class="line"><span class="attr">inet_interfaces</span> = loopback-<span class="literal">on</span>ly</span><br><span class="line"><span class="comment"># [空]</span></span><br><span class="line"><span class="attr">mydestination</span>   = </span><br><span class="line"><span class="attr">mynetworks</span>      = <span class="number">127.0</span>.<span class="number">0.0</span>/<span class="number">8</span> [::<span class="number">1</span>]/<span class="number">128</span></span><br><span class="line"><span class="attr">relayhost</span>       = smtp4.example.com</span><br><span class="line"><span class="attr">local_transport</span> = error:<span class="string">&quot;local delivery disabled&quot;</span></span><br></pre></td></tr></table></figure></li>
+<li>日志排错在<code>/var/log/maillog</code>，如果遇到服务报错或邮件未收到，可以使用日志排错；</li>
+<li>在server4上发送邮件测试：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mail -s <span class="string">&#x27;remote student&#x27;</span> student@desktop4.example.com</span><br><span class="line"><span class="comment"># 正文</span></span><br><span class="line">hello remote</span><br><span class="line"><span class="comment"># ^D提交</span></span><br><span class="line">EOT</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-7-31"><a href="#2018-7-31" class="headerlink" title="2018-7-31"></a>2018-7-31</h1><h2 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h2><ol>
+<li>DAS(direct attach storage)</li>
+</ol>
+<ol start="2">
+<li>NAS(network attach storage):<ul>
+<li>unix-like nfs;</li>
+<li>Windows smb(cifs)</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>SAN(storage area network): SCSI</li>
+</ol>
+<ol start="4">
+<li>概念：<ul>
+<li>node: iSCSI initiator或iSCSI target都是node；</li>
+<li>IQN(iSCSI Qualified Name)：全球唯一，类似链路层的MAC地址，以及网络层的IP地址；</li>
+<li>target：一个带有IQN地址的<strong>提供</strong>存储资源的设备；</li>
+<li>initiator：一个带有IQN地址的<strong>获取</strong>存储资源的设备；</li>
+<li>portal：入口，由IP地址和端口组成，用于建立连接；</li>
+<li>TPG(Target Portal Group)：一组入口，用于指定iSCSI目标监听；</li>
+<li>ACL(Access Control List)：用于限制initiator访问的IQN资源；</li>
+<li>discovery：基于入口或入口组的资源发现；</li>
+<li>login：initiator验证登录；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>实验：<ul>
+<li>desktop4上安装initiator<code>yum install -y iscsi-initiator-utils.i686</code>；</li>
+<li>server4上安装target<code>yum install -y targetcli.noarch</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>在server4上：<ul>
+<li>查看硬盘：<code>lsblk</code>，划分分区：<code>fdisk /dev/vdb</code>；</li>
+<li>创建pv：<code>pvcreate /dev/vdb1</code>；</li>
+<li>创建vg：<code>vgcreate ISCSI_vg /dev/vdb1</code>；</li>
+<li>创建lv：<code>lvcreate  -l 511 -n disk1_lv ISCSI_vg</code>，把disk1_lv当做存储做实验；</li>
+<li>进入<code>targetcli</code>交互模式：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建block1：</span></span><br><span class="line">/backstores/block create block1 /dev/ISCSI_vg/disk1_lv</span><br><span class="line"><span class="comment"># 创建IQN：</span></span><br><span class="line">/iscsi create iqn.2018-07.com.example:server4</span><br><span class="line"><span class="comment"># 创建ACL指定desktop4：</span></span><br><span class="line">/iscsi/iqn.2018-07.com.example:server4/tpg1/acls create iqn.2018-07.com.example:desktop4</span><br><span class="line"><span class="comment"># 切换到/iscsi/iqn.2018-07.com.example:server4/tpg1&gt;方便一些，创建LUN</span></span><br><span class="line">luns/ create /backstores/block/block1</span><br><span class="line"><span class="comment"># 创建监听端口，使用默认端口3260：</span></span><br><span class="line">portals/ create 172.25.4.11</span><br><span class="line"><span class="comment"># 查看所有配置</span></span><br><span class="line">ls</span><br><span class="line"><span class="comment"># 退出自动保存（格式为json，在/etc/target/saveconfig.json）</span></span><br><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></figure></li>
+<li>添加防火墙策略：<code>firewall-cmd --add-port=3260/tcp</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>在desktop4上：<ul>
+<li>修改IQN：<code>vim /etc/iscsi/initiatorname.iscsi</code>中的IQN为server4 ACL允许的名称<code>iqn.2018-07.com.example:desktop4</code>；</li>
+<li>发现target：<code>iscsiadm --mode discoverydb --type sendtargets --portal 172.25.4.11:3260 --discover</code>，发现后系统自动将目标记录在<code>/var/lib/iscsi/nodes/</code>中；</li>
+<li>登录：<code>iscsiadm --mode node -targetname iqn.2018-07.com.example:server4 --portal 172.25.4.11:3260 --login</code></li>
+<li>查看设备：<code>lsblk</code></li>
+<li>登出：<code>iscsiadm --mode node -targetname iqn.2018-07.com.example:server4 --portal 172.25.4.11:3260 --logout</code></li>
+<li>详情参考<code>man 8 iscsiadm</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="nfs共享"><a href="#nfs共享" class="headerlink" title="nfs共享"></a>nfs共享</h2><ol>
+<li>在server4上：<ul>
+<li>查看包是否按照<code>rpm -q nfs-util</code>；创建<code>/nfsshare</code>目录；</li>
+<li>配置共享<code>vim /etc/exports</code>：<code>/nfsshare    desktop4.example.com(rw)</code>；</li>
+<li>启用服务<code>systemctl status nfs-server &amp;&amp; systemctl enable nfs-server &amp;&amp; systemctl start nfs-server</code>；</li>
+<li>修改共享配置后重载<code>exportfs -r</code>；</li>
+<li>添加nfs防火墙策略<code>firewall-cmd --add-service=nfs --permanent &amp;&amp; firewall-cmd --add-service=nfs</code>；</li>
+<li>添加rpc-bind防火墙策略（远端查看<code>showmount</code>需要）<code>firewall-cmd --add-service=rpc-bind --permanent &amp;&amp; firewall-cmd --add-service=rpc-bind</code>；</li>
+<li>添加mountd防火墙策略（远端查看<code>showmount</code>需要）<code>firewall-cmd --add-service=mountd --permanent &amp;&amp; firewall-cmd --add-service=mountd</code>；</li>
+<li>端口信息可以从<code>grep 2049 /etc/services</code>中看到；</li>
+<li>查看共享目录<code>showmount -e server4</code></li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>在desktop4上：<ul>
+<li>新建挂载点<code>mkdir /mnt/nfsshare</code>；</li>
+<li>挂载<code>mount server4:/nfsshare /mnt/nfsshare</code>；</li>
+<li>永久挂载<code>echo &#39;server4:/nfsshare /mnt/nfsshare nfs defaults,_netdev 0 0&#39; &gt;&gt; /etc/fstab &amp;&amp; mount -a</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>共享权限问题：<ul>
+<li>若共享不可写，则检查model模型及SELinux；共享时虽然由root发起nfs-server进程，但是实际服务用户是一个名为<code>id nfsnobody</code>的内置账号，因此需要在server4上授权<code>chmod o+w /nfsshare</code>；</li>
+<li>在desktop4上强制修改SELinux标签：<code>mount -o context=&quot;system_u:object_r:public_content_rw_t:s0&quot; server4:/nfs /media</code>；</li>
+<li>服务端的配置在<code>/etc/sysconfig/nfs</code>配置<code>RPCNFSDARGS=&quot;-V 4.2&quot;</code>，desktop4挂载时使用<code>mount -o v4.2 server4:/nfs /media</code>，可以使客户端与服务端文件的SELinux一致；</li>
+<li>关于各软件的SELinux目录权限标签可以参考“软件名_selinux(8)”，如<code>man 8 nfsd\_selinux</code>；公共目录读写通常使用<code>public_content_rw_t</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>实验：<ul>
+<li>安装环境：<code>lab nfskrb5 setup</code></li>
+<li>在server4上，下载krb凭证<code>wget -O /etc/krb5.keytab http://classroom.example.com/pub/keytabs/server4.keytab</code></li>
+<li>新建文件夹<code>/securenfs</code>；</li>
+<li>设置共享<code>/etc/exports</code>写入<code>/securenfs desktop4.exmaple.com(rw,sec=krb5p)</code>；</li>
+<li>修改nfs版本配置<code>/etc/sysconfig/nfs</code>该为<code>RPCNFSDARGS=&quot;-V 4.2&quot;</code>；</li>
+<li>防火墙添加服务：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-service=nfs</span><br><span class="line">firewall-cmd --add-service=nfs --permanent</span><br></pre></td></tr></table></figure></li>
+<li>启动nfs服务：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable nfs-server</span><br><span class="line">systemctl enable nfs-secure-server</span><br><span class="line">systemctl start nfs-server</span><br><span class="line">systemctl start nfs-secure-server</span><br><span class="line">systemctl status nfs-server</span><br><span class="line">systemctl status nfs-secure-server</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<ul>
+<li>在desktop4上，下载krb凭证<code>wget -O /etc/krb5.keytab http://classroom.example.com/pub/keytabs/desktop4.keytab</code></li>
+<li>新建挂载点<code>mkdir /mnt/sercureshare</code></li>
+<li>启动服务<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable nfs-secure</span><br><span class="line">systemctl start nfs-secure</span><br><span class="line">systemctl status nfs-secure</span><br></pre></td></tr></table></figure></li>
+<li>挂载<code>mount -o sec=krb5p,v4.2 server4:/securenfs /mnt/secureshare</code></li>
+<li>配置永久挂载：<code>server4:/securenfs /mnt/secureshare nfs4 defaults,_netdev,sec=krb5p,v4.2 0 0</code></li>
+<li>另外，如果挂载时遇到访问被拒绝的问题，可以使用<code>klist /etc/krb5.keytab</code>查看证书问题；</li>
+<li>挂载选项中的<code>_netdev</code>选项参见<code>man 8 mount</code>，即网络设备启动过后再执行挂载；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-08-01"><a href="#2018-08-01" class="headerlink" title="2018-08-01"></a>2018-08-01</h1><h1 id="nfs共享权限"><a href="#nfs共享权限" class="headerlink" title="nfs共享权限"></a>nfs共享权限</h1><ol>
+<li>使用krb认证后，若切换到认证用户身份（如ldapuser1），则权限已经从nfsnobody用户变为认证用户了（即ldapuser1）；共享的权限检查顺序为：<ul>
+<li>共享权限<code>vim /etc/exports</code>；</li>
+<li>model权限<code>ll -d /securenfs</code>，包括ACL权限；</li>
+<li>SELinux权限<code>ll -dZ /securenfs</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>权限试验：<ul>
+<li>在server4上创建文件：<code>echo &#39;hello world&#39; &gt; /securenfs/testfile.txt</code></li>
+<li>修改SELinux标签：<code>chron -t public_content_t /securenfs/testfile.txt</code></li>
+<li>修改文件属主为ldap用户：<code>chown ldapuser0:ldapuser0 /securenfs/testfile.txt</code></li>
+<li>修改model权限：<code>chmod 644 /securenfs/testfile.txt</code></li>
+</ul>
+<hr>
+<ul>
+<li>在desktop4上查看共享权限：<code>ls -Z /mnt/shcureshare/</code></li>
+<li>通过认证切换用户为ldapuser4：<code>ssh ldapuser4@localhost</code></li>
+<li>尝试写入失败：<code>echo &#39;i can&#39;t wirte&#39; &gt;&gt; /mnt/seucreshare/testfile.txt</code>，文件对ldapuser4只读；</li>
+<li>通过认证切换用户为ldapuser0：<code>ssh ldapuser4@localhost</code>；注意：不可以通过<code>su - ldapuser0</code>，因为这样不会通过krb进行认证；</li>
+<li>此时可以写入：<code>echo &#39;i can&#39;t wirte&#39; &gt;&gt; /mnt/seucreshare/testfile.txt</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>nfs与smb的路径对比：<ul>
+<li>nfs：<code>hostname:/pathname</code></li>
+<li>cifs(smb)：<code>//hostname/sharename</code>，其中的sharename在<code>/etc/samba/smb.conf</code>中配置；</li>
+</ul>
+</li>
+</ol>
+<h1 id="smb共享"><a href="#smb共享" class="headerlink" title="smb共享"></a>smb共享</h1><ol>
+<li>smb(server message block)是一个标准的文件共享协议，用户Windows系统；smb文件服务器可以配置为<strong>工作组</strong>模式或<strong>域</strong>模式；<ul>
+<li>工作组绝对平等，每台电脑管理自己的本地用户及密码，不适于大规模管理；</li>
+<li>域成员服从域控制器，用户通过域控制器认证；</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>创建smb共享：<ul>
+<li>在server4上安装及查看<code>yum install -y samba</code>，<code>rpm -ql samba</code>；</li>
+<li>smb安装完成后提供两个服务：nmb提供netbios服务，解析共享时的域名解析；smb即共享服务；</li>
+<li>配置<code>vim /etc/samba/smb.conf</code>，参考<code>man 4 samba</code>：<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">workgroup</span> = WORKGROUP</span><br><span class="line">hosts <span class="attr">allow</span> = </span><br><span class="line"><span class="section">[yinhe]</span></span><br><span class="line"><span class="attr">path</span> = /smbshare/</span><br><span class="line"><span class="comment"># 用户,@组</span></span><br><span class="line">write <span class="attr">list</span> = smbuser4,@smb</span><br><span class="line">valid <span class="attr">users</span> = smbuser4</span><br></pre></td></tr></table></figure></li>
+<li>使用<code>testparm</code>检查配置文件语法错误；</li>
+<li>启动服务<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable smb nmb</span><br><span class="line">systemctl start smb nmb</span><br><span class="line"># 检查服务：139、445端口已经启动</span><br><span class="line">netstat -tnlp</span><br></pre></td></tr></table></figure></li>
+<li>配置防火墙：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-service=samba</span><br><span class="line">firewall-cmd --add-service=samba --permanent</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<ul>
+<li>在desktop4上新建非交互用户，为smbuser4指定非交互shell：<code>useradd -s /sbin/nologin smbuser4</code></li>
+<li>设置smb格式密码：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 搜索提供该命令的包</span></span><br><span class="line">yum provides smbpasswd</span><br><span class="line"><span class="comment"># 安装该包</span></span><br><span class="line">yum install -y samba-client</span><br><span class="line"><span class="comment"># 为用户设置密码</span></span><br><span class="line">smbpasswd -a smbuser4</span><br><span class="line"><span class="comment"># 查看该用户</span></span><br><span class="line">pdbedit -L</span><br></pre></td></tr></table></figure></li>
+<li>尝试挂载：<code>mount //server4/yinhe /media</code>报错，查看日志<code>tail /var/log/message</code>，发现需要cifs文件系统；</li>
+<li>安装cifs文件系统支持<code>yum install -y cifs-utils</code></li>
+<li>指定用户挂载：<code>mount -o username=smbuser4,password=redhat //server4/yinhe /media/</code></li>
+</ul>
+<hr>
+<ul>
+<li>尝试访问被拒绝，在server4中添加SELinux读权限：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看SELinux标签</span></span><br><span class="line">ll -dZ /smbshare</span><br><span class="line"><span class="comment"># 添加读标签，测试后可以访问，注意，chcon只用于临时调试，要永久修改策略应使用semanage</span></span><br><span class="line">chcon -t public_content_t /smbshare/</span><br><span class="line"><span class="comment"># 该为写标签</span></span><br><span class="line">chcon -t public_content_rw_t /smbshare/</span><br></pre></td></tr></table></figure></li>
+<li>为共享用户smbuser4添加ACL：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看ACL</span></span><br><span class="line">getfacl /smbshare</span><br><span class="line"><span class="comment"># 为smbuser4设置读写ACL</span></span><br><span class="line">setfacl -m smbuser4:rwx /smbshare/</span><br></pre></td></tr></table></figure></li>
+<li>尝试写发现写被拒绝，修改SELinux策略：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查smb权限</span></span><br><span class="line">getsebool -a | grep smb</span><br><span class="line"><span class="comment"># 设置写权限</span></span><br><span class="line">setsebool smbd_anon_write on</span><br><span class="line"><span class="comment"># 永久生效</span></span><br><span class="line">setsebool -P smbd_anon_write on</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li>多用户挂载<ul>
+<li>切换student写被拒绝，添加model权限：<code>chmod o+w /smbshare/</code>，我们发现student创建的属主文件也是smbuser4（即文件属于挂载用户）；</li>
+<li>在server4上初始化实验环境<code>lab smbmultiuser setup</code>；</li>
+<li>可以看到实验创建了<code>/smbshare</code>协作目录<code>drwxrwsr-x.</code>，并新增了两个账号<code>brain:1001:1001(marketing)</code>和<code>rob:1002:1002</code></li>
+</ul>
+<hr>
+<ul>
+<li>在desktop4上初始化实验环境<code>lab smbmultiuser setup</code>；</li>
+<li>安装cifs：<code>yum install -y cifs-utils</code>；</li>
+<li>创建认证文件<code>vim /root/multiuser</code>：<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">username</span>=brain</span><br><span class="line"><span class="attr">password</span>=redhat</span><br></pre></td></tr></table></figure></li>
+<li>配置永久挂载<code>vim /etc/fstab</code>：<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//server4/smbshare /mnt/multiuser cifs defaults,_netdev,multiuser,<span class="attr">credentials</span>=/root/multiuser <span class="number">0</span> <span class="number">0</span></span><br></pre></td></tr></table></figure></li>
+<li>测试切换brian<code>su - brian</code>：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 创建文件被拒绝</span><br><span class="line">touch /mnt/multiuser/testfile</span><br><span class="line"># 用户名密码认证</span><br><span class="line">cifscreds add server4</span><br><span class="line"># 具有读写权限</span><br><span class="line">touch test</span><br></pre></td></tr></table></figure></li>
+<li>测试切换rob<code>su - rob</code>：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 创建文件被拒绝</span><br><span class="line">touch /mnt/multiuser/testfile</span><br><span class="line"># 用户名密码认证</span><br><span class="line">cifscreds add server4</span><br><span class="line"># 具有只读权限</span><br><span class="line">touch test</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-08-02"><a href="#2018-08-02" class="headerlink" title="2018-08-02"></a>2018-08-02</h1><h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><ol>
+<li>安装MariaDB：<ul>
+<li>在server4上安装服务端，以组安装比较方便：<code>yum groups install MariaDB\ Database\ Server</code></li>
+<li>使用<code>yum history list</code>查看安装历史，使用<code>yum history info 2</code>查看组中安装的包详情</li>
+<li>使用<code>rpm -ql mariadb-server | grep .service</code>查看安装的服务；</li>
+<li>启动服务：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> mariadb.service</span><br><span class="line">systemctl start mariadb.service</span><br><span class="line"><span class="comment"># 确认默认端口3306</span></span><br><span class="line">netstat -tnlp</span><br></pre></td></tr></table></figure></li>
+<li>添加防火墙：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-service=mysql</span><br><span class="line">firewall-cmd --add-service=mysql --permanent</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<ul>
+<li>在desktop4上安装服务端，以组安装比较方便：<code>yum groups install MariaDB\ Database\ Client</code></li>
+<li>运行<code>yum history list</code>查看安装历史，运行<code>yum history info 2</code>查看组中安装的包详情</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>登录数据库<ul>
+<li>本地匿名登录，使用mysql客户端：<code>mysql</code>：<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> DATABASES;</span><br><span class="line">USE mysql;</span><br><span class="line"><span class="keyword">SHOW</span> TABLES;</span><br><span class="line"><span class="keyword">DESC</span> <span class="keyword">user</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host, password <span class="keyword">FROM</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure></li>
+<li>运行安全脚本禁用匿名用户、远程登录等功能：<code>mysql_secure_installation</code></li>
+<li>使用密码本地登录：<code>mysql -u root -predhat -h localhost</code>，注意<code>-p</code>选项后接密码无空格；<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">USE mysql;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">user</span>, host, password <span class="keyword">FROM</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>配置：<ul>
+<li><code>vim /etc/my.cnf</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认配置指向套接字文件，供同一个电脑的进程间通信使用：</span></span><br><span class="line"><span class="attr">socket</span>=/var/lib/mysql/mysql.sock</span><br><span class="line"><span class="comment"># bind-address，在所以配置文件中只允许一次，监听本地IP 172.25.0.11：</span></span><br><span class="line"><span class="attr">bind-address</span>=<span class="number">172.25</span>.<span class="number">0.11</span></span><br><span class="line"><span class="comment"># 禁用网络，仅使用本地套接字文件(以localhost连接会被自动转为本地套接字，而以server4连接则会被禁用)：</span></span><br><span class="line"><span class="attr">skip-network</span>=<span class="number">1</span></span><br><span class="line"><span class="comment"># 修改配置使能够远程访问，需要指向</span></span><br></pre></td></tr></table></figure></li>
+<li>子配置位于<code>ll /etc/my.cnf.d</code>；</li>
+<li>日志、数据文件、套接字等位于<code>ll /var/lib/mysql</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>SQL：<ul>
+<li>DDL数据定义语言：<code>create, show, drop, alter</code>等，对象为容器（如表、视图）；</li>
+<li>DML数据管理语言：<code>insert, delete, select, update</code>等，对象为数据记录；<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- DDL与DML：</span></span><br><span class="line"><span class="keyword">SHOW</span> HELP;</span><br><span class="line"><span class="comment">-- %通配多位</span></span><br><span class="line"><span class="keyword">SHOW</span> TABLES <span class="keyword">FROM</span> mysql <span class="keyword">LIKE</span> <span class="string">&#x27;%zone%&#x27;</span>;</span><br><span class="line"><span class="comment">-- _通配一位</span></span><br><span class="line"><span class="keyword">SHOW</span> TABLES <span class="keyword">FROM</span> mysql <span class="keyword">LIKE</span> <span class="string">&#x27;_i%&#x27;</span>;</span><br><span class="line"><span class="comment">-- 创建库</span></span><br><span class="line"><span class="keyword">CREATE</span> DATABASE inventory;</span><br><span class="line">USE inventory;</span><br><span class="line"><span class="comment">-- 创建表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> regions (</span><br><span class="line">    region_id <span class="type">int</span>(<span class="number">8</span>),</span><br><span class="line">    region_name <span class="type">varchar</span>(<span class="number">20</span>),</span><br><span class="line">    country_name <span class="type">varchar</span>(<span class="number">20</span>)</span><br><span class="line">);</span><br><span class="line"><span class="comment">-- 查看表结构</span></span><br><span class="line"><span class="keyword">DESC</span> regions;</span><br><span class="line"><span class="comment">-- 插入记录</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> regions <span class="keyword">values</span> (<span class="number">1</span>, <span class="string">&#x27;Asia&#x27;</span>, <span class="string">&#x27;China&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> regions(region_id, country_name) <span class="keyword">value</span> (<span class="string">&#x27;Asia&#x27;</span>, <span class="string">&#x27;Japan&#x27;</span>);</span><br><span class="line">UPDATE regions <span class="keyword">SET</span> country_name<span class="operator">=</span><span class="string">&#x27;CN&#x27;</span> <span class="keyword">WHERE</span> region_id<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure></li>
+<li>DCL数据控制语言：<code>grant, revoke</code>等；<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 新建用户</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">&#x27;yinhe&#x27;</span>@<span class="string">&#x27;desktop4.example.com&#x27;</span> identified <span class="keyword">by</span> <span class="string">&#x27;redhat&#x27;</span>;</span><br><span class="line"><span class="comment">-- 若使用主机名登录有问题，可以尝试使用IP地址登录</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">&#x27;yinhe&#x27;</span>@<span class="string">&#x27;172.25.4.10&#x27;</span> identified <span class="keyword">by</span> <span class="string">&#x27;redhat&#x27;</span>;</span><br><span class="line"><span class="comment">-- 授予权限</span></span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>, UPDATE, <span class="keyword">DELETE</span>, <span class="keyword">INSERT</span> <span class="keyword">ON</span> inventory.regions <span class="keyword">TO</span> <span class="string">&#x27;yinhe&#x27;</span>@<span class="string">&#x27;desktop4.example.com&#x27;</span>;</span><br><span class="line"><span class="comment">-- 刷新内存，赋权后建议刷新</span></span><br><span class="line">flush privileges;</span><br><span class="line"><span class="comment">-- 回收权限</span></span><br><span class="line"><span class="keyword">REVOKE</span> UPDATE, <span class="keyword">INSERT</span>, <span class="keyword">DELETE</span> <span class="keyword">ON</span> inventory.regions <span class="keyword">FROM</span> <span class="string">&#x27;yinhe&#x27;</span>@<span class="string">&#x27;desktop4.example.com&#x27;</span>;</span><br><span class="line"><span class="comment">-- 查看用户权限</span></span><br><span class="line"><span class="keyword">SHOW</span> GRANTS <span class="keyword">FOR</span> <span class="string">&#x27;yinhe&#x27;</span><span class="variable">@desktop4</span>.example.com<span class="string">&#x27;</span></span><br><span class="line"><span class="string">-- 用户授权支持SQL用通配符</span></span><br><span class="line"><span class="string">mobius@&#x27;</span>localhost<span class="string">&#x27;</span></span><br><span class="line"><span class="string">mobius@&#x27;</span><span class="number">192.168</span><span class="number">.1</span><span class="number">.5</span><span class="string">&#x27;</span></span><br><span class="line"><span class="string">mobius@&#x27;</span><span class="number">192.168</span><span class="number">.1</span>.<span class="operator">%</span><span class="string">&#x27;    </span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>数据备份<ul>
+<li>按业务分为冷备（所有业务下线）、温备（业务只读）、热备（所有业务在线）；</li>
+<li>备份方式分为逻辑备份（通过SQL导出记录，可以不下线，低效、高可移植）、物理备份（复制数据目录，如<code>/var/lib/mysql</code>，需要下线，高效、低可移植）；</li>
+<li>逻辑备份：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份</span></span><br><span class="line">mysqldump -uroot -predhat inventory &gt; ~/dump.out</span><br><span class="line"><span class="comment"># 还原</span></span><br><span class="line">mysql -uroot -predhat abc &lt; /root/dump.out</span><br></pre></td></tr></table></figure></li>
+<li>物理备份：<code>mysqlhotcopy</code>是mysql提供的冷/温备工具，或直接给逻辑卷做快照（lvm snapshots，cow写前复制，所以建议数据文件规划在逻辑卷上）；</li>
+</ul>
+</li>
+</ol>
+<h2 id="网页服务"><a href="#网页服务" class="headerlink" title="网页服务"></a>网页服务</h2><ol>
+<li>安装<code>yum install -y httpd</code>：<ul>
+<li>查看配置文件<code>rpm -qc httpd</code>；</li>
+<li>日志默认存放在<code>/var/log/httpd</code>（同时也会写入系统日志<code>/var/log/message</code>）；</li>
+<li>内容默认存放在<code>/var/www/html</code>；</li>
+<li>httpd的详细帮助文档，安装<code>yum install -y httpd-manual</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>实验，使用<code>/srv/www4.example.com/www/</code>为www4.example.com提供内容，使用<code>/srv/default/www/</code>为其他域名提供内容：<ul>
+<li>SELinux策略已经为<code>/srv/*/www</code>目录授予权限，若遇到403，使用<code>restorecon -vvvR /srv/</code>（v越多显示的过程越详细），使用<code>ll -RZ /srv/</code>查看，发现SELinux已重置为<code>httpd_sys_content_t</code>；</li>
+<li>虚拟主机配置可以参考<code>/usr/share/doc/httpd-2.4.6/httpd-vhosts.conf</code>，复制到<code>/etc/httpd/conf.d/</code>下，分屏编辑<code>vim -o &#123;default,www4&#125;.conf</code>；</li>
+<li>default配置：<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">VirtualHost</span> *<span class="attr">:80</span>&gt;</span></span><br><span class="line">    DocumentRoot &quot;/srv/default/www/&quot;</span><br><span class="line"><span class="tag">&lt;/<span class="name">VirtualHost</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Directory</span> &quot;/<span class="attr">srv</span>/<span class="attr">default</span>/<span class="attr">www</span>/&quot;&gt;</span></span><br><span class="line">    AllowOverride None</span><br><span class="line">    Require all granted</span><br><span class="line"><span class="tag">&lt;/<span class="name">Directory</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>www4配置：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:80&gt;</span><br><span class="line">    DocumentRoot <span class="string">&quot;/srv/www4.example.com/www/&quot;</span></span><br><span class="line">    ServerName www4.example.com</span><br><span class="line">    ServerAlias www4</span><br><span class="line">&lt;/VirtualHost&gt;</span><br><span class="line">&lt;Directory <span class="string">&quot;/srv/www4.example.com/www/&quot;</span>&gt;</span><br><span class="line">    AllowOverride None</span><br><span class="line">    Require all granted</span><br><span class="line">    <span class="comment"># Allow,Deny是老版本的访问控制命令，Require是新版本的命令</span></span><br><span class="line">    <span class="comment"># Order allow,deny</span></span><br><span class="line">    <span class="comment"># Allow from all</span></span><br><span class="line">    <span class="comment"># Deny from 172.25.4.10</span></span><br><span class="line">    <span class="comment"># 多条Require放入Require容器：&lt;RequireAny&gt;、&lt;RequireAl&gt;</span></span><br><span class="line">    <span class="comment"># &lt;RequireAny&gt;</span></span><br><span class="line">    <span class="comment">#     Require all granted</span></span><br><span class="line">    <span class="comment">#     Require not ip 172.25.0.10</span></span><br><span class="line">    <span class="comment"># &lt;/RequireAny&gt;</span></span><br><span class="line">&lt;/Directory&gt;</span><br></pre></td></tr></table></figure></li>
+<li>若有欢迎页面，重命名掉<code>/etc/httpd/conf.d/welcome.conf</code>，注释掉主配置<code>Options Indexes FollowSymLinks</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>实验，https（TLS）配置：<ul>
+<li>生成秘钥对：<code>openssl genrsa 1024 &gt; /root/pair.key</code>；</li>
+<li>生成新签名请求：<code>openssl req -new -key /root/pair.key -out /root/server.csr</code>；</li>
+<li>安装SSL支持：<code>yum install mod_ssl.x86_64</code>，查看安装文件<code>rpm -ql mod_ssl</code>，主配置文件为<code>/etc/httpd/conf.d/ssl.conf</code>；</li>
+<li>添加防火墙：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-service=https</span><br><span class="line">firewall-cmd --add-service=https --permanent</span><br></pre></td></tr></table></figure></li>
+<li>备份配置<code>mv /etc/httpd/conf.d/ssl.conf&#123;,.bak&#125;</code><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Listen 443 https</span><br><span class="line">&lt;VirtualHost *:443&gt;</span><br><span class="line">    SSLEngine on</span><br><span class="line">    SSLProtocol all -SSLv2 -SSLv3</span><br><span class="line">    SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5</span><br><span class="line">    SSLHonorCipherOrder on</span><br><span class="line">    ServerName www4.example.com</span><br><span class="line">    DocumentRoot /srv/ssl/www/</span><br><span class="line">    SSLCertificateFile</span><br><span class="line">    SSLCertificateKeyFile</span><br><span class="line">    SSLCACertificateFile /etc/pki/tls/certs/ca.crt</span><br><span class="line">    &lt;Directory <span class="string">&quot;/srv/ssl/www/&quot;</span>&gt;</span><br><span class="line">        Require all granted</span><br><span class="line">    &lt;/Directory&gt;</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure></li>
+<li>重启服务：<code>systemctl restart httpd.server</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>实验，部署python网络应用：<ul>
+<li>安装wsgi插件：<code>yum install -y mod_wsgi.x86_64</code>；</li>
+<li>修改<code>webapp.wsgi</code>的SELinux标签：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 永久改标签</span></span><br><span class="line">semanage fcontext -a -t <span class="string">&quot;httpd_sys_content_t&quot;</span> <span class="string">&quot;/srv/wsgi/www(/.*)?&quot;</span></span><br><span class="line"><span class="comment"># 刷新标签</span></span><br><span class="line">restorecon -vvvR /srv/wsgi/www/</span><br></pre></td></tr></table></figure></li>
+<li>修改端口的SELinux标签：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看9981端口标签</span></span><br><span class="line">semanage port -l | grep 9981</span><br><span class="line"><span class="comment"># 查看一般网页端口的标签</span></span><br><span class="line">semanage port -l | grep 80</span><br><span class="line"><span class="comment"># 永久改标签</span></span><br><span class="line">semanage port -a -t http_port_t -p tcp 9981</span><br></pre></td></tr></table></figure></li>
+<li>修改<code>vim wsgi.conf</code>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Listen 9981</span><br><span class="line">&lt;VirtualHost *:9981&gt;</span><br><span class="line">    DocumentRoot <span class="string">&quot;/srv/wsgi/www/&quot;</span></span><br><span class="line">    ServerName webapp4.example.com</span><br><span class="line">    WSGIScriptAlias / /srv/wsgi/www/webapp.wsgi</span><br><span class="line">&lt;/VirtualHost&gt;</span><br><span class="line">&lt;Directory <span class="string">&quot;/srv/wsgi/www/&quot;</span>&gt;</span><br><span class="line">    AllowOverride None</span><br><span class="line">    Require all granted</span><br><span class="line">&lt;/Directory&gt;</span><br></pre></td></tr></table></figure></li>
+<li>添加防火墙：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-port=9981/tcp</span><br><span class="line">firewall-cmd --add-port=9981/tcp --permanent</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-08-03"><a href="#2018-08-03" class="headerlink" title="2018-08-03"></a>2018-08-03</h1><h1 id="Shell脚本"><a href="#Shell脚本" class="headerlink" title="Shell脚本"></a>Shell脚本</h1><ol>
+<li>脚本文件首行可以写入魔术字：<code>#!/usr/bin/bash</code>，用于指定脚本执行的程序；</li>
+</ol>
+<ol start="2">
+<li>使用常量创建用户：<ul>
+<li>创建用户：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;adding user1&quot;</span></span><br><span class="line">useradd user1 &amp; &gt; /dev/null</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;setting password for user1&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;redhat&quot;</span> | passwd --stdin user1</span><br></pre></td></tr></table></figure></li>
+<li>执行脚本：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将脚本读入bash子进程执行，ps j能够看到多一个bash子进程</span></span><br><span class="line">bash createusers</span><br><span class="line"><span class="comment"># 将脚本读入当前进程运行执行</span></span><br><span class="line"><span class="built_in">source</span> createusers</span><br><span class="line"><span class="comment"># .等效于source</span></span><br><span class="line">. createusers</span><br><span class="line"><span class="comment"># 直接运行</span></span><br><span class="line">chmod a+x createusers</span><br><span class="line">/root/createusers</span><br><span class="line">./createusers</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li><code>which</code>路径查找的顺序：<code>alias、hash、$PATH</code>中具有x权限的文件，设置别名：<code>alias cdnet=&#39;cd /etc/sysconfig/network-scripts/&#39;</code>；<ul>
+<li><code>which</code>默认查找PATH，找到立刻返回，<code>which -a</code>表示查找PATH中的所有路径；</li>
+<li><code>whereis</code>也是路径查找，包man手册；<code>whatis</code>专用于查找man手册，匹配名称，<code>man -k</code>还匹配摘要内容；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li><code>$</code>用于变量调用，其他如<code>*, @, #</code>等特殊符号参见<code>man 1 bash</code>中“Special Parameters”；<ul>
+<li>设置环境变量：<code>export user=user2</code>；</li>
+<li>变量默认以字符存储，使用<code>[]</code>转换数字：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a=1</span><br><span class="line">b=2</span><br><span class="line"><span class="built_in">echo</span> $[<span class="variable">$a</span>+<span class="variable">$b</span>]</span><br></pre></td></tr></table></figure></li>
+<li>使用<code>let</code>数字赋值：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">let</span> c=<span class="variable">$a</span>+<span class="variable">$b</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$c</span></span><br></pre></td></tr></table></figure></li>
+<li>算数表达式：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> $[1+1*2]</span><br><span class="line"><span class="built_in">echo</span> $[(1+1)*2]</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>退出码<code>0</code>表示正常，非<code>0</code>值各程序定义不同，使用<code>exit 255</code>表示退出码；</li>
+</ol>
+<ol start="6">
+<li>条件判断：<ul>
+<li>数字比较：<code>[ &quot;$a&quot; -eq &quot;$b&quot; ] &amp;&amp; echo true || echo false</code>，注意：中括号前后有空格；</li>
+<li>字符串比较：<code>[ &quot;$a&quot; == &quot;$b&quot; ] &amp;&amp; echo true || echo false</code>，注意：中括号前后有空格；</li>
+<li>文件相关信息的条件判断参见<code>man 1 bash</code>的“Conditional Expressions”；</li>
+<li>判断语句if，参见<code>help if</code>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> xxx ; </span><br><span class="line">    <span class="keyword">then</span> ... ;</span><br><span class="line"><span class="keyword">elif</span> ... ;</span><br><span class="line">    <span class="keyword">then</span> ... ;</span><br><span class="line"><span class="keyword">else</span> ... ;</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></li>
+<li>判断语句case，参见<code>help case</code>，实验：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">case</span> $* <span class="keyword">in</span></span><br><span class="line">    redhat)</span><br><span class="line">        <span class="built_in">echo</span> fedora ;;</span><br><span class="line">    fedora)</span><br><span class="line">        <span class="built_in">echo</span> redhat ;;</span><br><span class="line">    *)</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;/root/foo.sh redhat|fedora&quot;</span></span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure></li>
+<li>添加运行权限<code>chmod a+x foo.sh</code></li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>循环语句：<ul>
+<li>for语句：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="keyword">in</span> &#123;1..100&#125;;</span><br><span class="line">    <span class="keyword">do</span> <span class="built_in">echo</span> <span class="variable">$i</span>; </span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></li>
+<li>判断PC是否在线：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> &#123;1..20&#125;</span><br><span class="line">    <span class="keyword">do</span> ping -c1 172.25.254.<span class="variable">$i</span> &gt; /dev/null</span><br><span class="line">    <span class="keyword">if</span> [ $? -eq 0 ] </span><br><span class="line">        <span class="keyword">then</span> <span class="built_in">echo</span> pc<span class="variable">$&#123;i&#125;</span>:online</span><br><span class="line">        <span class="built_in">let</span> sumon++</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> pc<span class="variable">$&#123;i&#125;</span>:online</span><br><span class="line">        <span class="built_in">let</span> sumoff++</span><br><span class="line">    <span class="keyword">if</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></li>
+<li>while语句：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>: xxx</span><br><span class="line">    <span class="keyword">do</span> ...;</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<ol start="8">
+<li>表格处理：<code>grep w /etc/passwd | cut -d: -f 1,7</code>；</li>
+</ol>
+<ol start="9">
+<li>实验，用到的文件newusers每行形为<code>Cassy:Rundle:60:1</code>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -ne 1 ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&#x27;Usage: /root/batchusers filename&#x27;</span></span><br><span class="line">    <span class="built_in">exit</span> 256</span><br><span class="line"><span class="keyword">elif</span> [ -f <span class="variable">$1</span> ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">    <span class="keyword">for</span> username <span class="keyword">in</span> `cut -d: -f1 <span class="variable">$1</span>`</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="variable">$username</span></span><br><span class="line">        useradd -s /bin/<span class="literal">false</span> <span class="variable">$username</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&#x27;input file not found&#x27;</span></span><br><span class="line">    <span class="built_in">exit</span> 128</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<p><a href="/2018/07/21/redhat-1/">Redhat Linux初体验（1）</a><br><a href="/2018/07/28/redhat-2/">Redhat Linux初体验（2）</a></p>
+<h1 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h1><ul>
+<li>特别感谢<strong>李老师</strong>在授课之余，带我刷猪肘饭和骨汤面；</li>
+<li>感谢成都天气控制部门一直将盛夏的气温保持在25℃左右，湿度也刚刚好，我现在知道成都妹纸为啥皮肤好了[捂脸]；</li>
+<li>感谢金开服务公寓的免费撸铁房；</li>
+<li>感谢东哥拐我来成都培训[捂脸]。</li>
+<li>特此批评西安的天气控制部门，连续的40℃还说自己是啥线城市？</li>
+</ul>
+</div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Shell/">Shell</a><a class="link-muted mr-2" rel="tag" href="/tags/Linux/">Linux</a></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><div class="social-share"></div><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.jpg" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2018/09/25/rbp3-aws-gateway/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">树莓派上的科学上网</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2018/07/28/redhat-2/"><span class="level-item">Redhat Linux初体验（2）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><script src="https://utteranc.es/client.js" repo="zlotus/comment" issue-term="pathname" label="some-issue-label" theme="github-light" crossorigin="anonymous" async></script></div></div></div><div class="column column-left is-3-tablet is-3-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/opm_sq.png" alt="子实"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">子实</p><p class="is-size-6 is-block">程序员</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>陕西/西安</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">78</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">22</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zlotus" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com/qinzishi"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/Zealot_uS"><i class="fab fa-twitter"></i></a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://www.zhihu.com/people/zlotus" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">知乎</span></span><span class="level-right"><span class="level-item tag">www.zhihu.com</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Diary/"><span class="level-start"><span class="level-item">Diary</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/categories/Programming/"><span class="level-start"><span class="level-item">Programming</span></span><span class="level-end"><span class="level-item tag">64</span></span></a></li><li><a class="level is-mobile" href="/categories/Python/"><span class="level-start"><span class="level-item">Python</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/Shell/"><span class="level-start"><span class="level-item">Shell</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Coroutines/"><span class="tag">Coroutines</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JavaScript/"><span class="tag">JavaScript</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Javascript/"><span class="tag">Javascript</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">30</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenCV/"><span class="tag">OpenCV</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Operating-System/"><span class="tag">Operating System</span><span class="tag">21</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Paper/"><span class="tag">Paper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">17</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Raspberry-Pi/"><span class="tag">Raspberry Pi</span><span class="tag">20</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Rust/"><span class="tag">Rust</span><span class="tag">29</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Shell/"><span class="tag">Shell</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TensorFlow/"><span class="tag">TensorFlow</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tokio/"><span class="tag">Tokio</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ZMQ/"><span class="tag">ZMQ</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ctpn/"><span class="tag">ctpn</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/macOS/"><span class="tag">macOS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/obsidion/"><span class="tag">obsidion</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%97%A5%E8%AE%B0/"><span class="tag">日记</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%82%E8%B0%88/"><span class="tag">杂谈</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95/"><span class="tag">算法</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/"><span class="tag">编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%84%9A%E6%9C%AC/"><span class="tag">脚本</span><span class="tag">4</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a><p class="is-size-7"><span>&copy; 2023 子实</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

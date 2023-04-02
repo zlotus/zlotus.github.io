@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>Redhat Linux初体验（1） - 子实</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="子实"><meta name="msapplication-TileImage" content="/img/avatar-o.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="子实"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Redhat系Linux基础学习"><meta property="og:type" content="article"><meta property="og:title" content="Redhat Linux初体验（1）"><meta property="og:url" content="https://zlotus.github.io/2018/07/21/redhat-1/"><meta property="og:site_name" content="子实"><meta property="og:description" content="Redhat系Linux基础学习"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://zlotus.github.io/img/og_image.png"><meta property="article:published_time" content="2018-07-21T03:22:47.000Z"><meta property="article:modified_time" content="2018-07-21T03:22:47.000Z"><meta property="article:author" content="子实"><meta property="article:tag" content="Shell"><meta property="article:tag" content="Linux"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><meta property="twitter:creator" content="@Zealot_uS"><meta property="twitter:site" content="Zealot_uS"><link rel="publisher" href="+LotusQin"><meta property="fb:admins" content="qinzishi"><meta property="fb:app_id" content="qinzishi"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zlotus.github.io/2018/07/21/redhat-1/"},"headline":"Redhat Linux初体验（1）","image":["https://zlotus.github.io/img/og_image.png"],"datePublished":"2018-07-21T03:22:47.000Z","dateModified":"2018-07-21T03:22:47.000Z","author":{"@type":"Person","name":"子实"},"publisher":{"@type":"Organization","name":"子实","logo":{"@type":"ImageObject","url":"https://zlotus.github.io/img/opm_sq.png"}},"description":"Redhat系Linux基础学习"}</script><link rel="icon" href="/img/avatar-o.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><!--!--><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/2014/07/09/about-me/">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-9-tablet is-9-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2018-07-21T03:22:47.000Z" title="7/21/2018, 11:22:47 AM">2018-07-21</time>发表</span><span class="level-item"><time dateTime="2018-07-21T03:22:47.000Z" title="7/21/2018, 11:22:47 AM">2018-07-21</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Programming/">Programming</a></span><span class="level-item">38 分钟读完 (大约5668个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">Redhat Linux初体验（1）</h1><div class="content"><p>这三周都被拐卖到成都培训RHCE，讲真，还是当学生好啊<del>哈哈哈</del>把学习笔记搬上来，关键时刻能做个速查~</p>
+<p>献上第一周的笔记。</p>
+<span id="more"></span>
+
+<h1 id="2018-07-16"><a href="#2018-07-16" class="headerlink" title="2018-07-16"></a>2018-07-16</h1><h2 id="Linux历史"><a href="#Linux历史" class="headerlink" title="Linux历史"></a>Linux历史</h2><ol>
+<li>Multics的产生</li>
+<li>Unix的产生</li>
+<li>BSD与GUN等开源软件的发展</li>
+<li>Linux的发展与发行现状</li>
+</ol>
+<h2 id="教学环境简介"><a href="#教学环境简介" class="headerlink" title="教学环境简介"></a>教学环境简介</h2><ol>
+<li>安装vnc以及使用vnc远程教师机器</li>
+<li>红帽虚拟机使用管理：<code>rht-vmctl [start|view|reset|stop]</code></li>
+<li>红帽虚拟机配置管理：<code>virt-manager</code></li>
+<li>通过伪终端连接虚拟机：<code>ssh student@desktop4</code></li>
+</ol>
+<h1 id="2018-07-17"><a href="#2018-07-17" class="headerlink" title="2018-07-17"></a>2018-07-17</h1><h2 id="常用基础命令"><a href="#常用基础命令" class="headerlink" title="常用基础命令"></a>常用基础命令</h2><ol>
+<li>修改密码<code>passwd</code>的策略；</li>
+<li>使用<code>date</code>修改、显示时间命令，以及命令行转义；</li>
+<li>文件查看相关命令：<code>file</code>、<code>wc</code>、<code>head</code>、<code>tail</code>，文本编辑器<code>nano</code>；</li>
+<li>使用<code>history</code>操作命令历史记录，使用<code>!</code>或<code>^r</code>快速逆向查找历史命令，使用<code>esc+.</code>或<code>!$</code>复制上条命令的参数，使用<code>!!</code>复现上一条命令；</li>
+<li>命令行光标操作：光标移至行首<code>^a</code>、光标移至行尾<code>^e</code>、删除光标之前<code>^u</code>、删除光标之后<code>^k</code>、删除前一个参数<code>^w</code>、<code>^l</code>清屏、<code>^Y</code>恢复<code>^u</code>或<code>^w</code>擦除的命令、<code>^\</code>撤销操作；</li>
+</ol>
+<h2 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h2><ol>
+<li>文件系统树形结构：<code>/, /bin, /boot, /dev, /etc, /etc/opt, /etc/sgml, /etc/X11, /home, /lib, /media, /mnt, /opt, /proc, /root, /sbin, /srv, /tmp, /usr, /var</code>的功能介绍；</li>
+<li>文件系统路径，区分相对路径、绝对路径，使用<code>cd -</code>切换到上一次使用的路径下</li>
+<li>新建文件：<code>touch</code>的本意是用来更新文件的时间戳，也用来新建文件；使用<code>mkdir -p</code>创建一系列路径；<code>ls -R</code>递归现实目录内容，类似<code>tree</code>；</li>
+<li>删除文件：<code>rmdir</code>不常用，只能删除非空目录；<code>rm</code>常用，可删除文件或目录，<code>-r</code>选项可递归删除</li>
+<li>修改文件：使用<code>cp</code>复制文件，<code>-r</code>递归复制，<code>*</code>通配复制（不可用于子目录）；使用<code>mv</code>移动文件，<code>mv</code>可用于重命名；</li>
+<li>文件通配符：<ul>
+<li><code>*</code>匹配任意字符任意长度；</li>
+<li><code>?</code>匹配任意字符1长度；</li>
+<li><code>[]</code>匹配指定字符1长度；</li>
+<li>使用<code>touch file&#123;start..stop..step&#125;</code>生成多个文件，类似python的<code>range</code>；</li>
+<li><code>ll -d ?????</code>匹配5位长度的文件名，<code>ll -d [abc]?????</code>匹配abc开头后接5位的文件名，<code>ll -d *[0-9]*</code>匹配包含数字的文件名；</li>
+<li><code>ll [[::upper:]]*</code>匹配大写字母开头的所有文件，具体匹配参见<code>man 7 glob</code>（不建议使用<code>[A-Z]</code>，在不同的字符集中A-Z之间的编码字符不一样）；字符集中<code>^</code>或<code>!</code>（如<code>[!0-9]</code>）表示取反；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-07-18"><a href="#2018-07-18" class="headerlink" title="2018-07-18"></a>2018-07-18</h1><h2 id="获取帮助"><a href="#获取帮助" class="headerlink" title="获取帮助"></a>获取帮助</h2><ol>
+<li>Unix帮助：使用<code>man man</code>查看man帮助格式（包括8个必选1个可选章节），使用<code>man 章节数 命令</code>查看相应命令的详细帮助信息，使用<code>man -k fd</code>搜索所有fd相关帮助</li>
+<li>使用<code>ls --help</code>、<code>ls --info</code>或<code>help ls</code>、<code>info ls</code>获取简要操作指南，</li>
+<li>在man中使用<code>-N CR</code>命令显示行号</li>
+<li>GNU帮助：使用<code>info info</code>查看info帮助各式，<code>pinfo</code>查看易读的info格式，若命令未提供info帮助，则info会将man帮助显示出来</li>
+<li>man手册位于<code>/usr/share/man</code>，info手册位于<code>/usr/share/info</code>，第三方软件的帮助位于<code>/usr/share/doc</code>，使用<code>rpm -ql httpd | grep /usr/share</code>查看第三方软件httpd的帮助文件安装情况</li>
+</ol>
+<h2 id="文本文件"><a href="#文本文件" class="headerlink" title="文本文件"></a>文本文件</h2><ol>
+<li><code>cat</code>可以连接输出多个文件，<code>head</code>或<code>tail</code>则会将文件分开输出，<code>cat -A</code>输出换行/制表等控制字符；</li>
+<li>使用<code>more、less</code>分屏显示文件，<code>less</code>功能更强大，<code>man</code>的输出默认调用<code>less</code>；</li>
+<li>重定向，<code>man stdin</code>查看；<code>/dev</code>中的<code>stdin/out/err</code>均指向<code>fd</code>（文件描述符），<code>ll -i std*</code>发现输出最前多了一列index node，即文件索引节点，使用<code>tty</code>查看当前终端的文件描述符，<code>echo hello1 1&gt; /dev/pts/2</code>可以在另一个终端上看到输出；</li>
+<li>输入重定向：<code>tr &#39;[:lower:]&#39; &#39;[:upper:]&#39; 0&lt;.bashrc</code>，将<code>.bashrc</code>的内容重定向到<code>stdin</code>传给<code>tr</code>进行大小写转换</li>
+<li>输出重定向：<code>&gt;</code>覆盖，<code>&gt;&gt;</code>追加</li>
+<li>管道<code>|</code>，连接前一个命令的<code>stdout</code>到后一个命令的<code>stdin</code>；</li>
+</ol>
+<h2 id="vim"><a href="#vim" class="headerlink" title="vim"></a>vim</h2><ol>
+<li><code>^u</code>向上<code>^d</code>向下，<code>ZZ</code>保存退出，<code>ZQ</code>不保存退出；</li>
+<li>插入模式、命令模式、可视模式（仅用于选择）；</li>
+<li><code>v</code>按字符选择、<code>V</code>按行选择、<code>^v</code>按块选择；</li>
+<li>字符级移动<code>hjkl</code>，<code>10j</code>向后移动10行；<code>0</code>绝对行首，<code>^</code>非空行首，<code>$</code>（行尾）；</li>
+<li>句级移动：<code>(</code>前一句，<code>)</code>后一句；</li>
+<li>段级移动：<code>&#123;</code>前一段，<code>&#125;</code>后一段；</li>
+<li>单词级移动：<code>w</code>下一个词首），<code>e</code>下一个词尾，<code>b</code>前一个词首；</li>
+<li>使用<code>#</code>查找相同单词，可以使用<code>n</code> <code>N</code>在该单词的搜索结果中跳转；</li>
+<li><code>d</code>删除，<code>d10w</code>删除后十个单词，<code>d10l</code>删除后十个字符；<code>c</code>删除并插入；</li>
+<li><code>dd</code>删除行；<code>S</code>删除行并插入；</li>
+<li><code>x</code>删除字符；<code>s</code>删除字符并插入；</li>
+<li><code>y</code>复制；</li>
+<li><code>p</code>粘贴光标后，<code>P</code>粘贴光标前；</li>
+<li>插入模式：<code>i</code>（插入光标前）<code>a</code>（插入光标后）<code>I</code>（行首插入）<code>A</code>（行尾插入）<code>o</code>（下行插入）<code>O</code>（上行插入）<code>R</code>（改写）；</li>
+<li><code>.</code>重复上一条命令；</li>
+<li>命令行模式，<code>set all</code>查看所有命令，直接输数字回车移动到相应行（<code>10CR</code>），命令<code>10G</code>也可以；</li>
+<li>命令行模式：<code>10,15d</code>（删除10-15行），<code>.,+3d</code>删除1+3行（<code>.</code>光标所在行，<code>\$</code>最后一行，<code>%</code>所有行）；</li>
+<li>命令行模式：<code>10,20s#nologin#login#</code>（10到20行第一个nologin换login）；<code>10,20s#n#N#gc</code>（10到20行n换N，询问模式）；<code>10,20s#n#A#gic</code>（10到20行n换A忽略大小写，询问模式）；</li>
+<li>命令行模式：<code>r abc.txt</code>（将abc.txt追加到光布行后面）<code>o abc.txt</code>（打开abc.txt）；</li>
+<li>命令行模式：<code>!</code>（执行外部命令），<code>r !hostname</code>（将hostname的输出读入到光标下一行）；</li>
+<li>命令行模式：<code>first</code> <code>prev</code> <code>next</code> <code>last</code>在多个打开的文件中切换；</li>
+<li><code>u</code>撤销，<code>^r</code>重复；</li>
+<li>多文件打开<code>vim -o a b c d</code>多文件水平分屏，<code>-O</code>竖直分屏，使用<code>^w</code>在多屏间切换，命令行下<code>split</code>为水平分屏，<code>hsplit</code>为竖直分屏；</li>
+</ol>
+<p>在root用户下，<code>vi</code>与<code>vim</code>是两个程序，<code>vim</code>更强大，语法高亮只有在特定位置自动渲染</p>
+<h1 id="2018-07-19"><a href="#2018-07-19" class="headerlink" title="2018-07-19"></a>2018-07-19</h1><h2 id="本地用户"><a href="#本地用户" class="headerlink" title="本地用户"></a>本地用户</h2><ol>
+<li>uid 0 分配给root用户；uid 1-999 分配给应用程序，通常不用来登录计算机，为内置账号；uid &gt; 1000 分配给普通用户</li>
+</ol>
+<ol start="2">
+<li><code>/etc/passwd</code>存储用户配置；<ul>
+<li>使用<code>useradd user1</code>添加用户；</li>
+<li>使用<code>id user1</code>现实uid（用户id）/gid（私有组）/group（附加组）信息；</li>
+<li>使用<code>useradd -u 8888 user2</code>指定UID；使用<code>useradd -d</code>指定home目录，使用<code>useradd -s</code>指定shell；</li>
+<li>使用<code>passwd user1</code>设置密码；</li>
+<li>使用<code>su - user1</code>切换用户；</li>
+<li>可以分配的shell在<code>/etc/shells</code>中；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>普通用户均有home目录和登录程序（shell），</li>
+</ol>
+<ol start="4">
+<li>查看<code>tail -n 2 /etc/&#123;passwd,shadow,group,gshadow&#125;</code>：<ul>
+<li>passwd保存用户信息；</li>
+<li>shadow保存用户密码信息；</li>
+<li>group保存组信息，新建用户时，若不指定，系统将用户分配至同名组，该组为私有组，gid分配方式与uid相同；微软使用公有组机制，比如Windows中新建用户统一加入users组；红帽使用私有组，部分Linux也使用公有组；用户除了自己的私有组，可以使用<code>groupadd group1</code>新建组，使用<code>usermod -aG group1 user1</code>给user1添加附加组group1（<code>a</code>写在前面，表示追加，若不写则会覆盖原来的附加组，<code>G</code>是要加参数的选项，放在后面）</li>
+<li>gshadow保存组密码信息；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>管理用户（必须使用root权限）：<ul>
+<li>图形管理界面<code>sudo system-config-users</code></li>
+<li>命令行添加用户<code>useradd</code>，使用<code>passwd</code>设置密码；</li>
+<li>命令行修改用户<code>usermod</code>，修改home目录时需使用<code>-md</code>（<code>m</code>移动home目录，放在<code>d</code>之前），home目录下默认文件均从<code>/etc/skel</code>复制而来；<code>-L</code>锁定用户，<code>-U</code>解锁用户；</li>
+<li>命令行删除用户<code>userdel</code>，<code>-r</code>表示删除home目录</li>
+<li><code>sudo</code>的权限写在<code>/etc/sudoer</code>，<code>visudo</code>是专门用于修改<code>/etc/sudoer</code>的程序，使用<code>man 5 sudoers</code>查看具体格式；</li>
+<li><code>chage -l user1</code>查看用户密码相关易读的时间信息（上次密码更改日期、密码过期日期、账户过期时间等）；使用<code>chage</code>修改这些信息；</li>
+<li><code>/etc/login.defs</code>为新建用户时的默认配置，可以修改这些配置以更改新建用户时的行为；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>管理组（必须使用root权限）：<ul>
+<li><code>groupadd -r</code>为创建系统内置组；</li>
+<li><code>groupmems</code>也可以用来给用户添加组，如使用<code>-a</code>；</li>
+<li><code>man 5 passwd</code>和<code>man 5 shadow</code>查看用户密码信息，<code>man 3 crypt</code>查看加密算法；<code>man 5 group</code>和<code>ma 5 shadow</code>查看组密码信息；</li>
+</ul>
+</li>
+</ol>
+<h2 id="文件权限"><a href="#文件权限" class="headerlink" title="文件权限"></a>文件权限</h2><ol>
+<li>文件被访问时，首先比对文件权限与<strong>用户</strong>权限，如果不符则比对<strong>用户属组</strong>权限，如果不符则比对<strong>其他用户</strong>权限；</li>
+</ol>
+<ol start="2">
+<li>文件权限：<code>r</code>读<code>w</code>写（修改删除或在目录中增删改文件）<code>x</code>执行（执行或进入目录）：<ul>
+<li>第一位，文件类型；</li>
+<li>234位：文件属主具有的权限；</li>
+<li>567位：文件属组具有的权限；</li>
+<li>89A位：文件属主之外的其他用户具有的权限；</li>
+<li>比如root用户<code>vim /etc/passwd</code>为读写，普通用户显示只读（<code>top</code>中<code>L</code>可以搜索进程）；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>修改权限，<code>ll -d /test</code>进查看目录而不进入目录：<ul>
+<li>使用<code>chmod a= /test</code>（<code>a</code>代表all）取消test目录的所有权限，root用户依然可以进入，权限仅对root用户无效，文件属主对文件永远具有写权限（即使显示readonly）；</li>
+<li>使用<code>chmod o=x /test</code>（<code>o</code>代表other）给其他用户赋予进入目录的权限；</li>
+<li>使用<code>chmod o-x /test</code>取消其他用户的进入权限；</li>
+<li>使用<code>chmod o=r /test</code>赋予其他用户列出目录中文件的权限，如果仅有r而没有x则只能读出文件名，其他属性均无法访问，因此应再使用<code>chmod o+x /test</code>；</li>
+<li>使用<code>chmod o=wx /test</code>赋予其他用户；</li>
+<li><code>chmod</code>中<code>ugo</code>代表修改文件属主、文件属组、属主外其他用户的权限，<code>a</code>表示修改<code>ugo</code>全部；<code>+-=</code>表示增、删、赋值，各种组合可以使用<code>,</code>分割，如<code>ugo=r,u+w</code>（应注意赋值覆盖增删）；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>修改所属关系：<ul>
+<li>使用<code>chown user1:user1 file</code>修改文件所属用户及所属用户属组，</li>
+<li>使用<code>-R</code>修改目录下所有文件的权限；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li><code>umask</code>的修改涉及到交互式登录与非交互登录脚本的加载，通常修改umask只能在本次会话中生效，若要长期生效，需要修改根据登录脚本加载顺序来修改各登录脚本中的umask的赋值：<ul>
+<li>登录脚本在<code>/etc/profile</code>（系统交互式初始化脚本）、<code>~/.bash_profile</code>（个人交互式初始化脚本）、<code>/etc/bashrc</code>（系统非交互式登录脚本）、<code>~/.bashrc</code>（个人非交互式初始化脚本）；</li>
+<li>关于脚本启动顺序，详情参见<code>man bash</code>，搜索<code>profile</code>，INVOCATION章节：</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>可执行文件的特殊权限：<ul>
+<li>SUID：设置后按照文件<strong>拥有者</strong>的权限运行（文件的普通权限是按照文件<strong>执行者</strong>的权限运行，比如user1 运行<code>touch test</code>，则<code>ll test</code>显示归属<code>user1 user1</code>）；s权限意味着原来为x，现在为s+x，S权限意味着原来为s；运行<code>chmod u+s touch</code>后再使用<code>touch test</code>，则<code>ll test</code>归属显示<code>root user1</code>，最常见的属主具有s权限的就是<code>passwd</code>；</li>
+<li>SGID：再运行<code>chmod g+s touch</code>后再使用<code>touch test</code>，则<code>ll test</code>归属显示<code>root root</code>，常为协作类可执行程序设置；</li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>目录的特殊权限：<ul>
+<li>SGID：使用<code>chmod g+s test</code>，使得目录具有s权限后，在目录中新建的任何文件，其属组均会被设置为该目录的属组，常用于协作目录；（目录的SUID(<code>u+s</code>)是没有任何效果的）</li>
+<li>t权限：针对上一条，设置了<code>g+s</code>的目录，就算不是文件拥有者，也可以删除组内其他人的文件，而对目录使用<code>chmod o+t test</code>后，仅有文件拥有者才能删除该文件；</li>
+<li>t权限仅对目录有效；</li>
+<li>umask的第一位即为特殊权限：<code>4</code>为SUID<code>u+s</code>、<code>2</code>为SGID<code>g+s</code>、<code>1</code>为t权限；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-07-20"><a href="#2018-07-20" class="headerlink" title="2018-07-20"></a>2018-07-20</h1><h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><ol>
+<li><p>启动顺序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">poweron-&gt;</span><br><span class="line">motherboard cmos(bios|uefi)-&gt;</span><br><span class="line">(F11|F12)sda(mbr|gpt)-&gt;</span><br><span class="line">grub2-&gt;</span><br><span class="line">vmliuz(kernel)-&gt;</span><br><span class="line">systemd-&gt;</span><br><span class="line">...GUI(gnome-terminal|gnome-gdm|kde|xfce)...或CLI(agetty)...或network(sshd)</span><br><span class="line">grub2的配置文件在/boot/grub2/grub.cfg</span><br></pre></td></tr></table></figure></li>
+<li><p>通过<code>pstree</code>可以查看进程树形结构（<code>-p</code>可以对应进程号），反映了启动顺序（<code>ps -up 进程号</code>现实进程详情）；</p>
+</li>
+</ol>
+<ol start="3">
+<li>通常的，由用户登录后发起的进程成为作业（jobs），而直接由systemd启动的进程成为服务（service），使用<code>ps j</code>查看所有作业，在终端执行的命令会随着终端的关闭而结束；比如在使用<code>ssh</code>连接的终端上执行<code>dd if=/dev/zero of=/dev/null</code>复制大文件，如果网络不稳定，sshd会认为远端断开连接，而结束本终端下的所有进程；</li>
+</ol>
+<ol start="4">
+<li>如果在进程运行时使用<code>^z</code>挂起进程（<code>^c</code>终止进程），使用<code>jobs</code>可以查看当前终端下的作业进程及其<strong>作业号</strong>（<code>jobs -l</code>可显示进程号，作业号是bash分配的，而进程号是系统分配的），使用<code>bg</code>可以在后台继续该进程，使用<code>fg</code>可以将后台程序移至前台，使用<code>fg</code> <code>bg</code>后接<strong>作业号</strong>可以选择要操作的对象。</li>
+</ol>
+<ol start="5">
+<li>使用<code>dd if=/dev/zero of=/dev/null&amp;</code>运行程序将直接后台运行，终端内执行的进程通常会在终端被关闭时结束（按照树形结构），使用<code>nohup dd if=/dev/zero of=/dev/null&amp;</code>将转为终端无关进程，使得在终端关闭后也可以继续执行，使用<code>ps -p 进程号</code>可以查看到该进程的tty值为<code>?</code>，即终端无关；</li>
+</ol>
+<ol start="6">
+<li>使用<code>ps</code>查看进程：<ul>
+<li><code>ps</code>仅能看到当前终端的作业，类似<code>jobs</code>仅多一个shell进程；</li>
+<li><code>ps a</code>显示所有终端下的作业（即显示终端相关进程），与<code>ps j</code>类似；</li>
+<li><code>ps x</code>显示终端相关或无关的所有进程；</li>
+<li><code>ps u</code>表示第一列显示用户，经常使用的就是<code>ps aux</code>；</li>
+<li><code>ps f</code>表示按树形结构显示，<code>m</code>显示线程信息，<code>s</code>显示信号格式（具体信号格式可以使用<code>man 7 signal</code>查看详情）；</li>
+<li><code>ps -e</code>显示所有进程，<code>ps -f</code>表示长格式，<code>-F</code>为更长的格式；</li>
+<li>VSZ为虚拟内存大小，RSS为常驻内存大小，状态码：D深睡眠、R运行中或可运行（或在排队）、S浅睡眠、T打断、X完全死亡（终止）、Z僵尸态（部分资源未释放），BSD格式状态码：&lt;高优先级、N低优先级、L有锁定内存、s会话的首进程、l多线程、+前台进程</li>
+<li>PID为进程号，PPID为父进程号（systemd的PID永远是0)，C为CPU使用率，STIME为进程启动时间，TIME为累计CPU时间（包括排队及运行时间）</li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>使用<code>kill</code>终止进程：<ul>
+<li><code>kill -l</code>查看支持的所有信号，其中<code>9 SIGKILL</code>（直接终止）、<code>15 SIGTERM</code>（正常终止，推荐）、<code>1 SIGHUP</code>（挂起）、<code>19 SIGSTOP</code>（停止）、<code>18 SIGCONT</code>（继续）、<code>10 SIGUSR1</code>和<code>12 SIGUSR2</code>为自定义信号；（详情参见<code>man 7 signal</code>）</li>
+<li>推荐使用字符命令方式，因为跨硬件平台通用字符信号，而不一定通数字信号；</li>
+<li>常见用法：<code>kill -s SIGTERM 2076</code>或<code>kill -SIGTERM 2076</code>或<code>kill -TERM 2076</code>；</li>
+<li><code>kill -s STOP 2088</code>后<code>ps 2088</code>显示状态为<code>T</code>，而<code>kill -s CONT 2088</code>后<code>ps 2088</code>显示状态为<code>R</code>；</li>
+<li>同一个终端中，<code>kill -s KILL %1</code>表示终止作业号为1的作业，不推荐使用；</li>
+<li><code>pkill</code>会使用<code>pgrep</code>，对进程进行查询并终止，如使用<code>pkill -TERM -u user1</code>终止user1下的所有进程（对于ssh登录的用户会导致直接退出远程连接），结束终端pts/0下的所有进程<code>pkill -TERM -t pts/0</code>，结束以PID 2226为首进程的所有进程<code>pkill -KILL -s 2226</code>（<code>ps jf</code>中的<code>s</code>状态的首进程，通常是bash进程，<code>TERM</code>信号不一定能够终止bash进程，推荐用<code>KILL</code>信号）；</li>
+</ul>
+</li>
+</ol>
+<ol start="8">
+<li>使用<code>top</code>跟踪进程：<code>L</code>表示查询，<code>1</code>开关CPU详细信息、<code>t</code>开关任务及CPU资源、<code>l</code>开关概况、<code>m</code>开关内存详细信息、PgUp和PgDn翻页、<code>X</code>指定排序列（从0开始）、<code>d</code>设置更新间隔、<code>F</code>定义列、<code>V</code>显示树形结构；</li>
+</ol>
+<ol start="9">
+<li>如<code>top</code>、<code>vim</code>是交互进程，而<code>ls</code>、<code>touch</code>为非交互进程；</li>
+</ol>
+<h2 id="服务"><a href="#服务" class="headerlink" title="服务"></a>服务</h2><ol>
+<li>服务有一个或多个进程构成，通常进程都是终端无关的非交互进程；通常命名中以d结尾的进程都服务端，如<code>sshd</code>、<code>httpd</code>等；</li>
+</ol>
+<ol start="2">
+<li>使用<code>systemctl status firewalld.service</code>查看防火墙服务状态，使用<code>systemctl start httpd</code>启用http服务，此时由于防火墙暂时无法从外部访问，使用<code>firewall-cmd --add-service=http</code>临时添加规则，此时http可以访问，使用<code>systemctl status httpd</code>查看服务状态；</li>
+</ol>
+<ol start="3">
+<li>使用<code>systemctl enable httpd.service</code>启用http服务，使用<code>systemctl disable firewalld.service</code>关闭防火墙服务，重启立刻生效；</li>
+</ol>
+<ol start="4">
+<li>参考<code>man systemd</code>；</li>
+</ol>
+<ol start="5">
+<li>使用<code>systemctl</code>查看已加载内存的服务单元，所有的程序的启动脚本位于<code>/usr/lib/systemd/system/</code>，使用<code>systemctl list-unit-files</code>查看系统管理的所有服务；</li>
+</ol>
+<ol start="6">
+<li><code>systemctl -t</code>后使用<code>TAB</code>补全可以看到systemctl对服务的分类，服务的类型就是服务名的后缀，如<code>httpd.service</code>就是service类型，<code>systemctl -a</code>显示所有应该启动的服务（或<code>systemctl list-unit</code>），<code>systemctl --failed</code>显示启动失败的服务，<code>systemctl status httpd.service</code>显示服务详细信息；若服务有多个进程，通常子进程是无法全部结束的，因为主进程一直负责维护子进程，结束主进程才会结束其他子进程，但是不推荐使用<code>kill -TERM 2088</code>结束服务；</li>
+</ol>
+<ol start="7">
+<li><code>systemctl is-active sshd</code>或<code>systemctl is-enabled sshd</code>显示sshd服务的设置状态；</li>
+</ol>
+<ol start="8">
+<li>服务控制：<ul>
+<li>启动<code>systemctl start httpd.service</code>；</li>
+<li>停止<code>systemctl stop httpd.service</code>；</li>
+<li>重启<code>systemctl restart httpd.service</code>；</li>
+<li>重载配置<code>systemctl reload httpd.service</code>（不停服务，如修改配置后）；</li>
+<li>启用<code>systemctl enable httpd.service</code>；</li>
+<li>停用<code>systemctl disable httpd.service</code>；</li>
+</ul>
+</li>
+</ol>
+<h2 id="ssh"><a href="#ssh" class="headerlink" title="ssh"></a>ssh</h2><ol>
+<li><code>netstat -tnp</code>查看本机已经建立的连接，<code>w</code>命令可以查看本机登录的账号，<code>w -f</code>可以看懂从哪个IP登录的；</li>
+</ol>
+<ol start="2">
+<li>教学环境中<code>ssh desktop4</code>时，真实环境使用的是<code>kiosk</code>用户，登录后发现虚拟环境的用户为<code>student</code>，是因为真实环境的kiosk用户与虚拟环境的student的uid均为1000；</li>
+</ol>
+<ol start="3">
+<li>在当前用户的<code>~/.ssh/known_hosts</code>里的记录格式为“主机名,IP地址 加密算法 指纹”，用来对已知主机进行唯一性验证，防止中间人攻击；</li>
+</ol>
+<ol start="4">
+<li>非对称加密传输文件时，通常用密码将文件对称加密并，再使用接收方的公钥将对称加密的密码加密，最终将密码发送给接收方，接收方再用自己的私钥解密对称加密的密码，再使用对称加密的密码解密文件；</li>
+</ol>
+<ol start="5">
+<li>免密登录：<ul>
+<li>使用<code>ssh-keygen</code>在本地生成秘钥对，默认的私钥保存在<code>~/.ssh/id_rsa</code>下，公钥保存在<code>~/.ssh/id_rsa.pub</code>下；</li>
+<li>使用<code>ssh-copy-id student@server4</code>将本地公钥拷贝至远端服务器（公钥在<code>student</code>的<code>.ssh/authorized_keys</code>文件中追加一行）；</li>
+<li>以后使用<code>ssh student@server4</code>即可免密；</li>
+<li>使用<code>ssh student@server4 &#39;cat /etc/resolv.conf&#39;</code>非交互登录，能够直接将命令结果返回本机，免密登录后会非常方便；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>使用<code>ll -a /etc/ssh/</code>查看配置文件，ssh客户端配置文件为<code>ssh_config</code>，<code>sshd_config</code>：<ul>
+<li>常用的<code>ssh -X</code>图形化传输，可以将<code>ssh_config</code>中的<code>ForwardX11 no</code>该为<code>yes</code>；</li>
+<li>禁止服务器的sshd配置，不允许以root用户登录，修改<code>PermitRootLogin yes</code>为<code>no</code>；</li>
+<li>上传秘钥后，关闭密码验证方式，修改<code>PasswordAuthentication yes</code>为<code>no</code>；</li>
+<li>ssh配置详见<code>man 5 ssh_config</code>；</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><a href="/2018/07/28/redhat-2/">Redhat Linux初体验（2）</a><br><a href="/2018/08/03/redhat-3/">Redhat Linux初体验（3）</a></p>
+</div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Shell/">Shell</a><a class="link-muted mr-2" rel="tag" href="/tags/Linux/">Linux</a></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><div class="social-share"></div><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.jpg" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2018/07/28/redhat-2/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Redhat Linux初体验（2）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2018/03/19/install-xgboost/"><span class="level-item">安装xgboost</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><script src="https://utteranc.es/client.js" repo="zlotus/comment" issue-term="pathname" label="some-issue-label" theme="github-light" crossorigin="anonymous" async></script></div></div></div><div class="column column-left is-3-tablet is-3-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/opm_sq.png" alt="子实"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">子实</p><p class="is-size-6 is-block">程序员</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>陕西/西安</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">78</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">22</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zlotus" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com/qinzishi"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/Zealot_uS"><i class="fab fa-twitter"></i></a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://www.zhihu.com/people/zlotus" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">知乎</span></span><span class="level-right"><span class="level-item tag">www.zhihu.com</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Diary/"><span class="level-start"><span class="level-item">Diary</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/categories/Programming/"><span class="level-start"><span class="level-item">Programming</span></span><span class="level-end"><span class="level-item tag">64</span></span></a></li><li><a class="level is-mobile" href="/categories/Python/"><span class="level-start"><span class="level-item">Python</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/Shell/"><span class="level-start"><span class="level-item">Shell</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Coroutines/"><span class="tag">Coroutines</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JavaScript/"><span class="tag">JavaScript</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Javascript/"><span class="tag">Javascript</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">30</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenCV/"><span class="tag">OpenCV</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Operating-System/"><span class="tag">Operating System</span><span class="tag">21</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Paper/"><span class="tag">Paper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">17</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Raspberry-Pi/"><span class="tag">Raspberry Pi</span><span class="tag">20</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Rust/"><span class="tag">Rust</span><span class="tag">29</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Shell/"><span class="tag">Shell</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TensorFlow/"><span class="tag">TensorFlow</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tokio/"><span class="tag">Tokio</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ZMQ/"><span class="tag">ZMQ</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ctpn/"><span class="tag">ctpn</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/macOS/"><span class="tag">macOS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/obsidion/"><span class="tag">obsidion</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%97%A5%E8%AE%B0/"><span class="tag">日记</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%82%E8%B0%88/"><span class="tag">杂谈</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95/"><span class="tag">算法</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/"><span class="tag">编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%84%9A%E6%9C%AC/"><span class="tag">脚本</span><span class="tag">4</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a><p class="is-size-7"><span>&copy; 2023 子实</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

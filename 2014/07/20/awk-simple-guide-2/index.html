@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>awk命令简介（二） - 子实</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="子实"><meta name="msapplication-TileImage" content="/img/avatar-o.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="子实"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="文章的干货来源于酷壳的**AWK 简明教程以及Linux与unix shell编程指南**。 本文纯属搬砖。 最近经常遇到需要处理大段文本输出的情况，所以想学习一下awk命令，这个命令更像是一个微型语言。 《awk命令简介（二）》着重介绍awk命令的详情，内容主要来自《Linux与unix shell编程指南》。"><meta property="og:type" content="article"><meta property="og:title" content="awk命令简介（二）"><meta property="og:url" content="https://zlotus.github.io/2014/07/20/awk-simple-guide-2/"><meta property="og:site_name" content="子实"><meta property="og:description" content="文章的干货来源于酷壳的**AWK 简明教程以及Linux与unix shell编程指南**。 本文纯属搬砖。 最近经常遇到需要处理大段文本输出的情况，所以想学习一下awk命令，这个命令更像是一个微型语言。 《awk命令简介（二）》着重介绍awk命令的详情，内容主要来自《Linux与unix shell编程指南》。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://zlotus.github.io/img/og_image.png"><meta property="article:published_time" content="2014-07-20T11:22:27.000Z"><meta property="article:modified_time" content="2014-07-23T11:22:27.000Z"><meta property="article:author" content="子实"><meta property="article:tag" content="编程"><meta property="article:tag" content="脚本"><meta property="article:tag" content="Shell"><meta property="article:tag" content="Linux"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><meta property="twitter:creator" content="@Zealot_uS"><meta property="twitter:site" content="Zealot_uS"><link rel="publisher" href="+LotusQin"><meta property="fb:admins" content="qinzishi"><meta property="fb:app_id" content="qinzishi"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zlotus.github.io/2014/07/20/awk-simple-guide-2/"},"headline":"awk命令简介（二）","image":["https://zlotus.github.io/img/og_image.png"],"datePublished":"2014-07-20T11:22:27.000Z","dateModified":"2014-07-23T11:22:27.000Z","author":{"@type":"Person","name":"子实"},"publisher":{"@type":"Organization","name":"子实","logo":{"@type":"ImageObject","url":"https://zlotus.github.io/img/opm_sq.png"}},"description":"文章的干货来源于酷壳的**AWK 简明教程以及Linux与unix shell编程指南**。 本文纯属搬砖。 最近经常遇到需要处理大段文本输出的情况，所以想学习一下awk命令，这个命令更像是一个微型语言。 《awk命令简介（二）》着重介绍awk命令的详情，内容主要来自《Linux与unix shell编程指南》。"}</script><link rel="icon" href="/img/avatar-o.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><!--!--><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/2014/07/09/about-me/">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-9-tablet is-9-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2014-07-20T11:22:27.000Z" title="7/20/2014, 7:22:27 PM">2014-07-20</time>发表</span><span class="level-item"><time dateTime="2014-07-23T11:22:27.000Z" title="7/23/2014, 7:22:27 PM">2014-07-23</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Shell/">Shell</a></span><span class="level-item">22 分钟读完 (大约3231个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">awk命令简介（二）</h1><div class="content"><p>文章的干货来源于<a target="_blank" rel="noopener" href="http://coolshell.cn/">酷壳</a>的**<a target="_blank" rel="noopener" href="http://coolshell.cn/articles/9070.html">AWK 简明教程</a><strong>以及</strong>Linux与unix shell编程指南**。</p>
+<p>本文纯属搬砖。</p>
+<p>最近经常遇到需要处理大段文本输出的情况，所以想学习一下<code>awk</code>命令，这个命令更像是一个微型语言。</p>
+<p>《awk命令简介（二）》着重介绍<code>awk</code>命令的详情，内容主要来自<strong>《Linux与unix shell编程指南》</strong>。</p>
+<span id="more"></span>
+
+<p>书接上回。</p>
+<h1 id="awk-命令详解"><a href="#awk-命令详解" class="headerlink" title="awk 命令详解"></a>awk 命令详解</h1><h2 id="调用awk"><a href="#调用awk" class="headerlink" title="调用awk"></a>调用awk</h2><p>如果在命令行中使用awk，通常型为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F field-separator <span class="string">&#x27;commands&#x27;</span> input-files</span><br></pre></td></tr></table></figure>
+
+<p><code>-F field-separator</code>为可选项，用于指定域分隔符，默认为空格，如果需要处理如<code>&#39;,&#39;</code>、<code>&#39;:&#39;</code>、<code>&#39;;&#39;</code>之类的字符做分隔符时，可以设置该值，如使用<code>&#39;:&#39;</code>的情形：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F: <span class="string">&#x27;commands&#x27;</span> input-files</span><br></pre></td></tr></table></figure>
+
+<p>也可以将awk命令写在文件中，作为脚本调用，如调用名为awk-script-file的脚本文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk -f awk-script-file input-files</span><br></pre></td></tr></table></figure>
+
+<p><code>-f</code>选项用于指定脚本文件名。</p>
+<h2 id="awk脚本"><a href="#awk脚本" class="headerlink" title="awk脚本"></a>awk脚本</h2><h3 id="模式和动作"><a href="#模式和动作" class="headerlink" title="模式和动作"></a>模式和动作</h3><p>awk脚本由各种<strong>动作</strong>和<strong>模式</strong>组成。</p>
+<p>awk使用<code>-F</code>命令指定的分隔符（不指定时使用空格）分离记录中的域，直到发现新一行。这个动作将一直持续到文件结束。</p>
+<p>awk命令可以有许多语句，语句中的<strong>模式</strong>用于控制<strong>动作</strong>的触发条件。</p>
+<p><strong>模式</strong>可以是任何条件语句、复合语句或正则表达式。模式包括了两个特殊字段，<code>BEGIN</code>和<code>END</code>。<code>BEGIN</code>语句使用在awk的任何文本浏览动作之前，之后awk文本浏览动作依据输入文件开始执行，<code>END</code>语句用来用来在awk完成文本浏览动作后打印输出文本总数及结尾状态标识。</p>
+<p><strong>动作</strong>在<code>&#123;&#125;</code>内声明，通常为打印动作，或是诸如条件语句或循环语句。如果不指名<strong>动作</strong>，awk将打印所有浏览记录。</p>
+<h3 id="记录和域"><a href="#记录和域" class="headerlink" title="记录和域"></a>记录和域</h3><p>awk会将读取的一条记录用<code>-F</code>指定的分隔符分为多个域，并依次将域命名为<code>$1</code>, <code>$2</code>, <code>$3</code>等，这些域名的使用类似于语言中变量名的使用。</p>
+<p><code>&#123;print $1, $3&#125;</code>就表示打印第1域和第3域，而<code>$0</code>表示所有的域，所以<code>&#123;print $0&#125;</code>表示打印所有域。</p>
+<p>上面的在<code>&#123;&#125;</code>中的<code>print</code>就是一个awk动作。</p>
+<p>假设有数据文件grade.txt（此文件会在本文的示例中大量出现），文件分隔符为<code>TAB</code>（即<code>&#39;\t&#39;</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cat grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用的输入输出"><a href="#常用的输入输出" class="headerlink" title="常用的输入输出"></a>常用的输入输出</h3><p>使用命令行时通常我们将结果重定向到文件中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F\t <span class="string">&#x27;&#123;print $1, $3&#125;&#x27;</span> grade.txt &gt; wow</span><br></pre></td></tr></table></figure>
+
+<p>或是使用<code>tee</code>，在将结果输出至标准输出的同时，写入文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F\t <span class="string">&#x27;&#123;print $1, $3&#125;&#x27;</span> grade.txt | tee wow</span><br></pre></td></tr></table></figure>
+
+<p>如果是脚本，在输入上我们可以使用文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ belt.awk grade.txt</span><br></pre></td></tr></table></figure>
+
+<p>或是使用标准输入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ belt.awk &lt; grade.txt</span><br></pre></td></tr></table></figure>
+
+<p>或是管道：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grade.txt | belt.awk</span><br></pre></td></tr></table></figure>
+
+<h3 id="打印头尾信息"><a href="#打印头尾信息" class="headerlink" title="打印头尾信息"></a>打印头尾信息</h3><ol>
+<li><p>使用<code>BEGIN</code>打印表头，为了对齐使用了制表符<code>\t</code>：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print &quot;Name\tBelt\n--------------------&quot;&#125;</span></span><br><span class="line"><span class="string">quote&gt; &#123;print $1&quot;\t&quot;$4&#125;&#x27;</span> grade.txt</span><br><span class="line">Name	Belt</span><br><span class="line">--------------------</span><br><span class="line">M.Tansley	Green</span><br><span class="line">J.Lulu	green</span><br><span class="line">P.Bunny	Yellow</span><br><span class="line">J.Troll	Brown-3</span><br><span class="line">L.Transly	Brown-2</span><br></pre></td></tr></table></figure></li>
+<li><p>使用<code>END</code>打印表尾：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print &quot;Name\n----------&quot;&#125; &#123;print $1&#125; END &#123;print &quot;----------\ntotle: &quot; NR&#125;&#x27;</span> grade.txt</span><br><span class="line">Name</span><br><span class="line">----------</span><br><span class="line">M.Tansley</span><br><span class="line">J.Lulu</span><br><span class="line">P.Bunny</span><br><span class="line">J.Troll</span><br><span class="line">L.Transly</span><br><span class="line">----------</span><br><span class="line">totle: 5</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="条件操作"><a href="#条件操作" class="headerlink" title="条件操作"></a>条件操作</h3><table>
+<thead>
+<tr>
+<th align="left">操作符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>&lt;</code></td>
+<td align="left">小于</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;=</code></td>
+<td align="left">小于等于</td>
+</tr>
+<tr>
+<td align="left"><code>==</code></td>
+<td align="left">等于</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;</code></td>
+<td align="left">大于</td>
+</tr>
+<tr>
+<td align="left"><code>&gt;=</code></td>
+<td align="left">大于等于</td>
+</tr>
+<tr>
+<td align="left"><code>~</code></td>
+<td align="left">匹配正则表达式</td>
+</tr>
+<tr>
+<td align="left"><code>!~</code></td>
+<td align="left">不匹配正则表达式</td>
+</tr>
+</tbody></table>
+<ol>
+<li>使用正则表达式匹配域时，用<code>~</code>接<code>/Regular_Express/</code>，如果使用<code>if</code>语句则需要放在<code>()</code>中。示例，为第4域匹配正则表达式，输出匹配的记录：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($4~/Brown/) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<p>上例中不使用<code>if</code>也可以，不指定<strong>动作</strong>时awk默认输出整条记录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$4~/Brown/&#x27;</span> grade.txt</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用正则表达式模糊匹配域：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($3~/48/) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$3~/48/ &#123;print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用<code>==</code>精确匹配：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$3==48 &#123;print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br></pre></td></tr></table></figure>
+
+<p>或</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($3==48) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>使用<code>!~</code>的正则表达式：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$0 !~ /Brown/&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br></pre></td></tr></table></figure>
+
+<p>配合<code>if</code>使用<code>!~</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($4!~/Brown/) print $1, $4&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley Green</span><br><span class="line">J.Lulu green</span><br><span class="line">P.Bunny Yellow</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>比较：</li>
+</ol>
+<ul>
+<li>小于：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($6&lt;$7) print $1&quot; try better at next comp&quot;&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley try better at next comp</span><br><span class="line">J.Lulu try better at next comp</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>小于等于：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($6&lt;=$7) print $1&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley</span><br><span class="line">J.Lulu</span><br><span class="line">J.Troll</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>大于：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($6&gt;$7) print $1&#125;&#x27;</span> grade.txt</span><br><span class="line">P.Bunny</span><br><span class="line">L.Transly</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>常见的正则表达式功能：</li>
+</ol>
+<ul>
+<li>匹配大小写，使用<code>[]</code>匹配字符：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;/[Gg]reen/&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通配符，<code>.</code>：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$1 ~ /^....a/&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>逻辑或，<code>|</code>：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$4 ~ /(Yellow|Brown)/&#x27;</span> grade.txt</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>行首<code>^</code>：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;/^J/&#x27;</span> grade.txt</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>行尾<code>$</code>:</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;/28$/&#x27;</span> grade.txt</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<h3 id="复合逻辑"><a href="#复合逻辑" class="headerlink" title="复合逻辑"></a>复合逻辑</h3><ol>
+<li><p>逻辑与，<code>&amp;&amp;</code>：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if ($1==&quot;P.Bunny&quot; &amp;&amp; $4==&quot;Yellow&quot;) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br></pre></td></tr></table></figure></li>
+<li><p>逻辑或，<code>||</code>：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if ($4==&quot;Yellow&quot; || $4~/Brown/) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure></li>
+<li><p>逻辑否，<code>!</code>：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$4 != &quot;Brown&quot; &#123;print $1, $4&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley Green</span><br><span class="line">J.Lulu green</span><br><span class="line">P.Bunny Yellow</span><br><span class="line">J.Troll Brown-3</span><br><span class="line">L.Transly Brown-2</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="内置变量的示例"><a href="#内置变量的示例" class="headerlink" title="内置变量的示例"></a>内置变量的示例</h3><ol>
+<li>已读取的记录数，<code>NR</code>：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;print&#125; END &#123;print &quot;total: &quot;NR&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br><span class="line">total: 5</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用<code>NR</code>检查保证文件记录数大于0：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if (NR&gt;0 &amp;&amp; $4~/Brown/) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>当前记录的域数，<code>NF</code>：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;print NF, NR, $0&#125; END &#123;print FILENAME&#125;&#x27;</span> grade.txt</span><br><span class="line">7 1 M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">7 2 J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">7 3 P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">7 4 J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">7 5 L.Transly	05/99	4712	Brown-2	12	30	28</span><br><span class="line">grade.txt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>显示当前目录名：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">pwd</span></span><br><span class="line">/Users/zealot</span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$PWD</span> | awk -F/ <span class="string">&#x27;&#123;print $NF&#125;&#x27;</span></span><br><span class="line">zealot</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>显示文件名：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">&quot;/Users/zealot/grade.txt&quot;</span> | awk -F/ <span class="string">&#x27;&#123;print $NF&#125;&#x27;</span></span><br><span class="line">grade.txt</span><br></pre></td></tr></table></figure>
+<h3 id="awk操作符"><a href="#awk操作符" class="headerlink" title="awk操作符"></a>awk操作符</h3><p>在awk中使用操作符，基本表达式可以划分为数字型、字符串型、变量型、域及数组元素。</p>
+<table>
+<thead>
+<tr>
+<th align="left">操作符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>=</code> <code>+=</code> <code>*=</code> <code>/=</code> <code>%=</code> <code>^=</code></td>
+<td align="left">赋值操作符</td>
+</tr>
+<tr>
+<td align="left"><code>?</code></td>
+<td align="left">条件表达操作符</td>
+</tr>
+<tr>
+<td align="left"><code>&amp;&amp;</code> <code>!</code></td>
+<td align="left">与、或、非操作符</td>
+</tr>
+<tr>
+<td align="left"><code>~</code> <code>!~</code></td>
+<td align="left">匹配操作符，包括匹配和不匹配</td>
+</tr>
+<tr>
+<td align="left"><code>&lt;</code> <code>&lt;=</code> <code>==</code> <code>!=</code> <code>&gt;&gt;</code></td>
+<td align="left">关系操作符</td>
+</tr>
+<tr>
+<td align="left"><code>+</code> <code>-</code> <code>*</code> <code>/</code> <code>%</code> <code>^</code></td>
+<td align="left">算术操作符</td>
+</tr>
+<tr>
+<td align="left"><code>++</code> <code>--</code></td>
+<td align="left">前缀和后缀</td>
+</tr>
+</tbody></table>
+<ol>
+<li><p>设置输入域到域变量名：</p>
+<p> 给特定的数据域设置有意义的域名，可以使得代码更加清楚明了。</p>
+<p> 一般的变量名设置方式为<code>name=$n</code>，如在grade.txt的例子中，可以设置<code>name=$1;belts=$4</code>。</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;name=$1;belts=$4; if(belts~/Yellow/) print name &quot; is belt &quot; belts&#125;&#x27;</span> grade.txt</span><br><span class="line">P.Bunny is belt Yellow</span><br></pre></td></tr></table></figure></li>
+<li><p>域值的比较操作：</p>
+</li>
+</ol>
+<p>有两种方式测试一数值域是否小于另一数值域：</p>
+<ol>
+<li>在关系操作中使用实际数值；</li>
+<li>在<code>BEGIN</code>中给变量名赋值；<br>关系操作必须写在圆括号内，如查询比赛中得分在27以下的学生：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($6&lt;27) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br></pre></td></tr></table></figure>
+
+<p>在<code>BEGIN</code>中给变量名赋值可以使代码更清晰：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;BASELINE=27&#125; &#123;if($6&lt;BASELINE) print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>修改数值域取值：</li>
+</ol>
+<p>需要注意的是，当在awk中修改任何域时，实际输入文件是不会被修改的，修改的只是 保存在缓存里的awk复本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($1==&quot;M.Tansley&quot;) $6=$6-1; print NR, NF $1, $6, $7&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley 39 44</span><br><span class="line">J.Lulu 24 26</span><br><span class="line">P.Bunny 35 28</span><br><span class="line">J.Troll 26 26</span><br><span class="line">L.Transly 30 28</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>修改文本域：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($1==&quot;J.Troll&quot;) ($1=&quot;J.L.Troll&quot;); print $1&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley</span><br><span class="line">J.Lulu</span><br><span class="line">P.Bunny</span><br><span class="line">J.L.Troll</span><br></pre></td></tr></table></figure>
+
+<p>赋值表达式通常放在括号中，以增强代码的可读性，非必须，如上一项中的<code>$6=$6-1</code>。</p>
+<ol start="5">
+<li>只显示修改记录：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($1==&quot;J.Troll&quot;) &#123;$1=&quot;J.L.Troll&quot;; print $1&#125;&#125;&#x27;</span> grade.txt</span><br><span class="line">J.L.Troll</span><br></pre></td></tr></table></figure>
+
+<p>此处使用<code>if</code>语句取得需要修改的位置，而后再使用赋值动作<code>$1=&quot;J.L.Troll&quot;</code>并打印。</p>
+<ol start="6">
+<li>创建新的输出域：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print &quot;Name\tDifference&quot;&#125; &#123;if($6&lt;$7) &#123;$8=$7-$6; print $1, $8&#125;&#125;&#x27;</span> grade.txt</span><br><span class="line">Name	Difference</span><br><span class="line">M.Tansley 4</span><br><span class="line">J.Lulu 2</span><br></pre></td></tr></table></figure>
+
+<p>或是直接将计算结果赋给变量名并打印：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print &quot;Name\tDifference&quot;&#125; &#123;if($6&lt;$7) &#123;diff=$7-$6; print $1, diff&#125;&#125;&#x27;</span> grade.txt</span><br><span class="line">Name	Difference</span><br><span class="line">M.Tansley 4</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>列值累加：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;total+=$6; END&#123;print &quot;Club student total points: &quot; total&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br><span class="line">Club student total points: 155</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，不必在<code>awk</code>中显式说明打印所有记录，当每一个操作匹配时，打印是缺省动作。</p>
+<p>如果不想这种缺省打印动作出现，可以显式声明不带打印命令的动作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;total+=$6&#125; END&#123;print &quot;Club student total points: &quot; total&#125;&#x27;</span> grade.txt</span><br><span class="line">Club student total points: 155</span><br></pre></td></tr></table></figure>
+
+<p>累加动作并不一定要写在圆括号中，但是这样做可以增强代码可读性。</p>
+<ul>
+<li>另一个累加列的示例，统计当前目录中文件的总大小：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ls -lAG | awk <span class="string">&#x27;$1~/^[^d]/ &#123;print $9&quot;\t&quot;$5&#125; &#123;total+=$5&#125; END &#123;print &quot;total &quot; total/1024 &quot; KB&quot;&#125;&#x27;</span></span><br><span class="line">...file name followed by size...</span><br><span class="line">grade.txt	176</span><br><span class="line">total 234.544 KB</span><br></pre></td></tr></table></figure>
+
+<p>大概过程是，先把当前目录中的文件信息列表用管道送给<code>awk</code>，而后使用第一个域滤掉目录项（d开头的项目，其实直接用<code>/^[^d]/</code>匹配整行就可以了），再累加第五列，最后在打印处理成以<code>KB</code>为单位的结果。</p>
+<h3 id="内置字符串函数"><a href="#内置字符串函数" class="headerlink" title="内置字符串函数"></a>内置字符串函数</h3><table>
+<thead>
+<tr>
+<th align="left">函数</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">gsub(r,s)</td>
+<td align="left">在整个$0中用s替代r</td>
+</tr>
+<tr>
+<td align="left">gsub(r,s,t)</td>
+<td align="left">在整个t中用s替代r</td>
+</tr>
+<tr>
+<td align="left">index(s,t)</td>
+<td align="left">返回s中字符串t的第一位置</td>
+</tr>
+<tr>
+<td align="left">length(s)</td>
+<td align="left">返回s长度</td>
+</tr>
+<tr>
+<td align="left">match(s,r)</td>
+<td align="left">测试s是否包含匹配r的字符串</td>
+</tr>
+<tr>
+<td align="left">split(s,a,fs)</td>
+<td align="left">在fs上将s分成序列a</td>
+</tr>
+<tr>
+<td align="left">sprint(fmt,exp)</td>
+<td align="left">返回经fmt格式化后的exp</td>
+</tr>
+<tr>
+<td align="left">sub(r,s)</td>
+<td align="left">用$0中最左边最长的子串代替s</td>
+</tr>
+<tr>
+<td align="left">substr(s,p)</td>
+<td align="left">返回字符串s中从p开始的后缀部分</td>
+</tr>
+<tr>
+<td align="left">substr(s,p,n)</td>
+<td align="left">返回字符串s中从p开始长度为n的后缀部分</td>
+</tr>
+</tbody></table>
+<ol>
+<li><code>gsub(r,s)</code>, <code>gsub(r,s,t)</code>，在整个个记录中匹配字符串模式r，并用s进行替换。若不指定t，gsub函数默认在<code>$0</code>上替换：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;gsub(/4842/, 4899) &#123;print $0&#125; &#x27;</span> grade.txt</span><br><span class="line">J.Troll	07/99	4899	Brown-3	12	26	26</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><code>index(s,t)</code>，返回字符串s中t第一次出现的位置：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print index(&quot;Bunny&quot;, &quot;ny&quot;)&#125;&#x27;</span> grade.txt</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><code>length(s)</code>，返回字符串s的长度：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$1==&quot;J.Troll&quot; &#123;print length($1) &quot; &quot; $1&#125;&#x27;</span> grade.txt</span><br><span class="line">7 J.Troll</span><br></pre></td></tr></table></figure>
+
+<p>或是直接传入字符串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print length(&quot;Hello World~&quot;)&#125;&#x27;</span></span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><code>match(s,r)</code>，测试目标串s是否包含匹配模式r的字符串，若包含，则返回r第一次出现的位置，若不包含则返回0：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print match(&quot;ABCD&quot;, /d/)&#125;&#x27;</span></span><br><span class="line">0</span><br><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print match(&quot;ABCD&quot;, /C/)&#125;&#x27;</span></span><br><span class="line">3</span><br><span class="line">$ awk <span class="string">&#x27;$1==&quot;J.Lulu&quot; &#123;print match($1, &quot;u&quot;)&#125;&#x27;</span> grade.txt</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>`split(s,a,fs)，使用分隔符fs将字符串s切割，存入数组a中，并返回切割后<span id="awk_array">数组</span>元素个数：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;print split(&quot;123#456#789&quot;, myarray, &quot;#&quot;), myarray[1], myarray[2], myarray[3]&#125;&#x27;</span></span><br><span class="line">3 123 456 789</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><code>sub(r,s,t)</code>，在t中查找模式r，将第一次匹配到的字符串替换为s：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$1==&quot;J.Troll&quot; &#123;sub(/26/, 29, $0)&#125; &#123;print $0&#125;&#x27;</span> grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	29	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><code>substr(s,p)</code>, <code>substr(s,p,n)</code>，在字符串s中截取从p开始到字符串结束的后缀并返回，若指定n，则截取从p开始长度为n的字符串并返回：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;$1==&quot;J.Troll&quot; &#123;print substr($0, 3)&#125;&#x27;</span> grade.txt</span><br><span class="line">Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">$ awk <span class="string">&#x27;$1==&quot;J.Troll&quot; &#123;print substr($0, 3, 5)&#125;&#x27;</span> grade.txt</span><br><span class="line">Troll</span><br><span class="line">$ awk <span class="string">&#x27;&#123;print substr($1, 3)&#125;&#x27;</span> grade.txt</span><br><span class="line">Tansley</span><br><span class="line">Lulu</span><br><span class="line">Bunny</span><br><span class="line">Troll</span><br><span class="line">Transly</span><br><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;STR=&quot;hello world~&quot;&#125; END &#123;print substr(STR,7)&#125;&#x27;</span> grade.txt</span><br><span class="line">world~</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>另：通过管道使用awk函数的例子：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;stand-by&quot;</span> | awk <span class="string">&#x27;&#123;print length($0)&#125;&#x27;</span></span><br><span class="line">8</span><br><span class="line">$ STR=<span class="string">&quot;mydoc.txt&quot;</span></span><br><span class="line">$ <span class="built_in">echo</span> <span class="variable">$STR</span> | awk <span class="string">&#x27;&#123;print substr($0,1,5)&#125;&#x27;</span></span><br><span class="line">mydoc</span><br></pre></td></tr></table></figure>
+
+<h3 id="awk命令的printf函数"><a href="#awk命令的printf函数" class="headerlink" title="awk命令的printf函数"></a><code>awk</code>命令的<code>printf</code>函数</h3><p><code>printf</code>的基本用法和C语言类似，形式为<code>printf format, values</code>。</p>
+<table>
+<thead>
+<tr>
+<th align="left">awk printf修饰符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+</table>
+<ul>
+<li><pre><code>              |左对齐
+</code></pre>
+width               |域的步长，用0表示0步长<br>.prec               |最大字符串长度，或小数点右边的位数（精确度）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">awk printf格式控制符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>%c</code></td>
+<td align="left">ASCII字符</td>
+</tr>
+<tr>
+<td align="left"><code>%d</code></td>
+<td align="left">整型</td>
+</tr>
+<tr>
+<td align="left"><code>%e</code></td>
+<td align="left">浮点数，科学计数法</td>
+</tr>
+<tr>
+<td align="left"><code>%f</code></td>
+<td align="left">浮点数</td>
+</tr>
+<tr>
+<td align="left"><code>%g</code></td>
+<td align="left">浮点数，由awk决定使用<code>%e</code>或<code>%f</code></td>
+</tr>
+<tr>
+<td align="left"><code>%o</code></td>
+<td align="left">八进制数</td>
+</tr>
+<tr>
+<td align="left"><code>%s</code></td>
+<td align="left">字符串</td>
+</tr>
+<tr>
+<td align="left"><code>%x</code></td>
+<td align="left">十六进制数</td>
+</tr>
+</tbody></table>
+<ol>
+<li>文字转换：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> 65 | awk <span class="string">&#x27;&#123;printf &quot;%c\n&quot;, $0&#125;&#x27;</span></span><br><span class="line">A</span><br><span class="line">$ awk <span class="string">&#x27;BEGIN &#123;printf &quot;%c\n&quot;, 65&#125;&#x27;</span></span><br><span class="line">A</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>格式化输出：</li>
+</ol>
+<p>第一列为行号，步长3字符，左对齐；第二列为姓名，步长15字符，左对齐；第四列为序列号，后接换行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;printf &quot;%-3d%-15s%s\n&quot;, NR,$1,$3&#125;&#x27;</span> grade.txt</span><br><span class="line">1  M.Tansley      48311</span><br><span class="line">2  J.Lulu         48317</span><br><span class="line">3  P.Bunny        48</span><br><span class="line">4  J.Troll        4842</span><br><span class="line">5  L.Transly      4712</span><br></pre></td></tr></table></figure>
+
+<p>或加上表头：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;BEGIN&#123;printf &quot;%-3s%-15s%s\n---------------------------\n&quot;, &quot;NR&quot;,&quot;Name&quot;,&quot;No.&quot;&#125; &#123;printf &quot;%-3d%-15s%s\n&quot;, NR,$1,$3&#125;&#x27;</span> grade.txt</span><br><span class="line">NR Name           No.</span><br><span class="line">---------------------------</span><br><span class="line">1  M.Tansley      48311</span><br><span class="line">2  J.Lulu         48317</span><br><span class="line">3  P.Bunny        48</span><br><span class="line">4  J.Troll        4842</span><br><span class="line">5  L.Transly      4712</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>向一行awk命令传参数：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($5&lt;AGE) print $0&#125;&#x27;</span> AGE=10 grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>awk脚本文件：</li>
+</ol>
+<p>将awk写入文件中执行，就不必每次输入大段命令了，而且可以好的排版和注释，来提高代码的可读性。</p>
+<ul>
+<li>场景1，将上面的命令写入脚本文件：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># all comment line must start with a hash `#`</span></span><br><span class="line"><span class="comment"># name: student_total.awk</span></span><br><span class="line"><span class="comment"># to call: student_total.awk grade.txt</span></span><br><span class="line"><span class="comment"># print total and average of club student points</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># print a header first:</span></span><br><span class="line">BEGIN&#123;</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;Student  Date    Member No.  Grade   Age Points  Max&quot;</span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;Name     Joined                          Gained  Point Available&quot;</span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;================================================================&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># let&#x27;s add the scores of points gained</span></span><br><span class="line">(total+=<span class="variable">$6</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># finished processing, now let&#x27;s print the total and average points:</span></span><br><span class="line">END&#123;</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;Club students total points: &quot;</span> total</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;Average club students points: &quot;</span> total/NR</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来使用<code>chmod</code>给脚本加上“所有用户可执行”的权限，再使用<code>cp</code>将脚本复制到shell可以找到的地方：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ chmod a+x student_total.awk</span><br><span class="line">$ sudo cp student_total.awk /usr/bin/</span><br></pre></td></tr></table></figure>
+
+<p>然后执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ student_total.awk grade.txt</span><br><span class="line">Student  Date    Member No.  Grade   Age Points  Max</span><br><span class="line">Name     Joined                          Gained  Point Available</span><br><span class="line">================================================================</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br><span class="line">P.Bunny	02/99	48	Yellow	12	35	28</span><br><span class="line">J.Troll	07/99	4842	Brown-3	12	26	26</span><br><span class="line">L.Transly	05/99	4712	Brown-2	12	30	28</span><br><span class="line">Club students total points: 155</span><br><span class="line">Average club students points: 31</span><br></pre></td></tr></table></figure>
+
+<p>顺便提一下，在OSX上使用<code>ls</code>命令时，会发现有的目录或文件的权限位的最后附有一个<code>@</code>或<code>+</code>符号，其中<code>@</code>说明该目录或文件具有<em>extended attributes</em>，而<code>+</code>符合说明该目录或文件具有类似ACL的非标准权访问限控制策略。可以通过在<code>ls</code>后添加<code>-@</code>命令查看。详情见<a target="_blank" rel="noopener" href="http://psionides.eu/2008/06/30/ls-on-mac-and-extended-file-attributes/">“ls” on mac and extended attributes</a>。</p>
+<ul>
+<li>场景2，清除重复输出：</li>
+</ul>
+<p>当调试程序时，遇到这样一个日志文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ cat error.log</span><br><span class="line">INVALID LCSD 98GJ23</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br><span class="line">CAUTION LPSS ERROR ON ACC NO.</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br><span class="line">PASS FIELD INVALID ON LDPS</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br><span class="line">PASS FIELD INVALID ON GHSI</span><br><span class="line">ERROR*</span><br><span class="line">CAUTION LPSS ERROR ON ACC NO.</span><br><span class="line">ERROR*</span><br><span class="line">ERROR*</span><br></pre></td></tr></table></figure>
+
+<p>我们想将其中的重复的多行<code>ERROR*</code>合并为一行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># name: error_strip.awk</span></span><br><span class="line"><span class="comment"># to call: error_strip.awk &lt;filename&gt;</span></span><br><span class="line"><span class="comment"># strips out the ERROR* lines if there are more than one</span></span><br><span class="line"><span class="comment"># ERROR* lines after each failed record.</span></span><br><span class="line"></span><br><span class="line">BEGIN&#123;error_line=<span class="string">&quot;&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># tell awk who is &quot;ERROR*&quot;</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$0</span>==<span class="string">&quot;ERROR*&quot;</span> &amp;&amp; error_line==<span class="string">&quot;ERROR*&quot;</span>)</span><br><span class="line"><span class="comment"># goto next line</span></span><br><span class="line">        next;</span><br><span class="line">    error_line=<span class="variable">$0</span>;</span><br><span class="line">    <span class="built_in">print</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ error_strip.awk error.log</span><br><span class="line">INVALID LCSD 98GJ23</span><br><span class="line">ERROR*</span><br><span class="line">CAUTION LPSS ERROR ON ACC NO.</span><br><span class="line">ERROR*</span><br><span class="line">PASS FIELD INVALID ON LDPS</span><br><span class="line">ERROR*</span><br><span class="line">PASS FIELD INVALID ON GHSI</span><br><span class="line">ERROR*</span><br><span class="line">CAUTION LPSS ERROR ON ACC NO.</span><br><span class="line">ERROR*</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>在脚本中制定分隔符FS：</li>
+</ol>
+<p>再复习一下，在shell中使用<code>awk</code>命令时，用<code>-F</code>指定分隔符：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F: <span class="string">&#x27;&#123;print $0&#125;&#x27;</span> input-file</span><br></pre></td></tr></table></figure>
+
+<p>而在脚本中，则是设置<code>FS</code>变量，值得注意的都是，<code>FS</code>变量需要放在<code>BEGIN</code>部分：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># to call: passwd.awk /private/etc/passwd</span></span><br><span class="line"><span class="comment"># print out the first and fifth fields</span></span><br><span class="line"></span><br><span class="line">BEGIN&#123;FS=<span class="string">&quot;:&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"># pass the comments of the file</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$0</span> ~ /^<span class="comment">#/)</span></span><br><span class="line">        next;</span><br><span class="line">    <span class="built_in">print</span> <span class="variable">$1</span><span class="string">&quot;\t&quot;</span><span class="variable">$5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nobody	Unprivileged User</span><br><span class="line">root	System Administrator</span><br><span class="line">daemon	System Services</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>向脚本传递参数：</li>
+</ol>
+<ul>
+<li>前面提到，在shell中使用awk命令时传递参数的形式是：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;if($5&lt;AGE) print $0&#125;&#x27;</span> AGE=10 grade.txt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>而使用脚本时，传递的方式的形式也基本相同：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk script_file var=value input_file</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># check on how many fields in a file</span></span><br><span class="line"><span class="comment"># name: field_check.awk</span></span><br><span class="line"><span class="comment"># to call: field_check.awk MAX=n FS=&lt;separator&gt; input-file</span></span><br><span class="line"></span><br><span class="line">NF!=MAX</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;line &quot;</span> NR <span class="string">&quot; does not have &quot;</span> MAX <span class="string">&quot; fields&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用时命令为<code>field_check.awk MAX=7 FS=&quot;:&quot; /private/etc/passwd</code>。</p>
+<ul>
+<li>将上面提到的传递“AGE”参数的例子改写，就应为：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># name: age.awk</span></span><br><span class="line"><span class="comment"># to call: age.awk AGE=10 grade.txt</span></span><br><span class="line"><span class="comment"># print students whose age are lower than age supplied on the command line</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$5</span>&lt;AGE) <span class="built_in">print</span> <span class="variable">$0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ age.awk AGE=10 grade.txt</span><br><span class="line">M.Tansley	05/99	48311	Green	8	40	44</span><br><span class="line">J.Lulu	06/99	48317	green	9	24	26</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通过管道使用脚本：</li>
+</ul>
+<p>从<code>du</code>命令获得数据后处理输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># name: du.awk</span></span><br><span class="line"><span class="comment"># to call: du | du.awk</span></span><br><span class="line"><span class="comment"># print file/direc&#x27;s in bytes and blocks</span></span><br><span class="line"></span><br><span class="line">BEGIN&#123;</span><br><span class="line">    OFS=<span class="string">&quot;\t&quot;</span>;</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;name&quot;</span>, <span class="string">&quot;\t\t&quot;</span>, <span class="string">&quot;bytes&quot;</span>, <span class="string">&quot;blocks\n&quot;</span>;</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;==================================&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;<span class="built_in">print</span> <span class="variable">$2</span>, <span class="string">&quot;\t\t&quot;</span>, <span class="variable">$1</span>*512, <span class="variable">$1</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ du | du.awk</span><br><span class="line">name				bytes	blocks</span><br><span class="line"></span><br><span class="line">==================================</span><br><span class="line">.				20461768704	39964392</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>awk数组：</li>
+</ol>
+<p><a href="#awk_array">上面</a>也提到了awk数组，现在看看更多关于数组的应用。</p>
+<p>数组在使用前，不需要声明，也不需要设定元素个数，我们经常会在循环中使用到数组，基本语法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">For (element <span class="keyword">in</span> array) <span class="built_in">print</span> array(element)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果把上面的例子在脚本中重新实现：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># name: array_test.awk</span></span><br><span class="line"><span class="comment"># prints out an array</span></span><br><span class="line">BEGIN&#123;</span><br><span class="line">    recode=<span class="string">&quot;123#456#789&quot;</span>;</span><br><span class="line">    split(recode, myarray, <span class="string">&quot;#&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">END&#123;</span><br><span class="line">    <span class="keyword">for</span>(i <span class="keyword">in</span> myarray) <span class="built_in">print</span> i, myarray[i]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时我们可以使用<code>/dev/null</code>作为输入文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ array_test.awk /dev/null</span><br><span class="line">2 456</span><br><span class="line">3 789</span><br><span class="line">1 123</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>一个稍微复杂的统计示例：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat grade_student.txt</span><br><span class="line">Yellow<span class="comment">#Junior</span></span><br><span class="line">Orange<span class="comment">#Senior</span></span><br><span class="line">Yellow<span class="comment">#Junior</span></span><br><span class="line">Purple<span class="comment">#Junior</span></span><br><span class="line">Brown-2<span class="comment">#Junior</span></span><br><span class="line">White<span class="comment">#Senior</span></span><br><span class="line">Orange<span class="comment">#Senior</span></span><br><span class="line">Red<span class="comment">#Junior</span></span><br><span class="line">Brown-2<span class="comment">#Senior</span></span><br><span class="line">Yellow<span class="comment">#Senior</span></span><br><span class="line">Red<span class="comment">#Junior</span></span><br><span class="line">Blue<span class="comment">#Senior</span></span><br><span class="line">Green<span class="comment">#Senior</span></span><br><span class="line">Purple<span class="comment">#Junior</span></span><br><span class="line">White<span class="comment">#Junior</span></span><br></pre></td></tr></table></figure>
+
+<p>要统计文件中黄、橙、红带各有多少种，分别有多少成年人和未成年人：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/awk -f</span></span><br><span class="line"><span class="comment"># name: belts.awk</span></span><br><span class="line"><span class="comment"># to call: belts.awk grade_student.txt</span></span><br><span class="line"><span class="comment"># loop through the file and count how many belts we have</span></span><br><span class="line"><span class="comment"># in (yellow, orange, red) also count how many adults and</span></span><br><span class="line"><span class="comment"># juniors we have.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># start from BEGIN</span></span><br><span class="line"><span class="comment"># set FS and load the arrays with our values</span></span><br><span class="line">BEGIN&#123;</span><br><span class="line">    FS=<span class="string">&quot;#&quot;</span></span><br><span class="line"><span class="comment"># load the belt colors we are interested in only</span></span><br><span class="line">    belt[<span class="string">&quot;Yellow&quot;</span>]</span><br><span class="line">    belt[<span class="string">&quot;Orange&quot;</span>]</span><br><span class="line">    belt[<span class="string">&quot;Red&quot;</span>]</span><br><span class="line"><span class="comment"># load the type of students</span></span><br><span class="line">    student[<span class="string">&quot;Junior&quot;</span>]</span><br><span class="line">    student[<span class="string">&quot;Senior&quot;</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># loop through array that holds the belt colors against field-1</span></span><br><span class="line"><span class="comment"># if we have a match, keep a running total</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span>(color <span class="keyword">in</span> belt)</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$1</span>==color)</span><br><span class="line">            belt[color]++</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># loop through array that holds the student type against field-2</span></span><br><span class="line"><span class="comment"># if we have a match, keep a running total</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">type</span> <span class="keyword">in</span> student)</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$2</span>==<span class="built_in">type</span>)</span><br><span class="line">            student[<span class="built_in">type</span>]++</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># finish processing, print out the match for each array</span></span><br><span class="line">END&#123;</span><br><span class="line">    <span class="keyword">for</span>(color <span class="keyword">in</span> belt)</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;The club has&quot;</span>, belt[color], color, <span class="string">&quot;belts&quot;</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">type</span> <span class="keyword">in</span> student)</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;The club has&quot;</span>, student[<span class="built_in">type</span>], <span class="built_in">type</span>, <span class="string">&quot;students&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ belts.awk grade_student.txt</span><br><span class="line">The club has 2 Orange belts</span><br><span class="line">The club has 2 Red belts</span><br><span class="line">The club has 3 Yellow belts</span><br><span class="line">The club has 8 Junior students</span><br><span class="line">The club has 7 Senior students</span><br></pre></td></tr></table></figure>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>awk是shell中的一个重要文本处理工具，在特定情况下可以方便快捷的配合其他命令输出有格式要求的文本并统计，就像<a target="_blank" rel="noopener" href="http://talk.linuxtoy.org/using-cli/#2">像黑客一样使用Linux命令行：我喜欢使用命令行的原因</a>中提到的这样~</p>
+<p>-EOF-</p>
+</div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E7%BC%96%E7%A8%8B/">编程</a><a class="link-muted mr-2" rel="tag" href="/tags/%E8%84%9A%E6%9C%AC/">脚本</a><a class="link-muted mr-2" rel="tag" href="/tags/Shell/">Shell</a><a class="link-muted mr-2" rel="tag" href="/tags/Linux/">Linux</a></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><div class="social-share"></div><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.jpg" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2014/11/09/algorithms-chapter-2/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">算法导论-第二章</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2014/07/11/awk-simple-guide-1/"><span class="level-item">awk命令简介（一）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><script src="https://utteranc.es/client.js" repo="zlotus/comment" issue-term="pathname" label="some-issue-label" theme="github-light" crossorigin="anonymous" async></script></div></div></div><div class="column column-left is-3-tablet is-3-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/opm_sq.png" alt="子实"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">子实</p><p class="is-size-6 is-block">程序员</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>陕西/西安</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">78</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">22</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zlotus" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com/qinzishi"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/Zealot_uS"><i class="fab fa-twitter"></i></a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://www.zhihu.com/people/zlotus" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">知乎</span></span><span class="level-right"><span class="level-item tag">www.zhihu.com</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Diary/"><span class="level-start"><span class="level-item">Diary</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/categories/Programming/"><span class="level-start"><span class="level-item">Programming</span></span><span class="level-end"><span class="level-item tag">64</span></span></a></li><li><a class="level is-mobile" href="/categories/Python/"><span class="level-start"><span class="level-item">Python</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/Shell/"><span class="level-start"><span class="level-item">Shell</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Coroutines/"><span class="tag">Coroutines</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JavaScript/"><span class="tag">JavaScript</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Javascript/"><span class="tag">Javascript</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">30</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenCV/"><span class="tag">OpenCV</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Operating-System/"><span class="tag">Operating System</span><span class="tag">21</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Paper/"><span class="tag">Paper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">17</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Raspberry-Pi/"><span class="tag">Raspberry Pi</span><span class="tag">20</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Rust/"><span class="tag">Rust</span><span class="tag">29</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Shell/"><span class="tag">Shell</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TensorFlow/"><span class="tag">TensorFlow</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tokio/"><span class="tag">Tokio</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ZMQ/"><span class="tag">ZMQ</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ctpn/"><span class="tag">ctpn</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/macOS/"><span class="tag">macOS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/obsidion/"><span class="tag">obsidion</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%97%A5%E8%AE%B0/"><span class="tag">日记</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%82%E8%B0%88/"><span class="tag">杂谈</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95/"><span class="tag">算法</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/"><span class="tag">编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%84%9A%E6%9C%AC/"><span class="tag">脚本</span><span class="tag">4</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a><p class="is-size-7"><span>&copy; 2023 子实</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>

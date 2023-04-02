@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><title>Redhat Linux初体验（2） - 子实</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="子实"><meta name="msapplication-TileImage" content="/img/avatar-o.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="子实"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Redhat系Linux基础学习"><meta property="og:type" content="article"><meta property="og:title" content="Redhat Linux初体验（2）"><meta property="og:url" content="https://zlotus.github.io/2018/07/28/redhat-2/"><meta property="og:site_name" content="子实"><meta property="og:description" content="Redhat系Linux基础学习"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://zlotus.github.io/img/og_image.png"><meta property="article:published_time" content="2018-07-28T03:22:47.000Z"><meta property="article:modified_time" content="2018-07-28T03:22:47.000Z"><meta property="article:author" content="子实"><meta property="article:tag" content="Shell"><meta property="article:tag" content="Linux"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><meta property="twitter:creator" content="@Zealot_uS"><meta property="twitter:site" content="Zealot_uS"><link rel="publisher" href="+LotusQin"><meta property="fb:admins" content="qinzishi"><meta property="fb:app_id" content="qinzishi"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zlotus.github.io/2018/07/28/redhat-2/"},"headline":"Redhat Linux初体验（2）","image":["https://zlotus.github.io/img/og_image.png"],"datePublished":"2018-07-28T03:22:47.000Z","dateModified":"2018-07-28T03:22:47.000Z","author":{"@type":"Person","name":"子实"},"publisher":{"@type":"Organization","name":"子实","logo":{"@type":"ImageObject","url":"https://zlotus.github.io/img/opm_sq.png"}},"description":"Redhat系Linux基础学习"}</script><link rel="icon" href="/img/avatar-o.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css"><!--!--><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/2014/07/09/about-me/">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-9-tablet is-9-desktop is-9-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2018-07-28T03:22:47.000Z" title="7/28/2018, 11:22:47 AM">2018-07-28</time>发表</span><span class="level-item"><time dateTime="2018-07-28T03:22:47.000Z" title="7/28/2018, 11:22:47 AM">2018-07-28</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Programming/">Programming</a></span><span class="level-item">1 小时读完 (大约9348个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">Redhat Linux初体验（2）</h1><div class="content"><p>这三周都被拐卖到成都培训RHCE，讲真，还是当学生好啊<del>哈哈哈</del>把学习笔记搬上来，关键时刻能做个速查~</p>
+<p>献上第二周的笔记。</p>
+<span id="more"></span>
+
+<h1 id="2018-07-23"><a href="#2018-07-23" class="headerlink" title="2018-07-23"></a>2018-07-23</h1><h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><ol>
+<li>syslog是老日志系统（文件型）、journal是新日志系统（内存型，可以配置保持硬盘，持久化）；日志默认保存在<code>/var/log</code>下；<ul>
+<li>除了认证、邮件、周期性作业、纯调试相关日志等类型，大多数日志都保存在<code>/var/log/messages</code>；</li>
+<li>启动日志保存在<code>/var/log/boot.log</code>，成功登录日志保存在<code>/var/log/utmp</code>和<code>/var/log/wtmp</code>，对应<code>last</code>；失败登录保存在<code>/var/log/btmp</code>，对应<code>lastb</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>syslog日志系统包含很多设备，如：<ul>
+<li>认证设备：LOG_AUTH，放在<code>/var/log/secure</code>中；</li>
+<li>邮件设备：LOG_MAIL，放在<code>/var/log/maillog</code>中；</li>
+<li>周期性作业：LOG_CRON，放在<code>/var/log/cron</code>中；</li>
+<li>详见<code>man 3 syslog</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>syslog日志系统分优先级，详见<code>man 3 syslog</code>；</li>
+</ol>
+<ol start="4">
+<li>syslog日志配置详见<code>man 5 rsyslog.conf</code>；日志系统采用异步I/O，以提高硬盘性能；</li>
+</ol>
+<ol start="5">
+<li><code>/etc/rsyslog.conf</code>为syslog的主配置文件，通常，我们通过在<code>/etc/rsyslog.d</code>中新建<code>.conf</code>结尾的文件来配置日志，如：<ul>
+<li>新建<code>/etc/rsyslog.d/debug.conf</code>，新增一行<code>*.debug /var/log/messages-debug</code>；</li>
+<li>重启服务：<code>systemctl restart rsyslog.service</code>；</li>
+<li>跟踪日志文件：<code>tail -f /var/log/messages-debug</code>；</li>
+<li>产生日志信息：<code>logger -p user.debug &quot;Debug Message Test&quot;</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li><code>rsyslog</code>中r代表remote，所以可以将日子保存在远程主机上，在<code>man 5 rsyslog.conf</code>中有详细信息，支持包括SNMP、MYSQL等模块在内的远程传输；</li>
+</ol>
+<ol start="7">
+<li>使用<code>journalctl</code>查看journal的日志，详见<code>man 5 journalctl</code>，常用的功能有：<ul>
+<li><code>-n</code>显示最近的日志；</li>
+<li><code>-p</code>显示小于等于指定级别的日志；</li>
+<li><code>_PID=</code>显示指定进程的日志；（双击<code>TAB</code>自动补全现实）</li>
+<li><code>_UID=</code>显示指定用户的日志；</li>
+<li><code>--since 09:30:00</code>显示指定时间后的日志；</li>
+<li><code>--until 10:00:00</code>显示指定时间前的日志；</li>
+<li><code>_SYSTEMD_UNIT=sshd.service</code>显示指定服务的日志；</li>
+</ul>
+</li>
+</ol>
+<ol start="8">
+<li>配置journal，详见<code>man 5 journald.conf</code>，配置文件为<code>/etc/systemd/journald.conf</code>：<ul>
+<li>journal持久化日志默认保存在<code>/var/log/journal</code>，新建该目录<code>mkdir /var/log/journal</code>；</li>
+<li>journal的各组件的内置用户均属于<code>systemd-journal</code>用户组（<code>grep journal /etc/group</code>），因此，<code>/var/log/journal</code>应配置为协作目录：先更改目录属组<code>chown root:systemd-journal /var/log/journal</code>，再添加协作权限<code>chmod 2755 /var/log/journal</code>，</li>
+<li>重启进程<code>killall -USR1 systemd-journald</code>；</li>
+</ul>
+</li>
+</ol>
+<h2 id="系统时间"><a href="#系统时间" class="headerlink" title="系统时间"></a>系统时间</h2><ol>
+<li>硬件时间<code>hwclock</code>，对应cmos(bios|uefi)中的一个硬件，因为主板工艺在关机后存在计时差异；</li>
+<li>软件时间在开机时复制硬件时间，软件时间可以手动调整，可以自动同步（网络的时钟服务器），软件时间可以将时间再写入硬件时间；</li>
+<li><code>timedatectl</code>红帽新提供的新工具，时间同步服务在<code>systemctl status chronyd.service</code>中，配置文件在<code>/etc/chronyd.conf</code>中；</li>
+<li>修改<code>/etc/chronyd.conf</code>的服务器为教学环境的授时服务器后，重启服务<code>systemctl restart chronyd.service</code>，再<code>timedatectl</code>查看发现NTP synchronized为yes；</li>
+<li>很多分布式软件均需要保持精确的系统时间；</li>
+</ol>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><ol>
+<li>旧命令<code>netstat</code>，网络状态统计：<ul>
+<li><code>-t</code>查看tcp链接，<code>-u</code>查看udp链接；</li>
+<li><code>-n</code>用数字表示（不解析域名）；</li>
+<li><code>-l</code>监听状态的端口（开放端口，<code>/etc/service</code>中可以看到端口对应信息）；</li>
+<li><code>-p</code>查看哪个个程序调用信息</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>新命令<code>ss</code>，套接字统计，与<code>netstat</code>基本用法一样；</li>
+</ol>
+<ol start="3">
+<li>旧命令<code>ifconfig</code>，不推荐使用；旧命令<code>ip</code>：查看三层：<code>ip addr</code>；查看二层<code>ip link</code>；添加地址<code>ip addr add 172.25.0.22/24 dev eth0</code>（重启后无效，需要改配置文件）；</li>
+</ol>
+<ol start="4">
+<li>新命令<code>nmcli</code>（命令行）或<code>nmtui</code>（字符图形化），旧命令仅能当前生效，并不能永久生效（需要改配置文件），新命令直接永久生效；<ul>
+<li>新命令<code>systemctl status network</code>是提供后台网络功能的服务，<code>systemctl status NetworkManager</code>是后台维护网络配置的服务，配置文件在<code>/etc/sysconfig/network-scripts/ifcfg-接口</code>，前台提供配置的工具有：</li>
+<li><code>nmcli device status</code>查看设备概要信息，<code>nmcli device shwo</code>查看设备详细信息；</li>
+<li><code>nmcli connection show &quot;System eth0&quot;</code>，查看链接详细信息；</li>
+<li>新建链接：<code>nmcli connection add con-name home ifname eth0 type ethernet</code>（此时多一个<code>/etc/sysconfig/network-scripts/ifcfg-home</code>文件）；</li>
+<li>配置自动连接的静态IP<code>nmcli connection add con-name work autoconnect yes ifname eth0 type ethernet ip4 172.24.4.11/24 gw4 172.24.4.254</code>(此时多一个<code>/etc/sysconfig/network-scripts/ifcfg-work</code>文件；</li>
+<li><code>nmcli delect work</code>删除链接</li>
+<li><code>nmcli connection modify work ipv4.addresses 172.25.0.23/24</code>添加IP地址；</li>
+<li>修改地址获取方式<code>nmcli connection modify home ipv4.method manual ipv4.address 172.25.0.23/24</code>；</li>
+<li><code>nmcli connection show --active</code>查看生效链接;</li>
+<li><code>nmcli connection up &quot;work&quot;</code>使配置work生效；</li>
+<li><code>show</code>命令时，大写是生效的配置，小小是配置文件中未生效的配置；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>旧命令<code>hostname</code>，仅查看，配置需要改<code>/etc/hosts</code>；</li>
+</ol>
+<ol start="6">
+<li>新命令<code>hostnamectl</code>，新工具直接永久生效；<ul>
+<li>dns查找顺序：<code>/etc/hosts</code>-&gt;<code>buffer</code>-&gt;<code>/etc/resolv.conf</code></li>
+<li><code>hostnamectl set-hostname server.example.com</code>设置主机映射；</li>
+<li>配置存放在<code>/etc/hostname</code>；</li>
+</ul>
+</li>
+</ol>
+<h2 id="归档"><a href="#归档" class="headerlink" title="归档"></a>归档</h2><ol>
+<li>使用命令<code>tar -cvf xxx.tar file1 file2 file3</code>（加.tar是归档的命名习惯，<code>-c</code>创建、<code>-v</code>显示详细信息、<code>-f</code>指定文件名）；</li>
+</ol>
+<ol start="2">
+<li>常用的压缩软件有<code>bzip2</code>、<code>xz</code>、<code>gzip</code>，这几个压缩软件默认行为都会删除原文件；</li>
+</ol>
+<ol start="3">
+<li><code>zcat</code>是<code>gzip</code>的配套工具，用来在不解包的情况下查看文件内容；<code>gunzip</code>等于<code>gzip -d</code>，详见<code>man gzip</code>；<ul>
+<li><code>bzcat</code>是<code>bzip2</code>的配套工具，详情见<code>man bzip2</code>；</li>
+<li><code>xzcat</code>是<code>xz</code>的配套工具，详见<code>man xz</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li><code>tar</code>可以直接调用其他压缩软件来做归档时压缩，<code>-j</code>调用bzip2、<code>-J</code>调用xz、<code>-z</code>调用gzip：<ul>
+<li><code>tar -cvjf xxx.tar file1 file2 file3</code></li>
+<li><code>tar -xvf xxx.tar -C</code>，<code>x</code>解压、<code>v</code>现实详细信息、<code>f</code>指定文件名、<code>-C</code>指定解压位置，解压不需要指定压缩程序，tar会自行判断；</li>
+<li>tar默认行为会在用户指定绝对路径时移除根（不然解压时可能会覆盖文件），选项<code>-P</code>可以保持根目录；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>加密拷贝<code>scp -r root@server:/etc/ssh /home/student/serverbackup</code>从server上取目录到本地，使用<code>-v</code>显示详细信息；</li>
+</ol>
+<ol start="6">
+<li><code>rsync</code>远程同步文件，<code>-a</code>传输前归档：<code>rsync -av root@server:/var/log/maillog /servermaillog</code>；<ul>
+<li><code>rsync</code>与<code>scp</code>最大的区别是，<code>rsync</code>是增量传输，<code>scp</code>是完全传输；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-07-24"><a href="#2018-07-24" class="headerlink" title="2018-07-24"></a>2018-07-24</h1><h2 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h2><ol>
+<li>rpm复制后端安装编译等工作，yum负责用户交互及解决依赖关系，是rpm的前段工具；</li>
+</ol>
+<ol start="2">
+<li><code>rpm</code>常用命令：<ul>
+<li><code>man 8 rpm</code>查看rpm数据库等帮助信息；</li>
+<li><code>rpm -qa | wc -l</code>统计已安装个数；</li>
+<li><code>rpm -q xxx</code>查询已安装包名；</li>
+<li><code>rpm -qi xxx</code>查询已安装包详细信息；</li>
+<li><code>rpm -ql xxx</code>查看包在安装时具体安装了哪些文件；<code>rpm -qc xxx</code>查看配置文件；<code>rpm -qd xxx</code>查看文档文件；<code>rpm -qf filename</code>查看指定文件属于哪个程序；</li>
+<li>已安装的包在rpm数据库<code>/var/lib/rpm</code>中；<code>rpm -qpi xxx</code>命令也可以看到未安装包，同样的<code>rpm -qpl/qpc/qpd</code>命令可以看到该包的所有文件、配置文件、文档文件；</li>
+<li><code>rpm -qR xxx</code>查询依赖；</li>
+</ul>
+</li>
+<li>建立本地<code>yum</code>仓库（redhat和centOS有mini/everything等版本，而epel的包比everything还多，通常用于自建仓库）：<ul>
+<li><code>/etc/yum.conf</code>是<code>yum</code>的配置文件，<code>/etc/yum.repos.d</code>是yum仓库的配置目录；</li>
+<li>下载<code>rhel.xxx.iso</code>，在linux下<code>.iso</code>是个文件系统，需要挂载：<code>mount xxx.iso /mnt</code>；（通过<code>file xxx.iso</code>可以显示文件系统详情）</li>
+<li>在<code>/etc/yum.repos.d</code>下新建<code>dvd.repo</code>，写入：<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 必须且应保证主机上唯一</span></span><br><span class="line"><span class="section">[dvd]</span>                 </span><br><span class="line"><span class="comment"># 非必须</span></span><br><span class="line"><span class="attr">name</span> = dvd            </span><br><span class="line"><span class="comment"># 必须</span></span><br><span class="line"><span class="attr">baseurl</span> = file:///mnt </span><br><span class="line"><span class="comment"># 开启本仓库</span></span><br><span class="line"><span class="attr">enable</span> = <span class="number">1</span>            </span><br><span class="line"><span class="comment"># 是否需要校验，通常官方光盘不需要</span></span><br><span class="line"><span class="attr">gpgcheck</span> = <span class="number">0</span>          </span><br></pre></td></tr></table></figure></li>
+<li><code>yum repolist</code>查看仓库信息，多了一个我们新建的<code>dvd</code>；</li>
+<li>repolist读取的仓库信息缓存在<code>/var/cache/yum</code>下；</li>
+<li>yum自动添加仓库：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -config-manager --add-repo=http://classroom.example.com/content/rhel7.0/x86_64/dvd</span><br></pre></td></tr></table></figure></li>
+<li>新建的仓库名称很长，还需要手动添加<code>gpgcheck=0</code>，推荐使用前一种方法；</li>
+<li><code>yum -config-manager --enable/disable</code>可以用来禁用/启用仓库，仓库全名使用<code>yum repolist</code>列出；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li><code>yum</code>常用命令：<ul>
+<li><code>yum list</code>列出所有软件，按名字查找使用<code>yum list xxx</code>（软件名完全匹配）可以使用通配符，如<code>yum list http*</code>；</li>
+<li><code>yum search</code>搜索软件，匹配包括简介信息；</li>
+<li><code>yum info tcpdump</code>查看软件详细信息；</li>
+<li><code>yum group install</code>以组为单位进行安装；</li>
+<li><code>yum history</code>显示yum历史操作汇总信息，加<code>list</code>命令查看详细信息，再使用<code>list</code>中的ID可以附加<code>undo</code>和<code>redo</code>等命令进行撤销或重做操作；</li>
+<li><code>yum erase</code>删除；</li>
+<li><code>yum provide</code>查询提供指定命令、文件的软件包；</li>
+</ul>
+</li>
+</ol>
+<h2 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h2><ol>
+<li>Linux仅允许一个主文进系统，一个根目录<code>/</code>（入口），其他文件系统需要挂载在主文进系统之下，统一从根目录<code>/</code>进入；（Windows允许多个跟目录，通过盘符区分），参见<code>man 8 mount</code>；</li>
+<li>上一节中的挂载：<code>mount xxx.iso /mnt</code>，卸载：<code>umount /mnt</code>；</li>
+<li><code>df -h</code>查看文件系统详细信息，<code>du filename</code>查看文件占硬盘大小，<code>du -s dirname</code>查看目录占用硬盘大小；</li>
+<li><code>blkid</code>查看块设备的属性；</li>
+<li>临时挂载、卸载使用<code>mount</code>、<code>umount</code>；<ul>
+<li>对于无法直接卸载的目录，使用<code>lsof /xxx</code>或<code>fuser /xxx</code>查看哪个用户哪个进程在使用，结束该进程后就可以卸载；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>永久挂载，配置<code>/etc/fstab</code>：<ul>
+<li>使用<code>/xxx/xxx.iso /mnt iso9660 defaults 0 0</code>挂载一个永久文件系统；</li>
+<li>意为挂载xxx.iso文件；</li>
+<li>挂载点为<code>/mnt</code>；</li>
+<li>文件系统类型为iso9660（这个信息可以使用<code>mount xxx.iso /mnt</code>临时挂载文件后使用<code>mount</code>命令查看到）；</li>
+<li><code>defaults</code>为默认选项（rw, suid, dev, exec, auto, nouser, async）；</li>
+<li><code>0</code>为dump选项，不允许转存；</li>
+<li><code>0</code>为非启动文件系统且不需要检查；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>硬链接<code>ln</code>：<ul>
+<li>Linux硬盘管理一个扇区的最小单位为4k，使用<code>mkfs</code>格式化分区时，系统会将扇区分为存储inode或存储block；</li>
+<li>inode，即文件索引，存储文件元数据，通过<code>ll -i xxx</code>查看到除文件名以外的信息全部是存储在inode中的，权限后的数字即block被连接的次数，使用<code>stat xxx</code>查看元信息，其中Modify是block修改时间，Change是元数据修改时间；</li>
+<li>block，存储文件内容；</li>
+<li>使用<code>ln xxx yyy</code>后，通过<code>ll -i xxx yyy</code>发现两个文件的inode值相同，即硬链接只复制了元数据；</li>
+<li>硬链接不依赖原文件，修改一处另一处也修改，一个block中的文件仅有一个inode值；</li>
+<li>硬链接删除操作删除的是inode连接，只有当连接数为0时，才删除文件回收block；</li>
+<li>硬链接不能跨文件系统，因为inode有可能冲突；</li>
+<li>硬链接不能对目录使用；</li>
+<li>另外，空目录连接次数为2，除了自己以外，还有<code>.</code>连接了它；如果有子目录，则连接数继续+1，即被子目录的<code>..</code>连接；</li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>软链接<code>ln -s</code>，相当于Windows的快捷方式：<ul>
+<li>软链接是指向源文件的路径名（硬链接指向原文件的block，即复制inode，软链接的大小刚好是目标文件的路径长度），因此，软链接的源一定要使用绝对路径；</li>
+<li>软链接可以跨文件系统，因为是路径；</li>
+<li>软链接可以对目录使用；</li>
+<li>软链接的原文件必须存在，如果原文件被删除，则软链接失效；</li>
+</ul>
+</li>
+</ol>
+<ol start="8">
+<li>文件查找<code>locate</code>：<ul>
+<li>基于文件名进行模糊查找；</li>
+<li>维护一个inode与文件名的映射，存在数据库<code>/var/lib/mlocate/mlocate.db</code>中，该数据库默认一天更新一次，即新建的文件不会存在于数据库中，也就找不到；</li>
+<li>使用<code>updatedb</code>更新数据库；</li>
+<li>不会查找<code>/tmp</code>中的任何文件；</li>
+<li>不能定义在那个目录中去找；</li>
+</ul>
+</li>
+</ol>
+<ol start="9">
+<li>文件查找<code>find</code>：<ul>
+<li>实时查找，可以基于文件的任何元属性进行查找，如文件名、修改日期、访问时间等；</li>
+<li><code>-amin n</code>最近n分钟被访问的文件，其中<code>-n</code>为n分钟以内、<code>+n</code>为n分钟以外；</li>
+<li><code>-anewer file</code>找出所有访问时间比file大的文件；</li>
+<li>命令包含<code>time</code>的单位为天；</li>
+<li><code>-empty</code>查找空文件；</li>
+<li><code>-links n</code>查找硬链接次数超过n的文件；</li>
+<li><code>find</code>后可以接动作，如删除动作<code>find . -empty -delete</code>；</li>
+<li><code>find / -perm -2000</code>查找的是特殊权限2，仅查找四位权限码第一位；</li>
+<li><code>find / -perm /7000</code>查找的是所有特殊权限；</li>
+<li><code>find / -nouser</code>查找失去用户的文件（不安全，因为下其他用户有可能占用该inode，造成权限漏洞）；</li>
+<li><code>find /var -user root -a -group wheel</code>，其中-a可以省略，默认and，也可以用-o；</li>
+<li><code>find /var -size -5k -exec ls -dlh &#39;&#123;&#125;&#39; \;</code>，表示小于等于4k的文件；</li>
+<li><code>find /root -size -6M -a -type f -exec tar cvzfP /tmp/5m.tar.gz &#39;&#123;&#125;&#39; \;</code>，将<code>/root</code>下所以小于6M的文件查找并打包放在<code>/tmp</code>下；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-07-25"><a href="#2018-07-25" class="headerlink" title="2018-07-25"></a>2018-07-25</h1><h2 id="系统批量部署"><a href="#系统批量部署" class="headerlink" title="系统批量部署"></a>系统批量部署</h2><ol>
+<li>安装kvm虚拟机时，对于Intel的CPU，支持vmx的CPU可以进行硬件虚拟化，需要在BIOS中保证开启vmx及nx；</li>
+<li>Kickstart批量部署：<ul>
+<li><code>%pre</code>安装软件包前的脚本；</li>
+<li><code>%package</code>安装软件包；</li>
+<li><code>%post</code>安装软件包后的脚本；</li>
+<li><code>%end</code>脚本结束标记；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>使用<code>virt-manager</code>管理虚拟机：<ul>
+<li>将server重启，使用<code>F12</code>后<code>^B</code>中断正常启动，选择<code>iPXE</code></li>
+<li>输入<code>gPXE&gt; autoboot</code>执行PXE启动；</li>
+<li>将<code>ks=http://172.25.4.10/ks-config/ks.cfg</code>输入到行尾（行尾为<code>... quit</code>）；</li>
+<li>实验完成后，使用<code>rht-vmctl fullreset server</code>将虚拟机完全重置；</li>
+</ul>
+</li>
+</ol>
+<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><ol>
+<li><code>grep</code>为全局（对文件）正则表达式搜索，<code>egrep</code>为使用扩展正则表达式搜索，扩展的更强大，<code>fgrep</code>为固定格式搜索（即不使用正则表达式，更快）；</li>
+</ol>
+<ol start="2">
+<li>注意：<ul>
+<li><code>\&lt;</code>词首、<code>\&gt;</code>词尾，等同于<code>\b</code>；</li>
+<li>正则表达式也可以使用<code>[[:digit:]]</code>代替<code>[0-9]</code>，<code>[^]</code>取反，参考<code>man 7 glob</code>和<code>man 7 regex</code>；</li>
+<li>正则表达式的测试可以使用<code>/usr/share/dict/words</code>；</li>
+<li><code>wc -l</code>可以统计行数；</li>
+<li><code>()</code>表示当做整体，通常在扩展正则表达式中使用，非扩展的需要转移括号；</li>
+<li><code>-v</code>表示取反，即显示不匹配的行；<code>-i</code>不区分大小写；<code>-A n</code>匹配行后显示n行，<code>-B n</code>匹配行前显示n行，<code>-C m, -n</code>匹配行前显示m行后显示n行，</li>
+</ul>
+</li>
+</ol>
+<h2 id="计划任务"><a href="#计划任务" class="headerlink" title="计划任务"></a>计划任务</h2><ol>
+<li><code>at</code>适合定时执行仅一次的任务：<ul>
+<li>使用<code>at</code>计划任务前，使用<code>systemctl start atd</code>启动<code>at</code>后台服务；</li>
+<li><code>at</code>是<code>atd</code>的前端工具，使用<code>^d</code>提交；</li>
+<li><code>atq</code>是监控任务的工具；</li>
+<li><code>atrm</code>删除任务；</li>
+<li>对于某些用户，不希望他执行<code>at</code>任务，可以将其用户名写入<code>/etc/at.deny</code>；</li>
+<li>对于某些用户，希望他执行<code>at</code>任务，可以将其用户名写入<code>/etc/at.allow</code>；<code>at</code>命令先查找<code>allow</code>，若没找到则继续在<code>deny</code>中查找，若仍未找到，则允许执行（默认允许）；</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li><code>cron</code>适合周期性执行的任务：<ul>
+<li><code>cron</code>是<code>crond</code>的前端工具；</li>
+<li><code>cron</code>分为用户cron（如数据备份）和系统cron（如<code>locate</code>命令使用的数据库更新）；</li>
+<li><code>crontab</code>是用户cron的前端工具，系统cron在<code>/etc/crontab</code>中，</li>
+<li><code>cron</code>的<code>deny</code>/<code>allow</code>和<code>at</code>的行为一样；</li>
+<li>通过<code>crontab -e</code>编辑当前用户的计划任务，写入<code>9-11/2 * * * * mktemp /tmp/XXXX</code>表示每个小时的第9到11分钟步长为2的执行作业，即9、11分钟各执行一次；</li>
+<li><code>crontab -l</code>列出当前用户的计划任务；</li>
+<li><code>crontab -r</code>删除当前用户的计划任务；</li>
+<li>系统cron在<code>/etc/cron.d</code>中，<code>0hourly</code>存储立即执行的任务，<code>raid-check</code>存储阵列检查相关任务，<code>sysstat</code>存储系统状态相关任务；</li>
+<li>其他文件夹如<code>.daily</code>、<code>.hourly</code>等文件夹存放按日、按小时执行的作业；</li>
+</ul>
+</li>
+</ol>
+<h2 id="进程优先级"><a href="#进程优先级" class="headerlink" title="进程优先级"></a>进程优先级</h2><ol>
+<li>优先级高的进程能够获得更多CPU资源：<ul>
+<li>TOP的<code>PR</code>和<code>NI</code>字段，即系统优先级和用户配置优先级；</li>
+<li>优先级取值为-100<del>39，系统优先级为-100</del>-1，用户优先级为0~39；</li>
+<li><code>NI</code>取值为-20~19；</li>
+<li><code>PR</code>值为<code>rt</code>的表示用户无法调整的（<code>PR</code>没有小于0的，小于0即显示<code>rt</code>）；</li>
+<li><code>PR-NI=20</code></li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li><code>nice</code>后接命令调整该命令的优先级，如<code>nice --20 dd if=/dev/zero of=/dev/null</code>（<code>-</code>代表省略的选项<code>-n</code>）</li>
+</ol>
+<ol start="3">
+<li><code>renice</code>后接进程PID可以重新调整该进程优先级；，如<code>renice -5 12336</code>；</li>
+</ol>
+<ol start="4">
+<li><code>top</code>命令也可以调整优先级，使用<code>r</code>命令再输入PID，确认后输入优先级值即可；</li>
+</ol>
+<h2 id="权限访问控制列表（权限ACL）"><a href="#权限访问控制列表（权限ACL）" class="headerlink" title="权限访问控制列表（权限ACL）"></a>权限访问控制列表（权限ACL）</h2><ol>
+<li>ACL控制粒度比POSIX的文件权限控制model更细；</li>
+<li>在<code>ll</code>显示的文件权限中如<code>-rwx-r-x-r-x.</code>，其中的<code>.</code>即表示未添加访问控制；</li>
+<li>使用<code>getfacl xxx</code>查看权限细节</li>
+<li>使用<code>setfacl</code>给文件设置ACL权限：<ul>
+<li><code>setfacl -m group::r xxx</code>（修改权限为<code>r--</code>），<code>setfacl -x group::- xxx</code>（删除权限为<code>---</code>），即也可以用于给文件设置model权限；</li>
+<li>比如对于<code>-rw-------. root root</code>的文件，user是不能读取的，因为user在model权限中匹配的是最后三位<code>---</code>（既不是root用户也不是用户组的其他权限），此时无法通过用户和组的model来设置文件权限；</li>
+<li>具体设置方法参见<code>man 1 setfacl</code>；</li>
+<li>如<code>setfacl -m user:r xxx</code>给user用户添加ACL读权限、<code>setfacl -m user:rw xxx</code>给user用户ACL添加读写权限、<code>setfacl -m m::r</code>修改ACL掩码将user权限改为读、<code>set -x user xxx</code>删除用户ACL权限</li>
+<li><code>setfacl -m g:user:rw xxx</code>给组添加权限，<code>setfacl -x g:user xxx</code>给组删除权限；</li>
+<li><code>setfacl -b xxx</code>删除所有ACL权限；</li>
+<li><code>setfacl -m user:rwx xdir</code>给目录添加rwx权限，若想要该目录下的所以新建文件均具有ACL权限，则应写为<code>setfacl -m d:user:rwx xdir</code>；需要注意的是<code>d</code>参数对目标目录无效，仅对目标目录下的子文件及子目录生效，要修改目标目录的ACL，仍应使用没有<code>d</code>的命令，即<code>setfacl -m user:rwx xdir</code>；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-07-26"><a href="#2018-07-26" class="headerlink" title="2018-07-26"></a>2018-07-26</h1><h2 id="SELinux"><a href="#SELinux" class="headerlink" title="SELinux"></a>SELinux</h2><ol>
+<li>model模型的权限控制针对用户和文件，而SELinux针对程序和文件，SELinux是为了<strong>避免人为错误（配置错误）</strong>而设计的；</li>
+</ol>
+<ol start="2">
+<li>SELinux对程序的标签可以用<code>ps uZ 7842</code>显示出来，对文件的标签可以用<code>ll -dZ /tmp</code>显示出来；</li>
+</ol>
+<ol start="3">
+<li>举例：<ul>
+<li>httpd的标签为<code>system_u:system_r:httpd_t:s0</code>；</li>
+<li>/tmp的标签为<code>system_u:object_r:tmp_t:s0</code>；</li>
+<li>/var/www/html的标签为<code>system_u:object_r:httpd_sys_content_t:s0</code>；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>安装<code>setools-console</code>可以查看SELinux规定的进程对目录做的操作：<code>sesearch -A -s httpd_t -t tmp_t</code>，可以看到<code>allow httpd_t tmp_t : dir</code>开头的两条记录，其中权限大的一条为Permissive模式（临时关闭SELinux）下的权限，权限小的一条为Enforce模式下的权限（即正常的SELinux开启时，可以通过<code>getenforce</code>目录查看）；</li>
+</ol>
+<ol start="5">
+<li>SELinux的开机启动配置在<code>/etc/selinux/config</code>中，要关闭SELinux应配置为<code>SELinux=disabled</code>，使配置生效需要重启；</li>
+</ol>
+<ol start="6">
+<li>在关闭SELinux后，用<code>-Z</code>选项查看新建的文件是没有SELinux标签的，在关闭SELinux后新建（或修改并保存）文件，会在该目录下生成一个名为<code>.autorelabel</code>的文件，意味着当再次开启SELinux并启动系统时，系统会再次打标签，系统会自动在打标签后再次重启；</li>
+</ol>
+<ol start="7">
+<li><code>setenforce</code>可以临时修改模式，通常供调试时使用；</li>
+</ol>
+<ol start="8">
+<li><p><code>semanage</code>管理SELinux策略：</p>
+<ul>
+<li>其中<code>fcontext</code>子命令管理文件上下文标签；</li>
+<li><code>semanage fcontext -l | grep admin_home_t</code>列出标签为<code>admin_home_t</code>的条目，其中默认条目<code>/root(/.*)?</code>只能改不能删；</li>
+<li><code>semanage fcontext -a -t admin_home_t /var/www/html/(/.*)</code>，将<code>/var/www/html</code>下所有文件改为<code>admin_home_t</code>标签；</li>
+<li><code>restorecon -vR /var/www/html/</code>，递归的重置标签，包括目录本身及子目录</li>
+<li><code>semanage fcontext -a -t admin_home_t &#39;/var/www/html/(/.*)?&#39;</code>，修改包括<code>/var/www/html</code>本身及子目录；</li>
+<li><code>semanage boolean -l | grep ftpd</code>查看ftp相关功能设置（<code>getsebool</code>查看的是内存中的运行时配置）；</li>
+<li>开启FTP匿名上产需要修改<code>semanage bool --modify --on ftpd_anon_write</code>，<code>semanage boolean --modify --on ftp_home_dir</code>，<code>chomd o+w .</code>，<code>chcon -t public_content_rw_t .</code>等很多策略，因为SELinux默认认为FTP匿名上传行为不安全；其中<code>setsebool</code>不加<code>-P</code>用于临时修改标签，<code>-P</code>用于永久修改标签；若要排查问题可参考系统日志<code>tail -n 50 /var/log/message</code>；</li>
+</ul>
+</li>
+<li><p>SELinux的默认配置已经能够很好的运行，通常不需要重新配置，除非确定需要的功能确实是因为SELinux安全策略引起的，再进行修改，推荐始终打开SELinux功能以提高系统安全性；</p>
+</li>
+</ol>
+<h2 id="网络用户"><a href="#网络用户" class="headerlink" title="网络用户"></a>网络用户</h2><ol>
+<li>安装<code>yum install authconfig-gtk.x86_64</code>，使用<code>authconfig-gtk</code>设置用户类型，<ul>
+<li>选择LDAP，LDAP搜索基DN为<code>dc=example,dc=com</code>（范围小的写前面）LDAP sever为<code>classroom.example.com</code>；</li>
+<li>选择TLS加密连接，在CA证书中写证书地址即可；</li>
+<li>认证模式为Kerberos密码认证，Realm为<code>EXAMPLE.COM</code>，KDCs和管理服务器均为<code>classroom.example.com</code>，下面两个DNS解析主机及DNC定位KDCs不选；应用配置</li>
+<li>使用<code>getent passwd</code>发现新加了<code>ldapuser*</code>账号，使用<code>ssh ldapuser4@localhost</code>测试登录，默认密码为<code>kerberos</code>；</li>
+<li>使用<code>getent passwd ldapuser0</code>查看网络用户条目（也可以查看本地用户，如<code>getent passwd root</code>）</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li><code>autofs</code>按需挂载（<code>mount</code>必须是root用户，且为永久挂载）：<ul>
+<li>安装<code>yum install -y autofs.x86_64</code>，查看<code>rpm -ql autofs | grep .service</code>发现有autofs有service；帮助参见<code>man auto.master</code>；</li>
+<li>开机运行并启动：<code>systemctl enable autofs.service &amp;&amp; systemctl start autofs.service</code>；</li>
+<li>编辑<code>/etc/auto.master</code>，添加一行<code>/home/guests /etc/auto.ldap</code></li>
+<li>新建并编辑<code>/etc/auto.ldap</code>（参考<code>auto.misc</code>，使用<code>:sp /etc/auto.master</code>或<code>vim -o /etc/auto.&#123;ldap,misc&#125;</code>分屏对照编辑更方便）：  <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># *与&amp;是一对内容对应的占位符</span></span><br><span class="line">* <span class="attr">-fstype</span>=nfs,rw,sync classroom.example.com:/home/huests/&amp;</span><br><span class="line"><span class="comment"># 若要指定用户及目录应写为</span></span><br><span class="line">ldapuser4 <span class="attr">-fstype</span>=nfs,rw,sync classroom.example.com:/home/huests/ldapuser4</span><br></pre></td></tr></table></figure></li>
+<li>此时在使用<code>ssh ldapuser4@localhost</code>登录即可按需挂载<code>ldapuser4</code>的home目录</li>
+</ul>
+</li>
+</ol>
+<h2 id="分区及格式化"><a href="#分区及格式化" class="headerlink" title="分区及格式化"></a>分区及格式化</h2><ol>
+<li>MBR分区（即微软的DOS），硬盘的的第一分区（盘面最外面）为MBR分区，存储主引导记录（如Linux的grub2.0 448字节 ）和分区表（64字节，其中，一条分区记录要占用16字节，即最多只能分四个主分区），通常最后一个分区作为扩展分区，用来做逻辑分区，而逻辑分区表不再MBR中，因此没有限制（MBR最大支持2T的硬盘）： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mbr</span><br><span class="line">├── P1</span><br><span class="line">├── P2</span><br><span class="line">├── P3</span><br><span class="line">└── extend(4)</span><br><span class="line">      ├── L5</span><br><span class="line">      ├── L6</span><br><span class="line">      ├── L7</span><br><span class="line">      ├── L8</span><br><span class="line">      ├── L9</span><br><span class="line">      ├── L10</span><br><span class="line">      └── L11</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ol start="2">
+<li><code>lsblk</code>查看硬盘分区，<code>-p</code>显示完全路径，<code>fdisk -l</code>列出分区信息，分区完成后，使用<code>partprobe</code>通知系统重新读取分区表：<ul>
+<li><code>fdisk /dev/vdb</code>开始分区；</li>
+<li><code>fdisk</code>对MBR支持更好；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>GPT分区（GUID Partition Table），LBA0为保护MBR区，LBA1为主GPT头，LBA2-34的每个LBA存四个条目，共128个条目；<ul>
+<li><code>gdisk</code>对GPT支持更好</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>上面仅是分区，现在的分区系统还不能使用，需要格式化，给每个分区分配UUID，使用<code>blkid</code>查看；<ul>
+<li><code>mkfs</code>格式化为文件系统用，<code>mkfs /dev/vdb1</code>；</li>
+<li>临时挂载<code>mount /dev/vdb1 /mnt</code>；</li>
+<li>重挂<code>mount -o remount,ro,nosuid /mnt</code>，即设备不断线仅改变参数；</li>
+<li>永久挂载配置<code>/etc/fstab</code>（<code>man 5 fstab</code>查看挂载及文件系统信息），使用<code>blkid</code>查看UUID，写入配置：<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 硬盘</span></span><br><span class="line"><span class="attr">UUID</span>=xxx /mnt xfs  default <span class="number">0</span> <span class="number">0</span></span><br><span class="line"><span class="comment"># 虚拟内存</span></span><br><span class="line"><span class="attr">UUID</span>=xxx swap swap default <span class="number">0</span> <span class="number">0</span></span><br></pre></td></tr></table></figure></li>
+<li>使用<code>df -h</code>或<code>fdisk -l</code>查看硬盘挂载结果；</li>
+<li><code>mkswap</code>格式化为虚拟内存用，挂载/写在虚拟内存<code>swapon /dev/vdb5</code>、<code>swapoff /dev/vdb5</code>；</li>
+<li>使用<code>top</code>或<code>free</code>查看Swap内存挂载结果；</li>
+</ul>
+</li>
+</ol>
+<ol start="5">
+<li>分区必须是连续的存储空间，而卷没有这种要求：<ul>
+<li>分区不能跨硬盘，而卷可以；</li>
+<li>分区不能动态扩展，而卷可以；</li>
+<li>逻辑卷可以做快照；</li>
+<li>物理分区-&gt;pv（物理卷）-&gt;vg（卷组）-&gt;lv（逻辑卷，当做逻辑卷或虚拟硬盘）-&gt;mkfs-&gt;mount</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>创建物理卷<code>pvcreate /dev/vdb7 /dev/vdc5</code>：<ul>
+<li><code>pvs</code>或<code>pvscan</code>查看概要，</li>
+<li><code>pvdisplay /dev/vdb7</code>查看详情；</li>
+<li><code>-s</code>指定PE（PhysicalExtent）大小（默认4M）；</li>
+</ul>
+</li>
+</ol>
+<ol start="7">
+<li>创建卷组<code>vgcreate vg0 /dev/vdb7 /dev/vdc5</code><ul>
+<li><code>vgs</code>查看卷组；</li>
+<li><code>vgremove vg0</code>删除卷组</li>
+<li><code>vgcreate -s 8m vg0 /dev/vdb7 /dev/vdc5</code>按8M指定PE大小</li>
+</ul>
+</li>
+</ol>
+<ol start="8">
+<li>创建逻辑卷<code>lvcreate -l 512 -n lv0 vg0</code><ul>
+<li><code>lvs</code>查看逻辑卷概要；</li>
+<li><code>-n</code> 指定卷名</li>
+<li><code>-l</code> 指定分配到PE个数；</li>
+<li><code>-L</code> 指定分配的空间；</li>
+</ul>
+</li>
+</ol>
+<ol start="9">
+<li>此时<code>lsblk</code>可以看到逻辑卷了，<code>mkfs.xfs</code>格式化<code>mkfs.xfs /dev/vg0/lv0</code>或<code>mkfs.xfs /dev/mapper/vg0-lv0</code>；</li>
+</ol>
+<ol start="10">
+<li>创建挂载点<code>mkdir -p /lv/&#123;lv0,lv1&#125;</code>，在<code>vim /etc/fstab</code>中的配置使挂载永久生效；</li>
+</ol>
+<ol start="11">
+<li>扩展逻辑卷：<ul>
+<li>扩展前<code>vgs</code>查看卷组的空闲，扩展使用<code>lvextend -L +2G /dev/vg0/lv0</code>，<code>df -hT</code>查看文件系统信息，而xfs支持自动识别增重的空间，使用<code>xfs_growfs /dev/vg0/lv0</code>；</li>
+<li>若卷组空间不够，硬向卷组添加空间（插硬盘，分区并格式化）；</li>
+<li>创建pv<code>pvcreate /dev/vdc6 /dev/vdd5</code>；</li>
+<li>扩展vg<code>vgextent vg0 /dev/vdc6 /dev/vdd5</code>；</li>
+<li>扩展lv<code>lvextent -L +10G /dev/vg0/lv1</code>，若为ext文件系统使用<code>resize2fs /dev/vg0/lv1</code>重新识别；</li>
+</ul>
+</li>
+</ol>
+<h1 id="2018-07-27"><a href="#2018-07-27" class="headerlink" title="2018-07-27"></a>2018-07-27</h1><h2 id="启动排错"><a href="#启动排错" class="headerlink" title="启动排错"></a>启动排错</h2><ol>
+<li>启动相关项位于<code>/boot</code>，vm开头的文件为内核文件，相关配置文件位于<code>/etc/grub.d</code>；</li>
+</ol>
+<ol start="2">
+<li>查看运行级别<code>runlevel</code>，共0~6七个运行级别，类似于Windows“安全模式、带网络的安全模式等”，不同的启动模式启动的功能不一样，正常启动模式为3和5：<ul>
+<li><code>runlevel</code>的返回值第一位为上次运行级别，第二位为本次运行级别；</li>
+<li>0为关机，即什么都不启动；</li>
+<li>1为单用户模式（root用户），即救援模式（类似Windows的安全模式）；</li>
+<li>2/4，未定义，都认为是3模式；</li>
+<li>3为正常命令行启动，不提供图形化界面；</li>
+<li>5为正常图形化启动，提供图形化界面及命令行界面（<code>ctl+alt+F2~6</code>）</li>
+<li>6位重启（先结束所有进程再启动）；</li>
+<li>使用<code>init n</code>即可执行相应的运行级别，如<code>init 6</code>即重启；</li>
+<li>以上是为了兼容Redhat 6，在7版本通常使用<code>systemctl [target]</code></li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li><code>systemctl</code>目标：<ul>
+<li><code>systemctl poweroff</code>或直接执行<code>poweroff</code>，查看<code>poweroff</code>可知<code>/usr/sbin/poweroff -&gt; ../bin/systemctl</code>，即<code>systemctl poweroff.target</code>；</li>
+<li><code>reboot</code>与上一条一样；</li>
+<li>目标存放在<code>/usr/lib/systemd/system</code>，使用<code>ll *.target</code>查看，发现Redhat 7的目标更加细致；</li>
+<li><code>systemctl -t</code>补全可以看到目标容器，将目标分为10类，类似分类服务，如查看<code>vim NetworkManager.service</code>中，有配置<code>Wants=network.target</code>表示NetworkManager服务应加入network目标容器；</li>
+<li>临时切换目标<code>systemctl isolate multi-user.target</code>（3级别）、<code>systemctl isolate graphical.target</code>（5级别）；</li>
+<li>查看默认目标<code>systemctl get-default</code>；</li>
+<li>设置默认目标<code>systemctl set-default multi-user.target</code>；</li>
+<li>刚启动时也可以设置目标，选择Linux版本时按<code>e</code>键，在<code>linux16</code>行行尾（物理机，虚拟机删到<code>ro</code>），输入<code>systemd.unit=multi-user.target</code>，按<code>^x</code>提交，系统启动就进入正常命令行模式了；</li>
+</ul>
+</li>
+</ol>
+<h2 id="修复密码"><a href="#修复密码" class="headerlink" title="修复密码"></a>修复密码</h2><ol>
+<li><code>openssl rand -hex 16</code>产生16位随机数，以十六进制输出；</li>
+<li><code>openssl rand -base64 16 | passwd --stdin root</code>，此时不知道root密码了：<ul>
+<li>选择Linux版本时按<code>e</code>键，在虚拟机环境<code>linux16</code>删到<code>ro</code>，输入<code>rd.break</code>（打断正常启动），按<code>^x</code>提交，进入交换根（内存根目录）；</li>
+<li>查看挂载情况<code>mount | grep ^/</code>，发现只读<code>ro</code>，重新挂载为读写<code>mount -o remount,rw /sysroot</code></li>
+<li>临时切换根目录<code>chroot /sysroot</code>，为了恢复环境（如补全等功能）；</li>
+<li>查看<code>ls -lZ /etc/shadow</code>，在此模式下发现没有标签（即SELinux）</li>
+<li><code>echo &#39;redhat&#39;| passwd --stdin root</code></li>
+<li>通知SELinux重建标签<code>touch /.autorelabel</code></li>
+<li>退出临时根<code>exit</code>，退出中断<code>exit</code>，继续启动过程，SELinux启动会重新打标签，自动重启后正常；</li>
+</ul>
+</li>
+</ol>
+<h2 id="修复文件系统"><a href="#修复文件系统" class="headerlink" title="修复文件系统"></a>修复文件系统</h2><ol>
+<li><code>fstab</code>的永久挂载信息有误：<ul>
+<li>选择Linux版本时按<code>e</code>键，在虚拟机环境<code>linux16</code>删到<code>ro</code>，输入<code>systemd.unit=emergency.target</code>（<code>rescue</code>也可以，打断正常启动），按<code>^x</code>提交，进入维护模式；</li>
+<li>查看关注情况<code>mount | grep ^/</code>，发现只读<code>ro</code>，重新挂载为读写<code>mount -o remount,rw /</code>；</li>
+<li>修改<code>/etc/fstab</code>，删除错误信息后<code>reboot</code>，系统正常；</li>
+</ul>
+</li>
+</ol>
+<h2 id="启动引导程序故障"><a href="#启动引导程序故障" class="headerlink" title="启动引导程序故障"></a>启动引导程序故障</h2><ol>
+<li><code>grub</code>错误，启动Linux立刻报错：<ul>
+<li>个人电脑：设备断电，将硬盘换到正常设备，挂载并<code>chroot</code>；服务器：使用救援光盘（虚拟机用<code>virt-manager</code>挂载光驱并加载下载好的镜像）；</li>
+<li>启动按<code>esc</code>进入启动项，选择光驱启动；</li>
+<li>选择<code>rescue xxx</code>，选择<code>continue</code>；</li>
+<li>临时切换根目录<code>chroot /mnt/sysimage</code>；</li>
+<li><code>vim /etc/grub2.cfg</code>查看配置找出错误，或生成默认配置覆盖<code>grub2-mkconfig &gt; /etc/grub2.cfg</code>；</li>
+</ul>
+</li>
+</ol>
+<h2 id="控制服务及守护进程"><a href="#控制服务及守护进程" class="headerlink" title="控制服务及守护进程"></a>控制服务及守护进程</h2><ol>
+<li>守护进程可以在<code>/usr/lib/systemd/system</code>中通过<code>ll -d *d.*</code>大概查看；</li>
+</ol>
+<ol start="2">
+<li>使用<code>systemctl</code>控制守护进程及服务，也可以控制系统运行级别；</li>
+</ol>
+<ol start="3">
+<li>系统相关功能的启动及服务的启动都是通过systemd的system和service manager管理；</li>
+</ol>
+<ol start="4">
+<li>Redhat认为，守护进程是一直在后台执行的作业，服务是守护进程的集合；</li>
+</ol>
+<ol start="5">
+<li>进程ID为1的为systemd的进程，<code>systemctl</code>是systemd的前端命令行；<ul>
+<li><code>systemctl</code>查询所有单元；</li>
+<li><code>systemctl --type=service</code>查看服务类单元；</li>
+<li><code>systemctl start|stop xxx.service</code>临时启停服务；</li>
+<li><code>systemctl enable|disable xxx.service</code>永久起停服务；</li>
+</ul>
+</li>
+</ol>
+<ol start="6">
+<li>对于目标（target）：<ul>
+<li>其中的emergency初始化内核（<code>/boot</code>中vm开头）、初始化内存（<code>/boot</code>中initramfs开头）、初始化系统根目录（挂载到<code>/</code>并为只读挂载）；</li>
+<li>其中的rescue模式为单用户，初始化基本的系统环境；</li>
+<li>multi-user模式提供字符接口；</li>
+<li>graphical模式提供字符及图形化接口；</li>
+<li>目标可以包含其他目标，使用<code>systemctl list-dependencies graphical.target</code>查看目标间的依赖关系；</li>
+</ul>
+</li>
+</ol>
+<h2 id="配置IPv6"><a href="#配置IPv6" class="headerlink" title="配置IPv6"></a>配置IPv6</h2><ol>
+<li>回顾<code>NetworkManager</code>：<ul>
+<li>一个device就是一个网络接口；</li>
+<li>一个连接就对应一个配置文件（连接是为设备做的）；</li>
+<li>一个设备可以对应多个连接；同一个时刻一个设备只允许一个连接生效；</li>
+<li>连接的永久配置在<code>/etc/sysconfig/network-scripts/ifcfg-name</code>；</li>
+<li><code>nmcli</code>用来创建或编辑连接配置；</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>IPv6有128位，缩写为8组十六进制数字，每组的引导0可以省略，连续的0组可以省略一次，<code>XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX</code>；<ul>
+<li><code>::1/128 localhost</code>，回环地址；</li>
+<li><code>:: 0.0.0.0</code>，未分配；</li>
+<li><code>::/0 0.0.0.0/0</code>，匹配IPv4的所有IP地址；</li>
+<li><code>2000::/3</code>，全局单播地址；</li>
+<li><code>ffe0::/8</code>，多播地址；</li>
+<li><code>fe80::/64</code>，链路多播；</li>
+<li><code>fe80::/64</code>，链路本地单播；</li>
+<li><code>fddb:fe2a:ab1e::c0a8:1/64</code></li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>IPv6故障排查：<ul>
+<li><code>ping6 fddb:fe2a:ab1e::c0a8:fe</code>，IPv6的ping命令；</li>
+<li><code>tracepath6 fddb:fe2a:ab1e::c0a8:fe</code>，追踪路由；</li>
+<li><code>traceroute -6 fddb:fe2a:ab1e::c0a8:fe</code>，追踪路由的另一种写法；</li>
+<li><code>ip -6 route</code>，IPv6的路由；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li>试验<code>lab ipv6 setup</code>：<ul>
+<li>先查看所有网卡配置<code>ip a</code>；</li>
+<li>创建连接<code>nmcli connection add con-name eno1 autoconnect yes ifname eno1 type ethernet</code>；</li>
+<li>配置连接，使下次重启生效<code>nmcli connection modify eno1 ipv4.method manual ipv4.addresses &quot;192.168.0.100/24 192.168.0.254&quot; ipv6.method manual ipv6.addresses &quot;fddb:fe2a:ab1e::c0a8:64/64 fddb:fe2a:ab1e::c0a8:fe&quot;</code></li>
+<li>是配置立即生效<code>nmcli conncetion up eno1</code>；</li>
+<li>检查路由<code>ip route</code>和<code>ip -6 route</code>；</li>
+<li>ping测试<code>ping -I eno1 192.168.0.254</code>和<code>ping6 -I eno1 fddb:fe2a:ab1e::c0a8:fe</code>；</li>
+<li>跟踪IPv6路由<code>tracepath6 fddb:fe2a:ab1e::c0a8:fe</code>或<code>traceroute -6 fddb:fe2a:ab1e::c0a8:fe</code>；</li>
+</ul>
+</li>
+</ol>
+<h2 id="链路聚合与软件网桥"><a href="#链路聚合与软件网桥" class="headerlink" title="链路聚合与软件网桥"></a>链路聚合与软件网桥</h2><ol>
+<li>将多个物理网卡合并为一个逻辑网卡，做负载均衡、故障转移、增加吞吐量；</li>
+</ol>
+<ol start="2">
+<li>链路聚合<code>lab teambridge setup</code>；<ul>
+<li>先查看所有网卡配置<code>ip a</code>；</li>
+<li>新建team0连接<code>nmcli connection add con-name team0 autoconnect yes ifname team0 type team</code>；</li>
+<li>修改team0连接的运行法则<code>nmcli connection modify team0 team.config &#39;&#123;&quot;runner&quot;: &#123;&quot;name&quot;: &quot;activebackup&quot;&#125;&#125;&#39;</code>（运行法则参考<code>man teamd.conf</code>）；</li>
+<li>查看的team0连接的运行法则是否配置正确<code>nmcli connection show team0</code>；</li>
+<li>给team0连接添加物理接口：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmcli connection add con-name team0-port1 autoconnect yes ifname eno1 type team-slave master team0</span><br><span class="line">nmcli connection add con-name team0-port2 autoconnect yes ifname eno2 type team-slave master team0</span><br></pre></td></tr></table></figure></li>
+<li>查看添加的物理接口：<code>nmcli connection show</code>；</li>
+<li>为team0连接配置IPv4：<code>nmcli connection modify team0 ipv4.method manual ipv4.address &quot;192.168.0.100/24 192.168.0.254&quot;</code>；</li>
+<li>启动team0连接：<code>nmcli connection up team0</code>；</li>
+<li>测试连接<code>ping -I team0 192.168.0.254</code>；</li>
+<li>检查运行聚合连接team0的运行状态：<code>teamdctl team0 state</code>，可以看到只有一个接口处于活动状态，则另一个接口处于预备状态；</li>
+<li>测试关闭物理接口：<code>nmcli device disconnect eno1</code>（旧命令<code>ifdown eno1</code>），备用接口立刻上线；</li>
+<li>配置在<code>/etc/sysconfig/network-scripts/ifcfg-team0</code>、<code>/etc/sysconfig/network-scripts/ifcfg-team0-port1</code>、<code>/etc/sysconfig/network-scripts/ifcfg-team0-port2</code>中；</li>
+</ul>
+</li>
+</ol>
+<ol start="3">
+<li>软件网桥常用于虚拟化平台，在物理机上<code>brctl show</code>查看：<ul>
+<li>先查看所有网卡配置<code>ip a</code>；</li>
+<li>删除上一节的配置：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmcli connection delete team0</span><br><span class="line">nmcli connection delete team0-port1</span><br><span class="line">nmcli connection delete team0-port2</span><br></pre></td></tr></table></figure></li>
+<li>新建br0网桥：；</li>
+<li>给br0网桥添加物理接口：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmcli connection add con-name br0-port1 autoconnect yes ifname eno1 type bridge=slave master br0</span><br><span class="line">nmcli connection add con-name br0-port2 autoconnect yes ifname eno2 type bridge-slave master br0</span><br></pre></td></tr></table></figure></li>
+<li>给br0网桥配置IPv4：<code>nmcli connection modify br0 ipv4.method manual ipv4.addresses &quot;192.168.0.100/24 192.168.0.254&quot;</code>；</li>
+<li>查看链接<code>nmcli connection show</code>；</li>
+<li>启动端口：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmcli connection up br0-port1</span><br><span class="line">nmcli connection up br0-port2</span><br></pre></td></tr></table></figure></li>
+<li>测试连接：<code>ping -I br0 192.168.0.254</code>；</li>
+<li>若连接不通，重启网络服务：<code>systemctl restart network.service</code>，若仍然不通，重启虚拟机；</li>
+</ul>
+</li>
+</ol>
+<ol start="4">
+<li><code>nmcli</code>的配置建议参考<code>man 5 nmcli-example</code>，范例丰富；</li>
+</ol>
+<hr>
+<p><a href="/2018/07/21/redhat-1/">Redhat Linux初体验（1）</a><br><a href="/2018/08/03/redhat-3/">Redhat Linux初体验（3）</a></p>
+</div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/Shell/">Shell</a><a class="link-muted mr-2" rel="tag" href="/tags/Linux/">Linux</a></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css"><div class="social-share"></div><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.jpg" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wechatpay.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2018/08/03/redhat-3/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">Redhat Linux初体验（3）</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2018/07/21/redhat-1/"><span class="level-item">Redhat Linux初体验（1）</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">评论</h3><script src="https://utteranc.es/client.js" repo="zlotus/comment" issue-term="pathname" label="some-issue-label" theme="github-light" crossorigin="anonymous" async></script></div></div></div><div class="column column-left is-3-tablet is-3-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/opm_sq.png" alt="子实"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">子实</p><p class="is-size-6 is-block">程序员</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>陕西/西安</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">78</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">4</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">22</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/zlotus" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/zlotus"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com/qinzishi"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com/Zealot_uS"><i class="fab fa-twitter"></i></a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://www.zhihu.com/people/zlotus" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">知乎</span></span><span class="level-right"><span class="level-item tag">www.zhihu.com</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/Diary/"><span class="level-start"><span class="level-item">Diary</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/categories/Programming/"><span class="level-start"><span class="level-item">Programming</span></span><span class="level-end"><span class="level-item tag">64</span></span></a></li><li><a class="level is-mobile" href="/categories/Python/"><span class="level-start"><span class="level-item">Python</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/categories/Shell/"><span class="level-start"><span class="level-item">Shell</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Coroutines/"><span class="tag">Coroutines</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/JavaScript/"><span class="tag">JavaScript</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Javascript/"><span class="tag">Javascript</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Linux/"><span class="tag">Linux</span><span class="tag">30</span></a></div><div class="control"><a class="tags has-addons" href="/tags/OpenCV/"><span class="tag">OpenCV</span><span class="tag">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Operating-System/"><span class="tag">Operating System</span><span class="tag">21</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Paper/"><span class="tag">Paper</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">17</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Raspberry-Pi/"><span class="tag">Raspberry Pi</span><span class="tag">20</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Rust/"><span class="tag">Rust</span><span class="tag">29</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Shell/"><span class="tag">Shell</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/TensorFlow/"><span class="tag">TensorFlow</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Tokio/"><span class="tag">Tokio</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ZMQ/"><span class="tag">ZMQ</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/ctpn/"><span class="tag">ctpn</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/macOS/"><span class="tag">macOS</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/obsidion/"><span class="tag">obsidion</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%97%A5%E8%AE%B0/"><span class="tag">日记</span><span class="tag">6</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9D%82%E8%B0%88/"><span class="tag">杂谈</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95/"><span class="tag">算法</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/"><span class="tag">编程</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%84%9A%E6%9C%AC/"><span class="tag">脚本</span><span class="tag">4</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/opm_sq.png" alt="子实" height="28"></a><p class="is-size-7"><span>&copy; 2023 子实</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><div id="outdated"><h6>Your browser is out-of-date!</h6><p>Update your browser to view this website correctly.&amp;npsb;<a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update my browser now </a></p><p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">×</a></p></div><script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script><script>window.addEventListener("load", function () {
+            outdatedBrowser({
+                bgColor: '#f25648',
+                color: '#ffffff',
+                lowerThan: 'object-fit' // display on IE11 or below
+            });
+        });</script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
