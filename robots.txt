@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /_astro/
+
+Sitemap: https://zlog.zxdata.uk/sitemap-index.xml

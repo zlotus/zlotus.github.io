@@ -1,0 +1,10 @@
+# Workers Static Assets 不会自动排除这些，必须显式写。
+# 这个文件会被 Astro 从 public/ 拷到 dist/，wrangler 在上传资源时读它。
+
+# Worker 脚本本身不是静态资源
+_worker.js
+_routes.json
+
+node_modules
+.git
+.DS_Store

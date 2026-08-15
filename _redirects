@@ -1,0 +1,23 @@
+# 旧 Hexo 站的列表页 -> 新站。文章页不在这里：它们的 URL 是 1:1 复现的，
+# 由 src/pages/[year]/[month]/[day]/[...slug].astro 直接生成。
+#
+# 规则从上往下匹配，第一条命中即止，所以具体的要排在笼统的前面。
+# 校验：node scripts/check-urls.mjs（旧站 URL 全量跑一遍新站）
+
+# 首页分页：Hexo 是 /page/2/，Fuwari 是 /2/
+/page/:num/  /:num/  301
+
+# 标签页 -> 归档页的标签筛选（中文标签在 URL 里是百分号编码的，
+# Fuwari 的 getTagUrl 也用 encodeURIComponent，两边一致）
+/tags/:tag/page/:num/  /archive/?tag=:tag  301
+/tags/:tag/            /archive/?tag=:tag  301
+/tags/                 /archive/           301
+
+# 分类页 -> 归档页的分类筛选
+/categories/:cat/page/:num/  /archive/?category=:cat  301
+/categories/:cat/            /archive/?category=:cat  301
+/categories/                 /archive/                301
+
+# 归档：Hexo 按年/月/分页拆得很细，Fuwari 只有一个总归档页（客户端筛选）
+/archives/   /archive/  301
+/archives/*  /archive/  301
