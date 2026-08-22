@@ -856,6 +856,33 @@ HTTP_PROXY=http://127.0.0.1:7897
 HTTPS_PROXY=http://127.0.0.1:7897
 NO_PROXY=localhost,127.0.0.1,::1,nvcr.io
 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;为docker daemon配置代理（2026-08-22更新）：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如果你的 Docker 是 Linux 上 systemd 管理的 daemon，最稳妥的是给 &lt;code&gt;docker.service&lt;/code&gt; 配环境变量代理。&lt;/p&gt;
+&lt;p&gt;先创建目录：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo mkdir -p /etc/systemd/system/docker.service.d
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;然后新建：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo vim /etc/systemd/system/docker.service.d/proxy.conf
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;写：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Service]
+Environment=&quot;HTTP_PROXY=http://127.0.0.1:7897&quot;
+Environment=&quot;HTTPS_PROXY=http://127.0.0.1:7897&quot;
+Environment=&quot;NO_PROXY=localhost,127.0.0.1,::1&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;然后让 systemd 重新加载并重启 Docker：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo systemctl daemon-reload
+sudo systemctl restart docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;确认是否生效：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl show --property=Environment docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;应该能看到类似：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Environment=HTTP_PROXY=http://127.0.0.1:7897 HTTPS_PROXY=http://127.0.0.1:7897 ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;然后测试：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo docker pull node:24
+&lt;/code&gt;&lt;/pre&gt;
 &lt;h1&gt;3 llama.cpp测试&lt;/h1&gt;
 &lt;p&gt;下个测试用的小模型：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;# 创建模型存放目录
