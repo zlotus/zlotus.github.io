@@ -1434,421 +1434,920 @@ EOF
 &lt;p&gt;建议先改主机名：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;sudo hostnamectl set-hostname new_name
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;用gemini和chatgpt写了个一键安装脚本，也可以一步一步执行。&lt;/p&gt;
+&lt;p&gt;20260829更新，用gpt-sol-5.6更新了个一键安装脚本 &lt;a href=&quot;https://gist.github.com/zlotus/c0516b62bd5117a7683c76f82cf8ea03&quot;&gt;bootstrap-dev-v5.sh&lt;/a&gt; ，也可以分块执行。&lt;/p&gt;
+&lt;p&gt;脚本是幂等的，可以直接用：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;curl -fsSL \
+  https://gist.githubusercontent.com/zlotus/c0516b62bd5117a7683c76f82cf8ea03/raw/bootstrap.sh \
+  -o /tmp/bootstrap.sh
+
+GITHUB_TOKEN=xxx bash /tmp/bootstrap.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;具体内容如下：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;#!/usr/bin/env bash
-set -e
+set -Eeuo pipefail
+IFS=$&apos;\n\t&apos;
 
-# ==========================================
-#  WSL2 Development Environment Bootstrap
-#  Target: Debian/Ubuntu
-#  Role:   System, Shell, Rust, Node, Python, Git
-# ==========================================
+# ============================================================
+# Development Environment Bootstrap v5
+# Target: Ubuntu / Debian, WSL2 or native Linux
+# Arch:   x86_64 / arm64(aarch64)
+#
+# Usage:
+#   bash bootstrap-dev.sh                 # run all phases
+#   bash bootstrap-dev.sh system rust     # run selected phases
+#
+# Optional environment variables:
+#   BOOTSTRAP_PROXY=auto                  # default: auto-detect 127.0.0.1:7897
+#   BOOTSTRAP_PROXY=http://127.0.0.1:7897 # force proxy
+#   BOOTSTRAP_PROXY=off                   # disable proxy configuration
+#   INSTALL_LAZYVIM=1                     # default: 1
+#   INSTALL_MINICONDA=1                   # default: 1
+#   INSTALL_DOCKER=1                      # default: 1
+#   INSTALL_AI_CLI=1                      # default: 1
+#   INSTALL_DESKTOP_I18N=auto             # auto: native GUI only; 1=force; 0=skip
+#   UPGRADE_SYSTEM=0                      # default: 0; avoid surprise full upgrade
+#
+# GitHub API rate limit:
+#   export GITHUB_TOKEN=...               # optional; never hard-code token here
+# ============================================================
 
-# 颜色定义，方便看日志
-GREEN=&apos;\033[0;32m&apos;
-BLUE=&apos;\033[0;34m&apos;
-RED=&apos;\033[0;31m&apos;
-NC=&apos;\033[0m&apos;
+readonly SCRIPT_NAME=&quot;${0##*/}&quot;
+readonly GREEN=&apos;\033[0;32m&apos;
+readonly BLUE=&apos;\033[0;34m&apos;
+readonly YELLOW=&apos;\033[0;33m&apos;
+readonly RED=&apos;\033[0;31m&apos;
+readonly NC=&apos;\033[0m&apos;
 
-log() { echo -e &quot;${GREEN}[SETUP] $1${NC}&quot;; }
-info() { echo -e &quot;${BLUE}[INFO] $1${NC}&quot;; }
-error() { echo -e &quot;${RED}[ERROR] $1${NC}&quot;; }
+BOOTSTRAP_PROXY=&quot;${BOOTSTRAP_PROXY:-auto}&quot;
+INSTALL_LAZYVIM=&quot;${INSTALL_LAZYVIM:-1}&quot;
+INSTALL_MINICONDA=&quot;${INSTALL_MINICONDA:-1}&quot;
+INSTALL_DOCKER=&quot;${INSTALL_DOCKER:-1}&quot;
+INSTALL_AI_CLI=&quot;${INSTALL_AI_CLI:-1}&quot;
+INSTALL_DESKTOP_I18N=&quot;${INSTALL_DESKTOP_I18N:-auto}&quot;
+UPGRADE_SYSTEM=&quot;${UPGRADE_SYSTEM:-0}&quot;
+export CARGO_NET_RETRY=&quot;${CARGO_NET_RETRY:-5}&quot;
+export CARGO_HTTP_TIMEOUT=&quot;${CARGO_HTTP_TIMEOUT:-120}&quot;
+export RUSTUP_DOWNLOAD_TIMEOUT=&quot;${RUSTUP_DOWNLOAD_TIMEOUT:-120}&quot;
 
-# 0. 基础检查
-# ------------------------------------------
-if [ &quot;$EUID&quot; -eq 0 ]; then
-  error &quot;请不要使用 root 运行此脚本，请使用普通用户运行！&quot;
-  error &quot;脚本内部会在需要时请求 sudo 权限。&quot;
-  exit 1
-fi
+log()  { printf &apos;%b[SETUP]%b %s\n&apos; &quot;$GREEN&quot; &quot;$NC&quot; &quot;$*&quot;; }
+info() { printf &apos;%b[INFO ]%b %s\n&apos; &quot;$BLUE&quot; &quot;$NC&quot; &quot;$*&quot;; }
+warn() { printf &apos;%b[WARN ]%b %s\n&apos; &quot;$YELLOW&quot; &quot;$NC&quot; &quot;$*&quot; &amp;gt;&amp;amp;2; }
+die()  { printf &apos;%b[ERROR]%b %s\n&apos; &quot;$RED&quot; &quot;$NC&quot; &quot;$*&quot; &amp;gt;&amp;amp;2; exit 1; }
 
-# 保持 sudo 权限活跃，防止脚本运行中途因为超时等待输入密码
-sudo -v
-while true; do sudo -n true; sleep 60; kill -0 &quot;$$&quot; || exit; done 2&amp;gt;/dev/null &amp;amp;
+on_error() {
+    local exit_code=$?
+    printf &apos;%b[ERROR]%b line=%s exit=%s command=%q\n&apos; \
+        &quot;$RED&quot; &quot;$NC&quot; &quot;$LINENO&quot; &quot;$exit_code&quot; &quot;$BASH_COMMAND&quot; &amp;gt;&amp;amp;2
+    exit &quot;$exit_code&quot;
+}
+trap on_error ERR
 
-# 先把文件建好，后面的 Rust/NVM/Conda 就会以为你已经在使用 zsh 了，
-# 它们会自动把 export PATH... 写入这两个文件。
-touch &quot;$HOME/.bashrc&quot;
-touch &quot;$HOME/.zshrc&quot;
+TMP_DIR=&quot;&quot;
+SUDO_KEEPALIVE_PID=&quot;&quot;
+cleanup() {
+    [[ -n &quot;$SUDO_KEEPALIVE_PID&quot; ]] &amp;amp;&amp;amp; kill &quot;$SUDO_KEEPALIVE_PID&quot; 2&amp;gt;/dev/null || true
+    [[ -n &quot;$TMP_DIR&quot; &amp;amp;&amp;amp; -d &quot;$TMP_DIR&quot; ]] &amp;amp;&amp;amp; rm -rf &quot;$TMP_DIR&quot;
+}
+trap cleanup EXIT
 
-### ========================================
-### 1. 系统基础 (System Base)
-### ========================================
-log &quot;📦 1. 更新系统并安装基础依赖...&quot;
+retry() {
+    local max_attempts=&quot;$1&quot;; shift
+    local delay=&quot;$1&quot;; shift
+    local attempt=1
+    until &quot;$@&quot;; do
+        if (( attempt &amp;gt;= max_attempts )); then
+            return 1
+        fi
+        warn &quot;命令失败，第 ${attempt}/${max_attempts} 次；${delay}s 后重试: $*&quot;
+        sleep &quot;$delay&quot;
+        ((attempt++))
+    done
+}
 
-sudo apt update &amp;amp;&amp;amp; sudo apt upgrade -y
+optional() {
+    local desc=&quot;$1&quot;; shift
+    if ! &quot;$@&quot;; then
+        warn &quot;可选步骤失败，继续执行: ${desc}&quot;
+        return 0
+    fi
+}
 
-# 安装必备工具
-# build-essential: 编译环境
-# software-properties-common:以此支持 add-apt-repository
-sudo apt install -y \
-  git git-lfs curl wget ca-certificates \
-  build-essential pkg-config libssl-dev \
-  zip unzip btop tmux zsh vim \
-  net-tools iproute2 dnsutils \
-  jq tree procps make \
-  direnv rsync shellcheck \
-  software-properties-common ffmpeg \
-  fonts-noto-cjk fonts-wqy-microhei \
-  language-pack-zh-hans
+has() { command -v &quot;$1&quot; &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; }
 
-# 注：如果要装yq，直接装go版二进制文件。
-# 获取并转换系统架构名称 (匹配 mikefarah/yq 的命名规则)
-ARCH=$(uname -m)
-case $ARCH in
-    x86_64) YQ_ARCH=&quot;amd64&quot; ;;
-    aarch64) YQ_ARCH=&quot;arm64&quot; ;;
-    *) echo &quot;不支持的架构&quot;; exit 1 ;;
-esac
+is_wsl() {
+    grep -qiE &apos;(microsoft|wsl)&apos; /proc/version 2&amp;gt;/dev/null || \
+    grep -qiE &apos;(microsoft|wsl)&apos; /proc/sys/kernel/osrelease 2&amp;gt;/dev/null
+}
 
-# 下载最新版的二进制文件并安装到 /usr/local/bin
-wget &quot;https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${YQ_ARCH}&quot;
-sudo mv &quot;yq_linux_${YQ_ARCH}&quot; /usr/local/bin/yq
-sudo chmod +x /usr/local/bin/yq
+port_open() {
+    local host=&quot;$1&quot; port=&quot;$2&quot;
+    timeout 1 bash -c &quot;&amp;lt;/dev/tcp/${host}/${port}&quot; &amp;gt;/dev/null 2&amp;gt;&amp;amp;1
+}
 
-# 安装fastfetch，因为sudo后常用 gpg/dirmngr 去连 keyserver，
-# gpg/dirmngr 不读 apt 的代理配置，
-# 而且 sudo 默认还会把 shell 里的 http_proxy/https_proxy 环境变量“清掉”，
-# 导致直连 keyserver，然后被墙阻断，表现为“没反应”。
-export http_proxy=&quot;http://127.0.0.1:7897&quot;
-export https_proxy=&quot;http://127.0.0.1:7897&quot;
+has_graphical_desktop() {
+    # DISPLAY/WAYLAND_DISPLAY covers an active graphical session.  The
+    # desktop-session files cover bootstrap runs from a TTY/SSH on a desktop
+    # machine where the GUI is installed but not active in this shell.
+    [[ -n &quot;${DISPLAY:-}&quot; || -n &quot;${WAYLAND_DISPLAY:-}&quot; ]] &amp;amp;&amp;amp; return 0
+    [[ -d /usr/share/xsessions ]] &amp;amp;&amp;amp; find /usr/share/xsessions -maxdepth 1 -type f -name &apos;*.desktop&apos; -print -quit 2&amp;gt;/dev/null | grep -q . &amp;amp;&amp;amp; return 0
+    [[ -d /usr/share/wayland-sessions ]] &amp;amp;&amp;amp; find /usr/share/wayland-sessions -maxdepth 1 -type f -name &apos;*.desktop&apos; -print -quit 2&amp;gt;/dev/null | grep -q . &amp;amp;&amp;amp; return 0
+    return 1
+}
 
-# 或永久添加代理
-echo &apos;export http_proxy=&quot;http://127.0.0.1:7897&quot;&apos; &amp;gt;&amp;gt; ~/.bashrc
-echo &apos;export https_proxy=&quot;http://127.0.0.1:7897&quot;&apos; &amp;gt;&amp;gt; ~/.bashrc
-echo &apos;export http_proxy=&quot;http://127.0.0.1:7897&quot;&apos; &amp;gt;&amp;gt; ~/.zshrc
-echo &apos;export https_proxy=&quot;http://127.0.0.1:7897&quot;&apos; &amp;gt;&amp;gt; ~/.zshrc
+should_install_desktop_i18n() {
+    case &quot;$INSTALL_DESKTOP_I18N&quot; in
+        1|yes|true|on) return 0 ;;
+        0|no|false|off) return 1 ;;
+        auto)
+            is_wsl &amp;amp;&amp;amp; return 1
+            has_graphical_desktop
+            ;;
+        *) die &quot;INSTALL_DESKTOP_I18N 取值无效: $INSTALL_DESKTOP_I18N（应为 auto/1/0）&quot; ;;
+    esac
+}
 
-sudo --preserve-env=http_proxy,https_proxy add-apt-repository ppa:zhangsongcui3371/fastfetch -y
-sudo apt update
-sudo apt install fastfetch -y
+apt_package_exists() {
+    apt-cache show &quot;$1&quot; &amp;gt;/dev/null 2&amp;gt;&amp;amp;1
+}
 
-### ========================================
-### 2. Rust 工具链 (Rust &amp;amp; Modern CLI)
-### ========================================
-log &quot;🦀 2. 安装 Rust 环境...&quot;
+apt_install_if_available() {
+    local -a available=()
+    local pkg
+    for pkg in &quot;$@&quot;; do
+        if apt_package_exists &quot;$pkg&quot;; then
+            available+=(&quot;$pkg&quot;)
+        else
+            info &quot;软件源中没有 $pkg，跳过。&quot;
+        fi
+    done
+    ((${#available[@]})) &amp;amp;&amp;amp; apt_install &quot;${available[@]}&quot;
+}
 
-if ! command -v rustup &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  # 安装 Rustup
-  curl --proto &apos;=https&apos; --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-else
-  info &quot;Rustup 已安装，跳过.&quot;
-fi
+require_normal_user() {
+    [[ ${EUID:-$(id -u)} -ne 0 ]] || die &quot;请使用普通用户运行，脚本会在需要时调用 sudo。&quot;
+}
 
-# 【关键】加载环境变量，确保 cargo 命令可用
-# 如果你分步运行，请务必执行这一行
-source &quot;$HOME/.cargo/env&quot;
+require_supported_os() {
+    [[ -r /etc/os-release ]] || die &quot;无法识别 Linux 发行版。&quot;
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    case &quot;${ID:-}&quot; in
+        ubuntu|debian) ;;
+        *) die &quot;当前仅支持 Debian / Ubuntu；检测到: ${ID:-unknown}&quot; ;;
+    esac
+}
 
-log &quot;🦀 安装 Cargo Binstall (加速工具安装)...&quot;
-if ! command -v cargo-binstall &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  curl -L --proto &apos;=https&apos; --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-fi
+detect_arch() {
+    readonly UNAME_ARCH=&quot;$(uname -m)&quot;
+    case &quot;$UNAME_ARCH&quot; in
+        x86_64|amd64)
+            readonly ARCH=&quot;amd64&quot;
+            readonly GH_ARCH=&quot;x86_64&quot;
+            readonly FASTFETCH_ARCH=&quot;amd64&quot;
+            readonly MINICONDA_ARCH=&quot;x86_64&quot;
+            ;;
+        aarch64|arm64)
+            readonly ARCH=&quot;arm64&quot;
+            readonly GH_ARCH=&quot;arm64&quot;
+            readonly FASTFETCH_ARCH=&quot;aarch64&quot;
+            readonly MINICONDA_ARCH=&quot;aarch64&quot;
+            ;;
+        *) die &quot;不支持的 CPU 架构: $UNAME_ARCH（当前仅支持 x86_64 / arm64）&quot; ;;
+    esac
+}
 
-log &quot;🦀 安装现代命令行工具 (Rust编写)...&quot;
-# 以用户token登录方式，解除 GitHub API 速率限制 (Rate Limiting)  
-# cargo-binstall 匿名查询API每小时仅60次，
-# 不登录超过将报403，登录将提升到5000次
-# Settings -&amp;gt; Developer settings -&amp;gt; Personal access tokens -&amp;gt; Tokens (classic)，
-# Expiration 选 &quot;No expiration&quot;，Scopes (权限) 一个都不用勾
-export GITHUB_TOKEN=&quot;ghp_xxx&quot;
+setup_sudo() {
+    sudo -v
+    (
+        while true; do
+            sudo -n true
+            sleep 50
+        done
+    ) 2&amp;gt;/dev/null &amp;amp;
+    SUDO_KEEPALIVE_PID=$!
+}
 
-# bob-nvim: Neovim 版本管理器
-# starship: 跨 Shell 提示符
-# eza(ls), bat(cat), fd(find), ripgrep(grep), zoxide(cd)
-cargo binstall -y \
-  eza bat fd-find ripgrep du-dust procs zoxide hyperfine \
-  cargo-watch cargo-nextest cargo-update cargo-audit \
-  starship bob-nvim topgrade tealdeer zellij
+setup_proxy() {
+    local proxy=&quot;&quot;
+    case &quot;$BOOTSTRAP_PROXY&quot; in
+        off|none|0)
+            info &quot;代理配置已禁用。&quot;
+            return
+            ;;
+        auto)
+            if port_open 127.0.0.1 7897; then
+                proxy=&quot;http://127.0.0.1:7897&quot;
+                info &quot;检测到 127.0.0.1:7897，启用代理。&quot;
+            else
+                info &quot;未检测到 127.0.0.1:7897，按直连模式执行。&quot;
+                return
+            fi
+            ;;
+        http://*|https://*) proxy=&quot;$BOOTSTRAP_PROXY&quot; ;;
+        *) die &quot;BOOTSTRAP_PROXY 格式无效: $BOOTSTRAP_PROXY&quot; ;;
+    esac
 
-# atuin本地编译更不容易报错glibc的错误
-cargo install atuin
+    export http_proxy=&quot;$proxy&quot; https_proxy=&quot;$proxy&quot;
+    export HTTP_PROXY=&quot;$proxy&quot; HTTPS_PROXY=&quot;$proxy&quot;
 
-# 装了tealdeer可以卸载 ubuntu 自带的 haskell tldr-hs
-sudo apt remove -y tldr
+    # apt doesn&apos;t reliably inherit WSL/Windows proxy settings.
+    sudo tee /etc/apt/apt.conf.d/99bootstrap-proxy &amp;gt;/dev/null &amp;lt;&amp;lt;EOF_PROXY
+Acquire::http::Proxy &quot;${proxy}&quot;;
+Acquire::https::Proxy &quot;${proxy}&quot;;
+EOF_PROXY
 
-### ========================================
-### 3. Neovim (via Bob)
-### ========================================
-log &quot;📝 3. 使用 Bob 安装最新 Neovim...&quot;
+    BOOTSTRAP_PROXY=&quot;$proxy&quot;
+}
 
-# 确保 bob 在路径中
-export PATH=&quot;$HOME/.cargo/bin:$PATH&quot;
+apt_get() {
+    retry 5 4 sudo apt-get \
+        -o Acquire::Retries=5 \
+        -o Acquire::http::Timeout=30 \
+        -o Acquire::https::Timeout=30 \
+        &quot;$@&quot;
+}
 
-if command -v bob &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  # 安装最新的稳定版
-  bob install stable
-  bob use stable
-  
-  # 这一步是为了确保 nvim 能被系统找到
-  # Bob 默认把 nvim 放在 ~/.local/share/bob/nvim-bin
-  if [[ &quot;:$PATH:&quot; != *&quot;:$HOME/.local/share/bob/nvim-bin:&quot;* ]]; then
-      info &quot;提示: 请将 $HOME/.local/share/bob/nvim-bin 添加到你的 PATH 中&quot;
-  fi
-else
-  error &quot;Bob 安装失败，跳过 Neovim 安装。&quot;
-fi
+apt_install() {
+    retry 5 4 sudo DEBIAN_FRONTEND=noninteractive apt-get \
+        -o Acquire::Retries=5 \
+        -o Acquire::http::Timeout=30 \
+        -o Acquire::https::Timeout=30 \
+        install -y --no-install-recommends &quot;$@&quot;
+}
 
-# 1. 让当前终端立刻生效（临时）
-export PATH=&quot;$HOME/.local/share/bob/nvim-bin:$PATH&quot;
-# 2. 写入 .bashrc（永久生效，防止下次进 bash 找不到 nvim）
-echo &apos;export PATH=&quot;$HOME/.local/share/bob/nvim-bin:$PATH&quot;&apos; &amp;gt;&amp;gt; ~/.bashrc
-echo &apos;export PATH=&quot;$HOME/.local/share/bob/nvim-bin:$PATH&quot;&apos; &amp;gt;&amp;gt; ~/.zshrc
+curl_download() {
+    local output=&quot;$1&quot; url=&quot;$2&quot;
+    retry 5 3 curl -fL \
+        --retry 5 --retry-delay 2 --retry-all-errors \
+        --connect-timeout 20 --max-time 900 \
+        -o &quot;$output&quot; &quot;$url&quot;
+}
 
-# 如果我觉得 neovim 过于毛坯，可以安装 lazyvim: https://www.lazyvim.org/installation
-# 备份
-for dir in ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim; do
-    [ -d &quot;$dir&quot; ] &amp;amp;&amp;amp; mv &quot;$dir&quot; &quot;${dir}.bak&quot;
-done
+# Replace only the block owned by this bootstrap; preserve user content elsewhere.
+update_managed_block() {
+    local file=&quot;$1&quot; begin=&quot;$2&quot; end=&quot;$3&quot; content=&quot;$4&quot;
+    local tmp
+    tmp=&quot;$(mktemp)&quot;
+    touch &quot;$file&quot;
 
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-rm -rf ~/.config/nvim/.git
+    awk -v begin=&quot;$begin&quot; -v end=&quot;$end&quot; &apos;
+        $0 == begin { skip=1; next }
+        $0 == end   { skip=0; next }
+        !skip { print }
+    &apos; &quot;$file&quot; &amp;gt; &quot;$tmp&quot;
 
-# 第一次打开 nvim 要装东西，会比较慢，记得梯子
+    # Trim excessive trailing blank lines before appending our block.
+    sed -i -e :a -e &apos;/^\n*$/{$d;N;ba}&apos; &quot;$tmp&quot; 2&amp;gt;/dev/null || true
+    cat &quot;$tmp&quot; &amp;gt; &quot;$file&quot;
+    {
+        printf &apos;\n%s\n&apos; &quot;$begin&quot;
+        printf &apos;%s\n&apos; &quot;$content&quot;
+        printf &apos;%s\n&apos; &quot;$end&quot;
+    } &amp;gt;&amp;gt; &quot;$file&quot;
+    rm -f &quot;$tmp&quot;
+}
 
-### ========================================
-### 4. Node.js (NVM)
-### ========================================
-log &quot;🟢 4. 安装 Node.js 环境...&quot;
+github_api() {
+    local url=&quot;$1&quot;
+    local -a args=(-fsSL --retry 3 --retry-delay 2 -H &apos;Accept: application/vnd.github+json&apos;)
+    if [[ -n &quot;${GITHUB_TOKEN:-}&quot; ]]; then
+        args+=(-H &quot;Authorization: Bearer ${GITHUB_TOKEN}&quot;)
+    elif has gh &amp;amp;&amp;amp; gh auth status &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
+        local token
+        token=&quot;$(gh auth token 2&amp;gt;/dev/null || true)&quot;
+        [[ -n &quot;$token&quot; ]] &amp;amp;&amp;amp; args+=(-H &quot;Authorization: Bearer ${token}&quot;)
+    fi
+    curl &quot;${args[@]}&quot; &quot;$url&quot;
+}
 
+install_github_asset() {
+    local repo=&quot;$1&quot; regex=&quot;$2&quot; output=&quot;$3&quot;
+    local api asset_url
+    api=&quot;$(github_api &quot;https://api.github.com/repos/${repo}/releases/latest&quot;)&quot;
+    asset_url=&quot;$(jq -r --arg re &quot;$regex&quot; &apos;.assets[] | select(.name | test($re)) | .browser_download_url&apos; &amp;lt;&amp;lt;&amp;lt;&quot;$api&quot; | head -n1)&quot;
+    [[ -n &quot;$asset_url&quot; &amp;amp;&amp;amp; &quot;$asset_url&quot; != null ]] || return 1
+    curl_download &quot;$output&quot; &quot;$asset_url&quot;
+}
+
+phase_system() {
+    log &quot;[system] 更新软件索引并安装基础依赖&quot;
+    apt_get update
+    if [[ &quot;$UPGRADE_SYSTEM&quot; == 1 ]]; then
+        retry 3 4 sudo DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 upgrade -y
+    fi
+
+    apt_install \
+        git git-lfs git-extras curl wget ca-certificates gnupg \
+        build-essential pkg-config libssl-dev \
+        zip unzip xz-utils bzip2 tar \
+        btop tmux zsh vim \
+        net-tools iproute2 dnsutils \
+        jq tree procps make \
+        direnv rsync shellcheck ffmpeg \
+        locales fonts-noto-cjk fonts-wqy-microhei
+
+    # Ubuntu-only language pack; Debian doesn&apos;t ship this package.
+    if apt-cache show language-pack-zh-hans &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
+        apt_install language-pack-zh-hans
+    fi
+
+    git lfs install --skip-repo &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 || true
+
+    if ! has yq; then
+        log &quot;[system] 安装 yq (${ARCH})&quot;
+        curl_download &quot;$TMP_DIR/yq&quot; \
+            &quot;https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${ARCH}&quot;
+        sudo install -m 0755 &quot;$TMP_DIR/yq&quot; /usr/local/bin/yq
+    fi
+
+    if ! has fastfetch; then
+        log &quot;[system] 安装 fastfetch 官方 Release (${FASTFETCH_ARCH})&quot;
+        if install_github_asset fastfetch-cli/fastfetch \
+            &quot;^fastfetch-linux-${FASTFETCH_ARCH}\\.deb$&quot; &quot;$TMP_DIR/fastfetch.deb&quot;; then
+            sudo dpkg -i &quot;$TMP_DIR/fastfetch.deb&quot; || apt_get -f install -y
+        else
+            warn &quot;找不到 fastfetch 对应架构的官方 .deb，跳过。&quot;
+        fi
+    fi
+
+    # GitHub CLI official apt repository. dpkg architecture handles amd64/arm64.
+    if ! has gh; then
+        log &quot;[system] 安装 GitHub CLI&quot;
+        sudo install -d -m 0755 /etc/apt/keyrings
+        curl_download &quot;$TMP_DIR/githubcli.gpg&quot; \
+            https://cli.github.com/packages/githubcli-archive-keyring.gpg
+        sudo install -m 0644 &quot;$TMP_DIR/githubcli.gpg&quot; /etc/apt/keyrings/githubcli-archive-keyring.gpg
+        printf &apos;deb [arch=%s signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\n&apos; \
+            &quot;$(dpkg --print-architecture)&quot; | sudo tee /etc/apt/sources.list.d/github-cli.list &amp;gt;/dev/null
+        apt_get update
+        apt_install gh
+    fi
+}
+
+
+phase_desktop() {
+    log &quot;[desktop] 配置桌面 Linux 中文显示与 Fcitx5 输入法&quot;
+
+    if is_wsl; then
+        info &quot;WSL 环境：中文输入由 Windows 输入法负责，跳过 Linux 输入法安装。&quot;
+        return 0
+    fi
+
+    if ! should_install_desktop_i18n; then
+        info &quot;未检测到桌面环境，或已按配置跳过 desktop phase。&quot;
+        return 0
+    fi
+
+    # Keep English as the system/UI language for easier diagnostics, while
+    # ensuring both English and Simplified Chinese UTF-8 locales exist.
+    apt_install_if_available locales language-pack-en language-pack-zh-hans \
+        fonts-noto-cjk fonts-wqy-microhei
+
+    if [[ -f /etc/locale.gen ]]; then
+        sudo sed -i -E \
+            -e &apos;s/^# *en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/&apos; \
+            -e &apos;s/^# *zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/&apos; \
+            /etc/locale.gen
+        sudo locale-gen en_US.UTF-8 zh_CN.UTF-8
+    else
+        sudo locale-gen en_US.UTF-8 zh_CN.UTF-8 || true
+    fi
+
+    # Do not force the desktop UI into Chinese.  If LANG is not already set
+    # persistently, retain the developer-friendly English UTF-8 default.
+    if [[ -z &quot;$(grep -E &apos;^LANG=&apos; /etc/default/locale 2&amp;gt;/dev/null || true)&quot; ]]; then
+        sudo update-locale LANG=en_US.UTF-8
+    fi
+
+    apt_install_if_available \
+        fcitx5 fcitx5-chinese-addons fcitx5-config-qt \
+        fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 \
+        fcitx5-frontend-qt5 fcitx5-frontend-qt6 \
+        im-config
+
+    # Debian/Ubuntu&apos;s supported selector.  This writes ~/.xinputrc and is
+    # preferable to blindly appending GTK/Qt environment variables to shell rc.
+    if has im-config; then
+        im-config -n fcitx5 || warn &quot;im-config 无法自动选择 fcitx5，可登录桌面后运行: im-config&quot;
+    fi
+
+    # Provide a desktop autostart fallback.  Existing user customizations are
+    # not overwritten; Fcitx5 itself safely ignores duplicate start attempts.
+    if has fcitx5; then
+        mkdir -p &quot;$HOME/.config/autostart&quot;
+        cat &amp;gt; &quot;$HOME/.config/autostart/org.fcitx.Fcitx5.desktop&quot; &amp;lt;&amp;lt;&apos;EOF_FCITX&apos;
+[Desktop Entry]
+Type=Application
+Name=Fcitx 5
+Comment=Start Fcitx 5 input method
+Exec=fcitx5 -d
+Terminal=false
+X-GNOME-Autostart-enabled=true
+NoDisplay=true
+EOF_FCITX
+    fi
+
+    info &quot;已安装 Fcitx5 与中文附加组件。&quot;
+    info &quot;注销并重新登录桌面后生效；首次使用若没有“拼音”，请打开 fcitx5-config-qt 添加 Pinyin。&quot;
+}
+
+phase_rust() {
+    log &quot;[rust] 安装 Rust 与现代 CLI&quot;
+    if ! has rustup; then
+        retry 5 3 curl --proto &apos;=https&apos; --tlsv1.2 -fL \
+            --retry 5 --retry-delay 2 --retry-all-errors \
+            --connect-timeout 20 --max-time 300 \
+            https://sh.rustup.rs -o &quot;$TMP_DIR/rustup-init.sh&quot;
+        sh &quot;$TMP_DIR/rustup-init.sh&quot; -y --no-modify-path
+    fi
+    # shellcheck disable=SC1091
+    [[ -f &quot;$HOME/.cargo/env&quot; ]] &amp;amp;&amp;amp; source &quot;$HOME/.cargo/env&quot;
+    export PATH=&quot;$HOME/.cargo/bin:$PATH&quot;
+
+    # Bootstrap should not fail just because rustup&apos;s own self-update endpoint
+    # has a transient TLS/CDN problem. Upgrade rustup explicitly when desired.
+    rustup set auto-self-update disable &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 || true
+
+    if ! rustup toolchain list 2&amp;gt;/dev/null | grep -q &apos;^stable-&apos;; then
+        retry 5 5 rustup toolchain install stable --profile default
+    else
+        info &quot;stable Rust toolchain 已存在，跳过重复下载。&quot;
+    fi
+    retry 3 3 rustup default stable
+
+    if ! has cargo-binstall; then
+        curl_download &quot;$TMP_DIR/install-cargo-binstall.sh&quot; \
+            https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh
+        bash &quot;$TMP_DIR/install-cargo-binstall.sh&quot;
+    fi
+
+    local tools=(
+        eza bat fd-find ripgrep du-dust procs zoxide hyperfine
+        cargo-watch cargo-nextest cargo-update cargo-audit
+        starship bob-nvim topgrade tealdeer zellij
+    )
+    local tool
+    for tool in &quot;${tools[@]}&quot;; do
+        if cargo install --list 2&amp;gt;/dev/null | grep -qE &quot;^${tool//-/[-_]} v&quot;; then
+            info &quot;Rust 工具已存在: $tool&quot;
+        else
+            optional &quot;cargo binstall $tool&quot; retry 3 5 cargo binstall -y &quot;$tool&quot;
+        fi
+    done
+
+    if ! has atuin; then
+        # Preserve the original preference: local compile avoids prebuilt glibc surprises.
+        optional &quot;cargo install atuin&quot; retry 3 8 cargo install --locked atuin
+    fi
+
+    apt_get remove -y tldr &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 || true
+}
+
+
+phase_agent_tools() {
+    log &quot;[agent-tools] 安装 Agent 常用文档 / 数据 / 媒体处理工具&quot;
+
+    # P0/P1/P2 agent toolbox. apt_install_if_available keeps the bootstrap
+    # portable across supported Debian/Ubuntu versions when a package name is
+    # temporarily absent from a specific repository.
+    apt_install_if_available \
+        file p7zip-full zstd \
+        poppler-utils pandoc imagemagick ghostscript libimage-exiftool-perl ffmpeg \
+        sqlite3 miller csvkit xmlstarlet shfmt
+
+    # jq/yq are installed in phase_system because other bootstrap helpers also
+    # depend on them (GitHub release parsing, YAML manipulation).
+
+    # DuckDB publishes native CLI archives for both Linux amd64 and arm64.
+    if ! has duckdb; then
+        log &quot;[agent-tools] 安装 DuckDB CLI (${ARCH})&quot;
+        if install_github_asset duckdb/duckdb \
+            &quot;^duckdb_cli-linux-${ARCH}\\.zip$&quot; &quot;$TMP_DIR/duckdb.zip&quot;; then
+            rm -rf &quot;$TMP_DIR/duckdb-extract&quot;
+            mkdir -p &quot;$TMP_DIR/duckdb-extract&quot;
+            unzip -q &quot;$TMP_DIR/duckdb.zip&quot; -d &quot;$TMP_DIR/duckdb-extract&quot;
+            [[ -x &quot;$TMP_DIR/duckdb-extract/duckdb&quot; ]] || chmod +x &quot;$TMP_DIR/duckdb-extract/duckdb&quot; 2&amp;gt;/dev/null || true
+            sudo install -m 0755 &quot;$TMP_DIR/duckdb-extract/duckdb&quot; /usr/local/bin/duckdb
+        else
+            die &quot;未找到 DuckDB Linux ${ARCH} CLI Release。&quot;
+        fi
+    fi
+
+    # htmlq is tiny, but on ARM64 we deliberately compile locally rather than
+    # relying on a third-party prebuilt binary with an unknown glibc baseline.
+    if ! has htmlq; then
+        has cargo || die &quot;htmlq 需要 Cargo；请先运行: $SCRIPT_NAME rust&quot;
+        retry 3 8 cargo install --locked htmlq
+    fi
+}
+
+phase_neovim() {
+    log &quot;[neovim] 通过 Bob 安装 stable Neovim&quot;
+    export PATH=&quot;$HOME/.cargo/bin:$HOME/.local/share/bob/nvim-bin:$PATH&quot;
+    has bob || die &quot;bob 未安装；请先运行: $SCRIPT_NAME rust&quot;
+
+    bob install stable
+    bob use stable
+
+    if [[ &quot;$INSTALL_LAZYVIM&quot; == 1 ]]; then
+        if [[ ! -e &quot;$HOME/.config/nvim/lua/config/lazy.lua&quot; &amp;amp;&amp;amp; ! -e &quot;$HOME/.config/nvim/lua/config/options.lua&quot; ]]; then
+            if [[ -e &quot;$HOME/.config/nvim&quot; ]]; then
+                local backup=&quot;$HOME/.config/nvim.pre-bootstrap.$(date +%Y%m%d-%H%M%S)&quot;
+                warn &quot;检测到已有 ~/.config/nvim，备份为: $backup&quot;
+                mv &quot;$HOME/.config/nvim&quot; &quot;$backup&quot;
+            fi
+            mkdir -p &quot;$HOME/.config&quot;
+            retry 3 2 git clone --depth=1 https://github.com/LazyVim/starter &quot;$HOME/.config/nvim&quot;
+            rm -rf &quot;$HOME/.config/nvim/.git&quot;
+        else
+            info &quot;检测到已有 Neovim/LazyVim 配置，不覆盖。&quot;
+        fi
+    fi
+}
+
+phase_node() {
+    log &quot;[node] 安装 NVM / Node LTS / pnpm / AI CLI&quot;
+    export NVM_DIR=&quot;$HOME/.nvm&quot;
+    if [[ ! -s &quot;$NVM_DIR/nvm.sh&quot; ]]; then
+        # Clone instead of letting the nvm installer mutate shell rc files.
+        if [[ -e &quot;$NVM_DIR&quot; ]]; then
+            local nvm_backup=&quot;${NVM_DIR}.pre-bootstrap.$(date +%Y%m%d-%H%M%S)&quot;
+            warn &quot;检测到不完整的 $NVM_DIR，移动到: $nvm_backup&quot;
+            mv &quot;$NVM_DIR&quot; &quot;$nvm_backup&quot;
+        fi
+        retry 3 2 git clone --depth=1 https://github.com/nvm-sh/nvm.git &quot;$NVM_DIR&quot;
+        (
+            cd &quot;$NVM_DIR&quot;
+            git fetch --tags --quiet
+            local latest
+            latest=&quot;$(git tag --sort=-v:refname | head -n1)&quot;
+            [[ -n &quot;$latest&quot; ]] &amp;amp;&amp;amp; git checkout --quiet &quot;$latest&quot;
+        )
+    fi
+    # shellcheck disable=SC1090
+    . &quot;$NVM_DIR/nvm.sh&quot;
+
+    nvm install --lts
+    nvm alias default &apos;lts/*&apos;
+    nvm use default
+
+    export PNPM_HOME=&quot;$HOME/.local/share/pnpm&quot;
+    export PNPM_GLOBAL_BIN_DIR=&quot;$PNPM_HOME/bin&quot;
+    mkdir -p &quot;$PNPM_HOME&quot; &quot;$PNPM_GLOBAL_BIN_DIR&quot;
+    # pnpm may persist a global-bin-dir from a previous install.  Put both the
+    # normal PNPM_HOME and the configured global bin directory in PATH now so
+    # the very first `pnpm add -g` works in this non-interactive shell.
+    export PATH=&quot;$PNPM_GLOBAL_BIN_DIR:$PNPM_HOME:$PATH&quot;
+
+    # Corepack is shipped with supported Node releases and avoids another curl|sh installer.
+    if has corepack; then
+        corepack enable
+        corepack prepare pnpm@latest --activate
+    elif ! has pnpm; then
+        retry 5 3 npm install -g pnpm
+    fi
+
+    # Own pnpm&apos;s global bin location instead of inheriting an old per-machine
+    # value that may not be present in PATH on a fresh bootstrap run.
+    pnpm config set global-bin-dir &quot;$PNPM_GLOBAL_BIN_DIR&quot;
+    retry 5 3 pnpm add -g typescript tsx eslint prettier
+
+    if [[ &quot;$INSTALL_AI_CLI&quot; == 1 ]]; then
+        # OpenAI&apos;s official Codex CLI install command currently uses npm.
+        # Keep it independent from pnpm so upgrades follow OpenAI&apos;s own path.
+        if ! has codex; then
+            retry 5 3 npm install -g @openai/codex
+        else
+            info &quot;Codex CLI 已存在，跳过安装。&quot;
+        fi
+
+        # Anthropic recommends the native installer on Linux/WSL. Download it
+        # first so our curl retry/timeout policy still applies, then execute it.
+        if ! has claude; then
+            curl_download &quot;$TMP_DIR/claude-install.sh&quot; https://claude.ai/install.sh
+            retry 5 3 bash &quot;$TMP_DIR/claude-install.sh&quot;
+        else
+            info &quot;Claude Code 已存在，跳过安装。&quot;
+        fi
+    fi
+}
+
+phase_python() {
+    log &quot;[python] 安装 uv 与 Python CLI&quot;
+    export PATH=&quot;$HOME/.local/bin:$PATH&quot;
+    if ! has uv; then
+        curl_download &quot;$TMP_DIR/uv-install.sh&quot; https://astral.sh/uv/install.sh
+        sh &quot;$TMP_DIR/uv-install.sh&quot;
+    fi
+
+    local tool
+    for tool in ruff mypy black poetry httpie; do
+        if uv tool list 2&amp;gt;/dev/null | grep -qE &quot;^${tool} v&quot;; then
+            info &quot;uv tool 已存在: $tool&quot;
+        else
+            optional &quot;uv tool install $tool&quot; uv tool install &quot;$tool&quot;
+        fi
+    done
+
+    if [[ &quot;$INSTALL_MINICONDA&quot; == 1 ]]; then
+        local conda_dir=&quot;$HOME/miniconda3&quot;
+        if [[ ! -x &quot;$conda_dir/bin/conda&quot; ]]; then
+            log &quot;[python] 安装 Miniconda (${MINICONDA_ARCH})&quot;
+            curl_download &quot;$TMP_DIR/miniconda.sh&quot; \
+                &quot;https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-${MINICONDA_ARCH}.sh&quot;
+            bash &quot;$TMP_DIR/miniconda.sh&quot; -b -p &quot;$conda_dir&quot;
+        fi
+        &quot;$conda_dir/bin/conda&quot; config --set auto_activate_base false
+        # Do NOT run conda init; shell config is owned by this bootstrap.
+    fi
+}
+
+phase_git() {
+    log &quot;[git] 安装 lazygit&quot;
+    if ! has lazygit; then
+        if install_github_asset jesseduffield/lazygit \
+            &quot;^lazygit_[0-9.]+_linux_${GH_ARCH}\\.tar\\.gz$&quot; &quot;$TMP_DIR/lazygit.tar.gz&quot;; then
+            tar -xzf &quot;$TMP_DIR/lazygit.tar.gz&quot; -C &quot;$TMP_DIR&quot; lazygit
+            sudo install -m 0755 &quot;$TMP_DIR/lazygit&quot; /usr/local/bin/lazygit
+        else
+            die &quot;未找到 lazygit 的 Linux ${GH_ARCH} Release。&quot;
+        fi
+    fi
+}
+
+phase_shell() {
+    log &quot;[shell] 配置 Oh My Zsh / fzf / Starship / aliases&quot;
+
+    if [[ ! -d &quot;$HOME/.oh-my-zsh/.git&quot; ]]; then
+        retry 3 2 git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git &quot;$HOME/.oh-my-zsh&quot;
+    fi
+    if [[ ! -d &quot;$HOME/.fzf/.git&quot; ]]; then
+        retry 3 2 git clone --depth=1 https://github.com/junegunn/fzf.git &quot;$HOME/.fzf&quot;
+    fi
+
+    local shell_block
+    shell_block=$(cat &amp;lt;&amp;lt;&apos;EOS&apos;
+# PATHs
+export PATH=&quot;$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/share/bob/nvim-bin:$PATH&quot;
+
+# Rust
+[ -f &quot;$HOME/.cargo/env&quot; ] &amp;amp;&amp;amp; . &quot;$HOME/.cargo/env&quot;
+
+# NVM
 export NVM_DIR=&quot;$HOME/.nvm&quot;
-
-if [ ! -d &quot;$NVM_DIR&quot; ]; then
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-fi
-
-# 【关键】加载 NVM 环境
 [ -s &quot;$NVM_DIR/nvm.sh&quot; ] &amp;amp;&amp;amp; . &quot;$NVM_DIR/nvm.sh&quot;
 
-log &quot;🟢 安装 Node LTS...&quot;
-nvm install --lts
-nvm use --lts
-nvm alias default lts/*
-
-log &quot;🟢 安装 pnpm 和常用全局包...&quot;
-if ! command -v pnpm &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  curl -fsSL https://get.pnpm.io/install.sh | sh -
-fi
-pnpm setup
-
-# 临时加载 pnpm 路径
-export PATH=&quot;$HOME/.local/share/pnpm:$PATH&quot;
-
-# 安装常用开发工具 
-pnpm add -g typescript tsx eslint prettier @google/gemini-cli @openai/codex
-# pnpm 交互式构建批准
-pnpm approve-builds -g
-curl -fsSL https://claude.ai/install.sh | bash
-echo &apos;export PATH=&quot;$HOME/.local/bin:$PATH&quot;&apos; &amp;gt;&amp;gt; ~/.bashrc &amp;amp;&amp;amp; source ~/.bashrc
-
-### ========================================
-### 5. Python uv and miniconda
-### ========================================
-log &quot;🐍 5. 安装 Python 环境 (uv)...&quot;
-
-if ! command -v uv &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  curl -Ls https://astral.sh/uv/install.sh | sh
-fi
-
-# 临时加载 uv 路径
-export PATH=&quot;$HOME/.local/bin:$PATH&quot;
-
-log &quot;🐍 安装 Python 工具链...&quot;
-# uv tool install 类似于 pipx，安装到隔离环境
-for tool in ruff mypy black poetry httpie; do
-    uv tool install &quot;$tool&quot; || true
-done
-
-log &quot;🐍 5.5 安装 Miniconda...&quot;
-
-# 定义安装路径 (通常在 ~/miniconda3 或 ~/.miniconda3)
-MINICONDA_PATH=&quot;$HOME/miniconda3&quot;
-
-if [ ! -d &quot;$MINICONDA_PATH&quot; ]; then
-  # 1. 下载最新的 Linux 安装脚本
-  wget &quot;https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-$(uname -m).sh&quot; -O miniconda.sh
-  
-  # 2. 静默安装 (-b: batch mode, -p: prefix path)
-  bash miniconda.sh -b -p &quot;$MINICONDA_PATH&quot;
-  
-  # 3. 删除安装包
-  rm miniconda.sh
-  
-  # 4. 【关键配置】初始化 Shell (bash 和 zsh)
-  # 这步会自动把 conda 的路径写入 .bashrc 和 .zshrc
-  &quot;$MINICONDA_PATH/bin/conda&quot; init bash
-  &quot;$MINICONDA_PATH/bin/conda&quot; init zsh
-
-  # 5. 【强力推荐】禁止 Conda 默认激活 base 环境
-  # 否则每次打开终端前面都有个 (base)，会干扰 uv 和系统 Python
-  &quot;$MINICONDA_PATH/bin/conda&quot; config --set auto_activate_base false
-  
-  log &quot;✅ Miniconda 安装完成 (Base 环境已禁用自动激活)&quot;
-else
-  info &quot;Miniconda 已存在，跳过安装。&quot;
-fi
-
-### ========================================
-### 6. Git &amp;amp; GitHub
-### ========================================
-log &quot;🐙 6. 安装 Git 工具...&quot;
-
-# 6.1 GitHub CLI (gh)
-if ! command -v gh &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  info &quot;安装 gh cli...&quot;
-  sudo mkdir -p -m 755 /etc/apt/keyrings
-  wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg &amp;gt; /dev/null
-  sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
-  echo &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main&quot; | sudo tee /etc/apt/sources.list.d/github-cli.list &amp;gt; /dev/null
-  sudo apt update
-  sudo apt install -y gh
-fi
-
-# 6.2 Lazygit (自动架构检测)
-if ! command -v lazygit &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
-  info &quot;安装 lazygit...&quot;
-  LAZYGIT_VERSION=$(curl -s &quot;https://api.github.com/repos/jesseduffield/lazygit/releases/latest&quot; | grep -Po &apos;&quot;tag_name&quot;: &quot;v\K[^&quot;]*&apos;)
-  ARCH=$(uname -m)
-  case $ARCH in
-    x86_64) LG_ARCH=&quot;x86_64&quot; ;;
-    aarch64) LG_ARCH=&quot;arm64&quot; ;;
-    *) error &quot;不支持的架构: $ARCH&quot;; exit 1 ;;
-  esac
-  
-  curl -Lo lazygit.tar.gz &quot;https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_${LG_ARCH}.tar.gz&quot;
-  tar xf lazygit.tar.gz lazygit
-  sudo install lazygit /usr/local/bin
-  rm -f lazygit lazygit.tar.gz
-fi
-
-### ========================================
-### 7. Shell (Oh-My-Zsh + Starship)
-### ========================================
-log &quot;💻 7. 配置 Shell 环境...&quot;
-
-# 安装 OMZ
-if [ ! -d &quot;$HOME/.oh-my-zsh&quot; ]; then
-  info &quot;安装 Oh-My-Zsh...&quot;
-  # --unattended: 不自动进入 zsh
-  # --keep-zshrc: 如果你已经有配置文件，不覆盖
-  sh -c &quot;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot; &quot;&quot; --unattended --keep-zshrc
-fi
-
-# 安装 fzf
-if [ ! -d &quot;$HOME/.fzf&quot; ]; then
-  info &quot;安装 FZF (命令行模糊搜索)...&quot;
-  git clone --depth 1 https://github.com/junegunn/fzf.git &quot;$HOME/.fzf&quot;
-  # --all: 自动启用 key-bindings (Ctrl+R/T) 和 fuzzy-completion
-  # --no-bash/--no-fish: 我们只配 zsh，不让它乱改其他 shell
-  &quot;$HOME/.fzf/install&quot; --all 
-else
-  info &quot;FZF 已安装，跳过.&quot;
-fi
-
-ZSHRC=&quot;$HOME/.zshrc&quot;
-
-# # 3.1 禁用 OMZ 主题 (让位给 Starship)
-# # 我们用 sed 查找并替换 ZSH_THEME=&quot;...&quot; 为 ZSH_THEME=&quot;&quot;
-# if grep -q &apos;ZSH_THEME=&apos; &quot;$ZSHRC&quot;; then
-#   sed -i &apos;s/^ZSH_THEME=&quot;.*&quot;/ZSH_THEME=&quot;&quot;/&apos; &quot;$ZSHRC&quot;
-# fi
-
-# A. 备份现有的 .zshrc (里面有 Conda 和 FZF 的配置，不能丢！)
-if [ -f &quot;$ZSHRC&quot; ]; then
-  cp &quot;$ZSHRC&quot; &quot;$ZSHRC.pre-bootstrap&quot;
-  info &quot;已备份现有配置到 .zshrc.pre-bootstrap&quot;
-fi
-
-# B. 获取 OMZ 官方模板 (作为地基)
-# 我们把模板下载下来，追加到现有的 .zshrc 后面，这样既保留了 Conda/FZF，又有了 OMZ 的功能
-if [ ! -f &quot;$HOME/.oh-my-zsh/templates/zshrc.zsh-template&quot; ]; then
-    # 万一模板没下载下来，手动抓取
-    curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/templates/zshrc.zsh-template &amp;gt; temp_zshrc
-else
-    cp &quot;$HOME/.oh-my-zsh/templates/zshrc.zsh-template&quot; temp_zshrc
-fi
-
-# C. 合并配置 (关键一步！)
-# 1. 保留 Conda/FZF (在文件头部)
-# 2. 插入 OMZ 模板 (在中间)
-# 3. 插入我们自定义的 PATH 和 Tool (在底部)
-
-# 读取现有内容 (Conda + FZF)
-CURRENT_CONTENT=$(cat &quot;$ZSHRC&quot;)
-
-# 覆写 .zshrc：先放 OMZ 模板，再放 原内容
-cat temp_zshrc &amp;gt; &quot;$ZSHRC&quot;
-echo &quot;&quot; &amp;gt;&amp;gt; &quot;$ZSHRC&quot;
-echo &quot;$CURRENT_CONTENT&quot; &amp;gt;&amp;gt; &quot;$ZSHRC&quot;
-rm temp_zshrc
-
-# D. 修改配置 (现在里面有东西了，可以改了)
-
-# 1. 禁用 OMZ 主题 (让 Starship 接管)
-# 使用 sed 将 ZSH_THEME=&quot;robbyrussell&quot; 替换为 ZSH_THEME=&quot;&quot;
-sed -i &apos;s/^ZSH_THEME=&quot;.*&quot;/ZSH_THEME=&quot;&quot;/&apos; &quot;$ZSHRC&quot;
-
-# 2. 启用常用插件 (git, extract, sudo)
-# 这是 OMZ 的精华，必须开
-sed -i &apos;s/^plugins=(git)/plugins=(git git-extras debian tmux screen history extract colorize web-search docker sudo)/&apos; &quot;$ZSHRC&quot;
-
-# 3. 注入环境变量 (把之前漏在 bashrc 里的补回来)
-cat &amp;lt;&amp;lt;EOT &amp;gt;&amp;gt; &quot;$ZSHRC&quot;
-
-# --- Bootstrap Generated Config (PATHs &amp;amp; Tools) ---
-
-# 1. PATH 补全 (Rust, Node, Bob, Local Bin)
-# 注意：Miniconda 已经在文件头部配好了，这里不需要重复
-export PATH=&quot;\$HOME/.local/bin:\$HOME/.cargo/bin:\$HOME/.local/share/bob/nvim-bin:\$HOME/.local/share/pnpm:\$PATH&quot;
-
-. &quot;\$HOME/.cargo/env&quot;
-
-# 2. 工具启动
-eval &quot;\$(atuin init zsh)&quot;     # 启动 atuin (需要在 fzf 初始化之后)
-eval &quot;\$(starship init zsh)&quot;  # 启动 Starship
-eval &quot;\$(zoxide init zsh)&quot;    # 启动 Zoxide (z 命令)
-
-# 3. 别名 (Aliases)
-alias cat=&apos;bat&apos;
-alias ls=&apos;eza --icons&apos;                        # 基础 ls 变彩色+图标
-alias ll=&apos;eza -lah --icons --git &apos;            # ll 显示详情、Git状态、隐藏文件
-alias lt=&apos;eza -lah --tree --level=2 --icons&apos;  # lt 显示目录树(2层)
-alias vi=&apos;nvim&apos;
-alias vim=&apos;nvim&apos;
-alias zj=&apos;zellij&apos;
-alias ra=&apos;ranger&apos; # 如果装了 ranger
-
-# 4. NVM
-export NVM_DIR=&quot;\$HOME/.nvm&quot;
-[ -s &quot;\$NVM_DIR/nvm.sh&quot; ] &amp;amp;&amp;amp; . &quot;\$NVM_DIR/nvm.sh&quot;  # This loads nvm
-[ -s &quot;\$NVM_DIR/bash_completion&quot; ] &amp;amp;&amp;amp; \. &quot;\$NVM_DIR/bash_completion&quot;  # This loads nvm bash_completion
-
-# 5. pnpm
-export PNPM_HOME=&quot;\$HOME/.local/share/pnpm&quot;
-case &quot;:\$PATH:&quot; in
-  *&quot;:\$PNPM_HOME:&quot;*) ;;
-  *) export PATH=&quot;\$PNPM_HOME:\$PATH&quot; ;;
+# pnpm
+export PNPM_HOME=&quot;$HOME/.local/share/pnpm&quot;
+export PNPM_GLOBAL_BIN_DIR=&quot;$PNPM_HOME/bin&quot;
+case &quot;:$PATH:&quot; in
+  *&quot;:$PNPM_HOME:&quot;*) ;;
+  *) export PATH=&quot;$PNPM_HOME:$PATH&quot; ;;
 esac
-# pnpm end
+case &quot;:$PATH:&quot; in
+  *&quot;:$PNPM_GLOBAL_BIN_DIR:&quot;*) ;;
+  *) export PATH=&quot;$PNPM_GLOBAL_BIN_DIR:$PATH&quot; ;;
+esac
 
-EOT
+# Conda: available on demand; base does not auto-activate.
+[ -f &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot; ] &amp;amp;&amp;amp; . &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;
 
-# 1. 删掉顶部的那行 FZF 配置 (使用 sed)
-#sed -i &apos;/\[ -f ~\/.fzf.zsh \] &amp;amp;&amp;amp; source ~\/.fzf.zsh/d&apos; &quot;$ZSHRC&quot;
-# 2. 把它追加到文件最末尾
-#echo &apos;[ -f ~/.fzf.zsh ] &amp;amp;&amp;amp; source ~/.fzf.zsh&apos; &amp;gt;&amp;gt; &quot;$ZSHRC&quot;
+# Oh My Zsh
+export ZSH=&quot;$HOME/.oh-my-zsh&quot;
+ZSH_THEME=&quot;&quot;
+plugins=(git git-extras debian tmux screen history extract colorize web-search docker sudo)
+[ -s &quot;$ZSH/oh-my-zsh.sh&quot; ] &amp;amp;&amp;amp; source &quot;$ZSH/oh-my-zsh.sh&quot;
 
-# 修改系统shell
-chsh -s $(which zsh)
+# fzf (without installer-driven rc mutation)
+[ -f &quot;$HOME/.fzf/shell/key-bindings.zsh&quot; ] &amp;amp;&amp;amp; source &quot;$HOME/.fzf/shell/key-bindings.zsh&quot;
+[ -f &quot;$HOME/.fzf/shell/completion.zsh&quot; ] &amp;amp;&amp;amp; source &quot;$HOME/.fzf/shell/completion.zsh&quot;
 
-log &quot;✅ .zshrc 修复完成！(Conda + FZF + OMZ + Tools 全部合体)&quot;
-log &quot;👉 现在输入 &apos;zsh&apos; 进入新环境吧！&quot;
+# Interactive tools
+command -v atuin &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; eval &quot;$(atuin init zsh)&quot;
+command -v zoxide &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; eval &quot;$(zoxide init zsh)&quot;
+command -v starship &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; eval &quot;$(starship init zsh)&quot;
 
-# 安装 ohmytmux
-curl -fsSL &quot;https://github.com/gpakosz/.tmux/raw/refs/heads/master/install.sh#$(date +%s)&quot; | bash
+# Aliases
+command -v bat &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias cat=&apos;bat&apos;
+command -v eza &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias ls=&apos;eza --icons&apos;
+command -v eza &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias ll=&apos;eza -lah --icons --git&apos;
+command -v eza &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias lt=&apos;eza -lah --tree --level=2 --icons&apos;
+command -v nvim &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias vi=&apos;nvim&apos;
+command -v nvim &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias vim=&apos;nvim&apos;
+command -v zellij &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias zj=&apos;zellij&apos;
+command -v ranger &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &amp;amp;&amp;amp; alias ra=&apos;ranger&apos;
+EOS
+)
 
-# 安装docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+    update_managed_block \
+        &quot;$HOME/.zshrc&quot; \
+        &apos;# &amp;gt;&amp;gt;&amp;gt; bootstrap-dev managed &amp;gt;&amp;gt;&amp;gt;&apos; \
+        &apos;# &amp;lt;&amp;lt;&amp;lt; bootstrap-dev managed &amp;lt;&amp;lt;&amp;lt;&apos; \
+        &quot;$shell_block&quot;
+
+    local bash_block
+    bash_block=$(cat &amp;lt;&amp;lt;&apos;EOS&apos;
+export PATH=&quot;$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/share/bob/nvim-bin:$PATH&quot;
+[ -f &quot;$HOME/.cargo/env&quot; ] &amp;amp;&amp;amp; . &quot;$HOME/.cargo/env&quot;
+export NVM_DIR=&quot;$HOME/.nvm&quot;
+[ -s &quot;$NVM_DIR/nvm.sh&quot; ] &amp;amp;&amp;amp; . &quot;$NVM_DIR/nvm.sh&quot;
+export PNPM_HOME=&quot;$HOME/.local/share/pnpm&quot;
+case &quot;:$PATH:&quot; in
+  *&quot;:$PNPM_HOME:&quot;*) ;;
+  *) export PATH=&quot;$PNPM_HOME:$PATH&quot; ;;
+esac
+[ -f &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot; ] &amp;amp;&amp;amp; . &quot;$HOME/miniconda3/etc/profile.d/conda.sh&quot;
+EOS
+)
+    update_managed_block \
+        &quot;$HOME/.bashrc&quot; \
+        &apos;# &amp;gt;&amp;gt;&amp;gt; bootstrap-dev managed &amp;gt;&amp;gt;&amp;gt;&apos; \
+        &apos;# &amp;lt;&amp;lt;&amp;lt; bootstrap-dev managed &amp;lt;&amp;lt;&amp;lt;&apos; \
+        &quot;$bash_block&quot;
+
+    # Change login shell only when necessary.
+    local zsh_path
+    zsh_path=&quot;$(command -v zsh)&quot;
+    if [[ &quot;${SHELL:-}&quot; != &quot;$zsh_path&quot; ]]; then
+        chsh -s &quot;$zsh_path&quot; || warn &quot;chsh 失败；可稍后手动执行: chsh -s $zsh_path&quot;
+    fi
+}
+
+phase_tmux() {
+    log &quot;[tmux] 安装 oh-my-tmux&quot;
+    local repo=&quot;$HOME/.tmux&quot;
+    if [[ ! -d &quot;$repo/.git&quot; ]]; then
+        retry 3 2 git clone --depth=1 https://github.com/gpakosz/.tmux.git &quot;$repo&quot;
+    else
+        git -C &quot;$repo&quot; pull --ff-only || warn &quot;oh-my-tmux 更新失败，保留现有版本。&quot;
+    fi
+
+    if [[ ! -e &quot;$HOME/.tmux.conf&quot; || -L &quot;$HOME/.tmux.conf&quot; ]]; then
+        ln -sfn &quot;$repo/.tmux.conf&quot; &quot;$HOME/.tmux.conf&quot;
+    elif ! cmp -s &quot;$HOME/.tmux.conf&quot; &quot;$repo/.tmux.conf&quot;; then
+        warn &quot;~/.tmux.conf 是已有普通文件，不自动覆盖。&quot;
+    fi
+
+    if [[ ! -f &quot;$HOME/.tmux.conf.local&quot; ]]; then
+        cp &quot;$repo/.tmux.conf.local&quot; &quot;$HOME/.tmux.conf.local&quot;
+    fi
+}
+
+phase_docker() {
+    [[ &quot;$INSTALL_DOCKER&quot; == 1 ]] || { info &quot;[docker] 已按配置跳过。&quot;; return; }
+    log &quot;[docker] 安装 Docker Engine 官方 apt 仓库&quot;
+
+    if ! has docker; then
+        sudo install -m 0755 -d /etc/apt/keyrings
+        curl_download &quot;$TMP_DIR/docker.asc&quot; \
+            &quot;https://download.docker.com/linux/${ID}/gpg&quot;
+        sudo install -m 0644 &quot;$TMP_DIR/docker.asc&quot; /etc/apt/keyrings/docker.asc
+
+        # shellcheck disable=SC1091
+        . /etc/os-release
+        local codename=&quot;${VERSION_CODENAME:-}&quot;
+        [[ -n &quot;$codename&quot; ]] || die &quot;无法获取 VERSION_CODENAME，不能配置 Docker 仓库。&quot;
+
+        printf &apos;deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/%s %s stable\n&apos; \
+            &quot;$(dpkg --print-architecture)&quot; &quot;$ID&quot; &quot;$codename&quot; \
+            | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt;/dev/null
+        apt_get update
+        apt_install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    fi
+
+    if getent group docker &amp;gt;/dev/null 2&amp;gt;&amp;amp;1; then
+        if ! id -nG &quot;$USER&quot; | grep -qw docker; then
+            sudo usermod -aG docker &quot;$USER&quot;
+            warn &quot;已将 $USER 加入 docker 组；重新登录后生效。&quot;
+        fi
+    fi
+
+    if is_wsl; then
+        info &quot;WSL 环境：Docker 服务是否由 systemd 启动取决于你的 WSL systemd 配置。&quot;
+    fi
+}
+
+phase_verify() {
+    log &quot;[verify] 验证关键工具&quot;
+    local required=(
+        git curl zsh tmux jq yq cargo rustc nvim node pnpm uv gh lazygit starship
+        file pdftotext pdfinfo pandoc ffmpeg ffprobe exiftool sqlite3 duckdb mlr csvcut xmlstarlet shfmt htmlq
+    )
+    local optional_tools=(atuin zoxide eza bat fd rg dust procs hyperfine zellij fastfetch docker codex claude magick convert gs 7z zstd)
+    local failed=0 cmd
+
+    export PATH=&quot;$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/share/bob/nvim-bin:$HOME/.local/share/pnpm/bin:$HOME/.local/share/pnpm:$PATH&quot;
+    export NVM_DIR=&quot;$HOME/.nvm&quot;
+    # shellcheck disable=SC1090
+    [[ -s &quot;$NVM_DIR/nvm.sh&quot; ]] &amp;amp;&amp;amp; . &quot;$NVM_DIR/nvm.sh&quot;
+
+    for cmd in &quot;${required[@]}&quot;; do
+        if has &quot;$cmd&quot;; then
+            printf &apos;  [OK]   %-12s %s\n&apos; &quot;$cmd&quot; &quot;$(command -v &quot;$cmd&quot;)&quot;
+        else
+            printf &apos;  [MISS] %-12s\n&apos; &quot;$cmd&quot;
+            failed=1
+        fi
+    done
+    for cmd in &quot;${optional_tools[@]}&quot;; do
+        has &quot;$cmd&quot; &amp;amp;&amp;amp; printf &apos;  [OK?]  %-12s %s\n&apos; &quot;$cmd&quot; &quot;$(command -v &quot;$cmd&quot;)&quot;
+    done
+
+    if ! is_wsl &amp;amp;&amp;amp; has_graphical_desktop; then
+        if has fcitx5; then
+            printf &apos;  [OK?]  %-12s %s\n&apos; &quot;fcitx5&quot; &quot;$(command -v fcitx5)&quot;
+        else
+            printf &apos;  [INFO] %-12s %s\n&apos; &quot;fcitx5&quot; &quot;not installed&quot;
+        fi
+        locale -a 2&amp;gt;/dev/null | grep -qi &apos;^zh_CN\.utf\|^zh_CN\.UTF&apos; \
+            &amp;amp;&amp;amp; printf &apos;  [OK?]  %-12s %s\n&apos; &quot;zh_CN.UTF-8&quot; &quot;locale available&quot; \
+            || printf &apos;  [INFO] %-12s %s\n&apos; &quot;zh_CN.UTF-8&quot; &quot;locale missing&quot;
+    fi
+
+    if (( failed )); then
+        warn &quot;有必需工具未通过验证，请查看上方日志。&quot;
+        return 1
+    fi
+    log &quot;验证完成。&quot;
+}
+
+usage() {
+    cat &amp;lt;&amp;lt;EOF_USAGE
+Usage: $SCRIPT_NAME [phase ...]
+
+Phases:
+  system   Base packages, yq, fastfetch, gh
+  desktop  Native GUI: Chinese fonts/locales + Fcitx5 (WSL skips)
+  rust     Rust + modern CLI tools
+  agent-tools  PDF/JSON/data/media utilities for coding agents
+  neovim   Bob + Neovim + optional LazyVim
+  node     NVM + Node LTS + pnpm + AI CLIs
+  python   uv + Python tools + optional Miniconda
+  git      lazygit
+  shell    managed .zshrc/.bashrc + Oh My Zsh + fzf
+  tmux     oh-my-tmux
+  docker   Docker Engine
+  verify   final verification
+  all      all phases (default)
+EOF_USAGE
+}
+
+run_phase() {
+    case &quot;$1&quot; in
+        system) phase_system ;;
+        desktop) phase_desktop ;;
+        rust) phase_rust ;;
+        agent-tools) phase_agent_tools ;;
+        neovim) phase_neovim ;;
+        node) phase_node ;;
+        python) phase_python ;;
+        git) phase_git ;;
+        shell) phase_shell ;;
+        tmux) phase_tmux ;;
+        docker) phase_docker ;;
+        verify) phase_verify ;;
+        *) die &quot;未知 phase: $1&quot; ;;
+    esac
+}
+
+main() {
+    require_normal_user
+    require_supported_os
+    detect_arch
+    setup_sudo
+    TMP_DIR=&quot;$(mktemp -d)&quot;
+    setup_proxy
+
+    info &quot;OS: ${PRETTY_NAME:-unknown}&quot;
+    info &quot;Arch: $UNAME_ARCH -&amp;gt; $ARCH&quot;
+    if is_wsl; then
+        info &quot;Runtime: WSL&quot;
+    else
+        info &quot;Runtime: native Linux&quot;
+    fi
+
+    if (($# == 0)) || [[ &quot;${1:-}&quot; == all ]]; then
+        local phases=(system desktop rust agent-tools neovim node python git shell tmux docker verify)
+        local phase
+        for phase in &quot;${phases[@]}&quot;; do
+            run_phase &quot;$phase&quot;
+        done
+    else
+        local phase
+        for phase in &quot;$@&quot;; do
+            case &quot;$phase&quot; in
+                -h|--help|help) usage; return 0 ;;
+            esac
+            run_phase &quot;$phase&quot;
+        done
+    fi
+
+    printf &apos;\n&apos;
+    log &quot;Bootstrap 完成。&quot;
+    info &quot;建议重新登录 shell，或执行: exec zsh -l&quot;
+}
+
+main &quot;$@&quot;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h2&gt;5.1 关于&lt;code&gt;yt-dlp&lt;/code&gt;&lt;/h2&gt;
 &lt;pre&gt;&lt;code&gt;# 建议使用default安装
