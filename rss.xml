@@ -1,4 +1,111 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Z的日志</title><description>zlog</description><link>https://zlog.zxdata.uk/</link><language>zh_CN</language><item><title>十几亿 Token，零行手写代码 - Ask Codex 开发实录</title><link>https://zlog.zxdata.uk/2026/07/26/ask-codex/</link><guid isPermaLink="true">https://zlog.zxdata.uk/2026/07/26/ask-codex/</guid><description>AI 不但把一个真实项目做完了，还把跨设备开发、项目接力和日常工作流逐渐沉淀成了一套可以复用的 Skills</description><pubDate>Sun, 26 Jul 2026 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;先说这次最离谱的地方：这个项目里，我一行代码都没敲。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Z的日志</title><description>zlog</description><link>https://zlog.zxdata.uk/</link><language>zh_CN</language><item><title>AI给我的家庭服务器搬了个家：Rock 5B → Q8B</title><link>https://zlog.zxdata.uk/2026/09/05/rock-5b-to-q8b/</link><guid isPermaLink="true">https://zlog.zxdata.uk/2026/09/05/rock-5b-to-q8b/</guid><description>服务能抄，硬盘能搬，正在写的数据库和AI自己的聊天记录比较难办</description><pubDate>Sat, 05 Sep 2026 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;fastfetch-screenshot.png&lt;/p&gt;
+&lt;p&gt;2022年双十一，我花988块买了一块16G的Rock 5B，还很有仪式感地写了篇&lt;a href=&quot;/2022/11/13/rock-5b-init/&quot;&gt;使用体验&lt;/a&gt;。后来它从玩具一路混成了家里的低功耗服务器：接三块机械硬盘，跑下载、爬虫、网盘、文件管理、命令行历史、Tailscale网关，还有一个我自己用的&lt;a href=&quot;/2026/07/26/ask-codex/&quot;&gt;Ask Codex&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;三年多以后，我又买了一块16G的Radxa Dragon Q8B。高通 SC8280XP，Ubuntu 26.04，板子新，系统也新，看着很适合把老Rock 5B换下来。&lt;/p&gt;
+&lt;p&gt;问题是，我已经记不清Rock 5B上到底跑了些什么。&lt;/p&gt;
+&lt;p&gt;于是这次搬家基本交给了sol-5.6。&lt;/p&gt;
+&lt;p&gt;先说清楚，不是我让AI写一篇迁移教程，然后自己照着做。Codex就运行在Q8B上，可以SSH进Rock 5B，实际盘点两台机器、复制文件、导出镜像、恢复数据库、写systemd服务和检查结果。需要sudo密码、Cloudflare网页操作、物理关机拔硬盘的地方由我来。大部分时候我做的事情，就是看它给出的结论，然后回复“继续”。&lt;/p&gt;
+&lt;p&gt;当然，AI不但真的搬了，它也真的闯祸了。这个后面再说。&lt;/p&gt;
+&lt;h2&gt;0x00 第一步不是复制，是查家底&lt;/h2&gt;
+&lt;p&gt;我能想起来的东西不少：Tailscale subnet router、Cloudflare Tunnel、Ask Codex、&lt;code&gt;hd-idle&lt;/code&gt;、Samba、五个Docker容器、几个代码目录、两个爬虫，还有Codex自己的历史、memory和skills。&lt;/p&gt;
+&lt;p&gt;我给AI定了两条规矩：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先只读检查，不许修改旧机；&lt;/li&gt;
+&lt;li&gt;没必要不要碰&lt;code&gt;/mnt&lt;/code&gt;，三块大硬盘睡着就让它们继续睡。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这个限制非常有用。AI没有上来就&lt;code&gt;rsync -a /&lt;/code&gt;，而是先看systemd、Docker inspect、Compose、端口、Git状态、挂载元数据和进程。查完以后发现，我果然漏记了东西。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;~/quant/weconn&lt;/code&gt;不只是一个“好像部署在远端的微信项目”，Rock 5B本机还有一个开机自启、已经连续跑了二十多天的&lt;code&gt;watcher.service&lt;/code&gt;，它有自己的&lt;code&gt;watcher.db&lt;/code&gt;和环境变量。&lt;code&gt;amplist&lt;/code&gt;则一直躲在tmux里手动运行，也有一份正在写的SQLite。File Browser除了三块硬盘的bind mount，还有几个Docker volume；如果只记得容器启动参数，用户和配置就没了。&lt;/p&gt;
+&lt;p&gt;反过来，也排除了一些看着像服务、其实没有业务的东西：rpcbind没有NFS exports，OpenVPN没有配置，CUPS没有打印队列，&lt;code&gt;vnstat&lt;/code&gt;只有旧网卡的流量历史。&lt;code&gt;Douyin_TikTok_Download_API&lt;/code&gt;也没有被&lt;code&gt;dkx-dl&lt;/code&gt;引用，我决定不迁。&lt;/p&gt;
+&lt;p&gt;两边都是aarch64，容器和源码总体没什么架构鸿沟。真正麻烦的是“活的东西”：正在写的SQLite、PostgreSQL、Docker卷、登录凭据和本机状态。还有旧机是Python 3.12，新机系统Python已经3.14，直接把&lt;code&gt;.venv&lt;/code&gt;复制过去属于给未来的自己埋雷。&lt;/p&gt;
+&lt;h2&gt;0x01 先把代码变成可以搬的样子&lt;/h2&gt;
+&lt;p&gt;AI把旧机几个目录下的Git仓库都扫了一遍，列出未提交、未跟踪以及没有push的内容。我先自己把能提交的提交掉，&lt;code&gt;watcher.db&lt;/code&gt;这种运行数据库放进&lt;code&gt;.gitignore&lt;/code&gt;，然后才开始第一轮预复制。&lt;/p&gt;
+&lt;p&gt;目录保持原样：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;~/jsws/ask-codex
+~/devof/amplist
+~/devof/dkx-dl
+~/devof/XHS-Downloader
+~/quant/weconn
+~/quant/trading-codex
+~/agentws
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;第一轮只搬代码和普通文件，明确排除了&lt;code&gt;.venv&lt;/code&gt;、&lt;code&gt;node_modules&lt;/code&gt;、缓存、两份活SQLite和&lt;code&gt;/mnt&lt;/code&gt;。大约69MB，旧机没停任何服务，新机原有的migration目录也没有被&lt;code&gt;--delete&lt;/code&gt;顺手扬掉。&lt;/p&gt;
+&lt;p&gt;然后在Q8B上重建环境。Ask Codex的typecheck、lint、709项测试和ARM64构建都过了；&lt;code&gt;weconn&lt;/code&gt;的74项测试也过了。&lt;code&gt;dkx-dl&lt;/code&gt;有一项失败，最后查出来不是Q8B问题，而是代码已经把小红书恢复等待改成48小时，测试还坚持24小时。迁移顺便给原项目做了次体检。&lt;/p&gt;
+&lt;p&gt;Python统一用uv管理的3.12，不去折腾Ubuntu 26.04的系统Python。&lt;code&gt;yt-dlp&lt;/code&gt;和&lt;code&gt;gallery-dl&lt;/code&gt;一开始AI按旧机看到的版本装了，我想起来自己以前不是这么装的，于是让它重来：主程序用最新版，两个tool环境都带上&lt;code&gt;curl_cffi==0.14&lt;/code&gt;和&lt;code&gt;pycryptodomex&lt;/code&gt;，gallery-dl里再注入yt-dlp。ARM64上的&lt;code&gt;curl_cffi&lt;/code&gt;有点挑版本，这种自己踩过的坑，还是人类的记性暂时赢了一回。&lt;/p&gt;
+&lt;p&gt;Playwright的ARM64 Chromium也重新下载，只开空白页做smoke test，没有把旧浏览器profile和登录态一锅抄走。&lt;/p&gt;
+&lt;h2&gt;0x02 Docker镜像不能只看tag&lt;/h2&gt;
+&lt;p&gt;旧机上有五个容器：Atuin、PostgreSQL、OpenList、Open WebUI和File Browser。&lt;/p&gt;
+&lt;p&gt;其中几个镜像只有本地SHA，tag要么没了，要么是&lt;code&gt;latest/main&lt;/code&gt;。如果在Q8B上重新pull，很可能得到“名字相同、内容已经不是那一版”的新镜像。AI最后按正在运行容器的精确SHA，通过局域网直接做了&lt;code&gt;docker save | docker load&lt;/code&gt;，大约1.88GB，不在旧机落中间tar，也不用停服务。&lt;/p&gt;
+&lt;p&gt;数据则分成两次：先在线预复制静态目录，并给Atuin做一份PostgreSQL逻辑备份；正式切换时再停写、重新dump和最后一次rsync。&lt;/p&gt;
+&lt;p&gt;做到这里，我让Codex把剩余步骤写进&lt;code&gt;~/agentws/migration&lt;/code&gt;。还专门装了我自己的&lt;code&gt;project-continuity&lt;/code&gt; skill，把“最初盘点”“当前进度”“Docker停机清单”“网络切换”“Samba切换”拆成几份文档。现在回头看，这一步救过场——后面真的有一小段聊天记录没了，执行到哪主要靠这些落盘文档找回来。&lt;/p&gt;
+&lt;h2&gt;0x03 先把路接过去&lt;/h2&gt;
+&lt;p&gt;Q8B和Rock 5B先同时广播&lt;code&gt;192.168.1.0/24&lt;/code&gt;，做Tailscale subnet router的HA。这里特意没有加&lt;code&gt;--accept-routes&lt;/code&gt;，不然standby可能把本来直连的家庭LAN流量又绕给primary。&lt;/p&gt;
+&lt;p&gt;测试方法很土但是有效：手机关Wi-Fi，开蜂窝网络和Tailscale，访问旧机上的File Browser。先确认Q8B转发正常，再给Q8B安排一个120秒后自动恢复路由的临时systemd任务，然后清空它的advertise route。手机还访问得了旧机，说明Rock 5B确实接管了。恢复Q8B以后也正常，于是新机primary、旧机standby先这么留着。&lt;/p&gt;
+&lt;p&gt;Ask Codex不适合两边同时跑。它看到的是各自机器的工作目录和Codex状态，如果Cloudflare把请求随机分给两台，网页看着像一个服务，脑子其实是两个。所以我直接停掉旧机实例，把Q8B上的Ask Codex改成了&lt;code&gt;ask-codex@radxa.service&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;systemd不会加载我的&lt;code&gt;.zshrc&lt;/code&gt;，Codex又得找得到cargo、npm、pnpm、uv之类的工具。最后没有在启动脚本里activate conda，也没有每次跑一遍&lt;code&gt;nvm use&lt;/code&gt;，而是在服务环境里明确设置&lt;code&gt;HOME&lt;/code&gt;和完整的工具&lt;code&gt;PATH&lt;/code&gt;，Node则直接指向当前版本。服务起来以后，下面还跟着真正的&lt;code&gt;codex app-server&lt;/code&gt;进程，不是只有网页空壳：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;node dist-server/index.js
+└─ codex app-server --listen stdio://
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Cloudflare Tunnel继续用原来的远程配置。token没有从聊天或命令行参数里路过，而是放在root-only、&lt;code&gt;0600&lt;/code&gt;的&lt;code&gt;/etc/cloudflared/token&lt;/code&gt;。顺序是先停旧connector，再启Q8B connector；metrics显示四条边缘连接都起来以后，我从浏览器重新过Cloudflare Access和新的Ask Codex应用token。公网入口没变，后面的机器换了。&lt;/p&gt;
+&lt;h2&gt;0x04 AI迁自己的脑子，然后把自己绊了一跤&lt;/h2&gt;
+&lt;p&gt;旧机有52个Codex session，新机也已经有自己的会话。整个&lt;code&gt;~/.codex&lt;/code&gt;覆盖肯定不行，登录状态、配置、memory、skills和新版SQLite索引都会互相踩。&lt;/p&gt;
+&lt;p&gt;AI先在&lt;code&gt;/tmp&lt;/code&gt;里做了一个隔离的&lt;code&gt;CODEX_HOME&lt;/code&gt;，把两边rollout JSONL放进去，让Q8B上的新版Codex自己重建索引。确认旧会话能列出、能恢复以后，才做正式切换。第一次切完又发现索引里的&lt;code&gt;rollout_path&lt;/code&gt;还指向staging目录，于是备份数据库，用一个事务改回正式&lt;code&gt;sessions&lt;/code&gt;路径。&lt;/p&gt;
+&lt;p&gt;紧接着又出现一个很有Codex特色的问题：旧会话在各自原cwd下还是看不到。查了半天，原来旧会话写的是&lt;code&gt;custom&lt;/code&gt; provider，新机默认叫&lt;code&gt;openai&lt;/code&gt;。补上&lt;code&gt;custom&lt;/code&gt;以后，旧会话出现了，新机的migration会话又消失了——列表还会按provider过滤。&lt;/p&gt;
+&lt;p&gt;我让它干脆把旧会话里的&lt;code&gt;custom&lt;/code&gt;统一改成&lt;code&gt;openai&lt;/code&gt;，然后恢复默认配置。它在副本里演练成功，写了一个带备份和回滚的脚本，改了数据库里52条记录和JSONL里的82处元数据。刷新网页以后，新旧会话终于都在。&lt;/p&gt;
+&lt;p&gt;但我发现，刚才讨论停服务、关机和搬硬盘的几轮对话不见了。&lt;/p&gt;
+&lt;p&gt;数据库&lt;code&gt;quick_check&lt;/code&gt;是&lt;code&gt;ok&lt;/code&gt;，不是SQLite坏了。日志也能证明那几轮确实发生过，migration文档的修改时间和内容都对。最后查明，AI写的转换脚本只停了systemd里的Ask Codex，不知道我另一台电脑的VS Code通过Remote SSH还在Q8B上跑着另一个&lt;code&gt;codex app-server&lt;/code&gt;。脚本用&lt;code&gt;perl -pi&lt;/code&gt;替换JSONL，相当于创建新文件再换掉旧文件；VS Code的旧进程还握着已经被取消目录链接的inode，继续往里面写。&lt;/p&gt;
+&lt;p&gt;然后我直接&lt;code&gt;poweroff&lt;/code&gt;了Q8B。&lt;/p&gt;
+&lt;p&gt;文件句柄消失，那几轮也彻底没了。&lt;/p&gt;
+&lt;p&gt;所以，这次迁移最严重的事故，是AI迁移自己的聊天记录时，没数清到底有几个自己正在写文件。硬盘没坏，数据库没坏，业务也没丢，偏偏迁移过程本身少了几句话。幸好它此前坚持把每一步更新到runbook里，才能从文档和日志还原到“旧机服务已经停、两台机器都关机、三块盘已经换过去”。&lt;/p&gt;
+&lt;p&gt;后来脚本规则也补上了：以后动Codex session文件以前，不仅要停Ask Codex服务，还要关掉所有Remote SSH里的Codex插件，并确认没有任何&lt;code&gt;codex app-server&lt;/code&gt;进程。&lt;/p&gt;
+&lt;p&gt;AI确实很会做备份，但它也需要有人提醒：你到底有几个AI。&lt;/p&gt;
+&lt;h2&gt;0x05 三块硬盘，真的用手搬&lt;/h2&gt;
+&lt;p&gt;AI能SSH，不能拔SATA线。停掉旧机的OpenList、File Browser、Samba和&lt;code&gt;hd-idle&lt;/code&gt;，确认没有占用以后，我把两台板子都关了，把16T、8T、1T三块NTFS硬盘从Rock 5B的ASM1166卡上按原位置挪到Q8B。&lt;/p&gt;
+&lt;p&gt;开机后的第一件事不是挂载，而是对序列号、WWN、UUID和ASM1166端口。三块盘仍然对应ATA 1/4/6，旧机也确认没有误挂载。然后才跑&lt;code&gt;ntfsfix --no-action&lt;/code&gt;，全部通过以后以只读方式挂到原路径：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/mnt/exos_16t
+/mnt/exos_8t
+/mnt/exos_1t
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这期间没有遍历盘内目录。确认文件系统和身份都没问题后，才写入fstab、改成读写挂载并做最小读写测试。&lt;/p&gt;
+&lt;p&gt;硬盘休眠继续保持300秒，不过不再依赖&lt;code&gt;sda/sdb/sdc&lt;/code&gt;这种可能换号的名字，而是每块盘各自的&lt;code&gt;/dev/disk/by-id/&lt;/code&gt;。&lt;code&gt;hd-idle&lt;/code&gt;做成systemd服务，日志只进系统盘上的journald，不给它配写在机械盘上的日志文件。五分钟以后，日志里三块盘依次&lt;code&gt;spindown&lt;/code&gt;，&lt;code&gt;hdparm -C&lt;/code&gt;也都返回&lt;code&gt;standby&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这时候三块盘才算真正搬完，不是&lt;code&gt;mount&lt;/code&gt;成功就算完。&lt;/p&gt;
+&lt;h2&gt;0x06 两个小数据库，反而要最后搬&lt;/h2&gt;
+&lt;p&gt;代码第一轮复制时故意留下了&lt;code&gt;watcher.db&lt;/code&gt;和&lt;code&gt;amplist.db&lt;/code&gt;。现在硬盘和服务都停稳，才轮到它们。&lt;/p&gt;
+&lt;p&gt;Rock 5B重启后我没有重新运行amplist，所以先复制它的数据库；&lt;code&gt;watcher.service&lt;/code&gt;还活着，我手工&lt;code&gt;disable --now&lt;/code&gt;以后再搬。两份库都检查了WAL/SHM、跑&lt;code&gt;quick_check&lt;/code&gt;，复制前后对SHA256，新机再跑&lt;code&gt;integrity_check&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;我还提醒AI watcher“好像有腾讯申请的key”。它没有把&lt;code&gt;.env&lt;/code&gt;打印出来，而是只核对路径、权限和哈希。最后发现真正需要保留的是推送用的bearer token，腾讯行情本身走公开接口；环境文件已经原样迁到Q8B，权限顺手从&lt;code&gt;0664&lt;/code&gt;收紧成&lt;code&gt;0600&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;两个原本一个靠旧systemd、一个靠tmux手工吊着的程序，这次都正式做成了服务。watcher启动后在非交易时段正常跳过监控项；amplist第一次循环抓到25条、没有新任务，然后睡600秒。&lt;/p&gt;
+&lt;p&gt;它启动时正常唤醒了1T盘。又等300秒，&lt;code&gt;hd-idle&lt;/code&gt;把盘重新睡下去。爬虫和省电策略算是和平共处了。&lt;/p&gt;
+&lt;h2&gt;0x07 容器恢复，比想象中碎&lt;/h2&gt;
+&lt;p&gt;Atuin最先做正式停机切换。先停应用，让PostgreSQL继续运行并导出最终dump；在Q8B用同版PostgreSQL验证备份清单以后，才停旧数据库。新库从空目录恢复，用户、session和store记录数逐项对上，再启动Atuin。&lt;/p&gt;
+&lt;p&gt;旧机的两个Atuin容器在停止数据库的同一秒被Docker daemon销毁了，尽管inspect里&lt;code&gt;AutoRemove=false&lt;/code&gt;，执行的也只有&lt;code&gt;docker stop&lt;/code&gt;。原因没彻底查清，好在Compose、旧数据库目录和最终dump都在，回滚只是从“docker start旧容器”变成“用旧Compose重建”。这是AI很擅长的一件事：出怪事的时候不先宣布成功，先把还能回滚的东西数一遍。&lt;/p&gt;
+&lt;p&gt;Atuin客户端只需要把&lt;code&gt;sync_address&lt;/code&gt;从旧IP换成新IP。数据库里的session一起迁了，不需要重新login，加密key也不用换。后来Q8B自己作为一个已登录客户端跑&lt;code&gt;atuin sync&lt;/code&gt;成功，旧历史还在。&lt;/p&gt;
+&lt;p&gt;OpenList和Open WebUI停机后做最后一次rsync，第二次dry-run都是0漂移。File Browser那边，AI看到文件名叫&lt;code&gt;filebrowser.db&lt;/code&gt;，一开始拿SQLite去验，当然失败；再看文件头才发现它是BoltDB，最后用同一版File Browser二进制执行&lt;code&gt;config cat&lt;/code&gt;和&lt;code&gt;users ls&lt;/code&gt;才确认能读。文件名有时候比AI还会骗人。&lt;/p&gt;
+&lt;p&gt;Open WebUI也藏了一个坑：&lt;code&gt;WEBUI_SECRET_KEY&lt;/code&gt;在旧容器可写层里，不在挂载的数据目录。直接重建会生成新key，旧网页登录session就失效了。AI发现新旧key哈希不同以后，把旧key单独保存成宿主机&lt;code&gt;0600&lt;/code&gt;文件，再只读挂进新容器。镜像自带的healthcheck还因为一条有问题的&lt;code&gt;jq ... break&lt;/code&gt;把正常HTTP 200报成unhealthy，最后也换成直接检查&lt;code&gt;/health&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;期间AI还连续踩了两次zsh：先把变量叫&lt;code&gt;path&lt;/code&gt;，把自己的&lt;code&gt;PATH&lt;/code&gt;弄没了，提示找不到&lt;code&gt;tar&lt;/code&gt;和&lt;code&gt;wc&lt;/code&gt;；后来又用了zsh的特殊变量&lt;code&gt;options&lt;/code&gt;。两次都没有伤到源数据，只是很像一个熟练程序员在半夜写迁移脚本时会干出来的事。&lt;/p&gt;
+&lt;h2&gt;0x08 Docker管容器，systemd管硬盘有没有来&lt;/h2&gt;
+&lt;p&gt;最初AI给Open WebUI、OpenList和File Browser都套了systemd。我问它：Docker自己不是会重启吗？&lt;/p&gt;
+&lt;p&gt;答案是，systemd不是为了比Docker更会养容器，而是为了挡住一个很阴的情况：机械盘启动时没挂上，&lt;code&gt;/mnt/exos_1t&lt;/code&gt;这个目录依然存在，只不过它其实落在系统NVMe上。Docker照样会把这个空目录bind mount进去，OpenList也照样会开开心心往里面写。等真正的硬盘挂上来，那些新数据反而被盖住了。&lt;/p&gt;
+&lt;p&gt;所以OpenList和File Browser保留systemd管理：启动前检查所需路径必须是真实、可写的mount point，容器自己的restart policy设为&lt;code&gt;no&lt;/code&gt;，避免Docker绕过门禁。Open WebUI不依赖HDD，没有这个问题，后来又拆掉多余的unit，交回Docker的&lt;code&gt;unless-stopped&lt;/code&gt;。Atuin继续由Compose管理。&lt;/p&gt;
+&lt;p&gt;不是“统一由谁管理”最好看，而是谁需要知道硬盘到底在不在。&lt;/p&gt;
+&lt;h2&gt;0x09 最后把Samba接回来&lt;/h2&gt;
+&lt;p&gt;旧机有效的Samba业务就三个共享：&lt;code&gt;EXOS_16T&lt;/code&gt;、&lt;code&gt;EXOS_8T&lt;/code&gt;、&lt;code&gt;EXOS_1T&lt;/code&gt;，都允许&lt;code&gt;radxa&lt;/code&gt;读写。Q8B照原名字和原路径恢复，这样家里其他设备只需要换服务器IP。&lt;/p&gt;
+&lt;p&gt;没有跨Samba版本硬抄&lt;code&gt;passdb.tdb&lt;/code&gt;，而是在新机重新建立Samba密码。密码也不在&lt;code&gt;smb.conf&lt;/code&gt;里，以后要改就是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo smbpasswd radxa
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;smbd&lt;/code&gt;同样加了三盘真实读写挂载门禁；老式NetBIOS发现我用不上，&lt;code&gt;nmbd&lt;/code&gt;继续关着。安装和检查配置的过程只读挂载元数据，不列硬盘目录。真正从客户端打开共享、创建和删除测试文件，留给我自己验收——这个动作本来就一定会唤醒硬盘。&lt;/p&gt;
+&lt;h2&gt;0x10 搬完了吗&lt;/h2&gt;
+&lt;p&gt;到这里，Q8B已经接管了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Tailscale家庭网段路由；&lt;/li&gt;
+&lt;li&gt;Ask Codex和Cloudflare Tunnel；&lt;/li&gt;
+&lt;li&gt;Atuin/PostgreSQL、OpenList、Open WebUI、File Browser；&lt;/li&gt;
+&lt;li&gt;watcher和amplist；&lt;/li&gt;
+&lt;li&gt;三块NTFS硬盘、300秒休眠和三个Samba共享。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;旧Rock 5B还留着，文件和配置也都没有删。Tailscale暂时继续当standby，等新机多跑几天再退休。旧机还有一个inactive但enabled的&lt;code&gt;atuin.service&lt;/code&gt;要禁用，免得哪天开机又把旧服务拉起来。OpenList、File Browser和Samba也还需要我从日常客户端做最后的登录、网盘和读写验收。&lt;/p&gt;
+&lt;p&gt;这篇不是一份可以照抄的迁移教程。里面不少脚本绑定了我自己的目录、磁盘身份和服务名，换台机器直接跑，大概会得到一场很有教育意义的事故。&lt;/p&gt;
+&lt;p&gt;但这次确实让我第一次把“AI操作真实服务器”用到了比较完整的程度。它不只是给命令，而是先查旧机到底有什么，区分静态文件和活数据，做预复制、停写、校验、回滚，再把临时决定写进文档。很多我不会主动想到的边角——File Browser卷、Open WebUI的secret key、HDD没挂载时写进系统盘——都是它翻出来的。&lt;/p&gt;
+&lt;p&gt;同时，它也用丢掉自己几轮对话证明了一件事：AI写的安全脚本，仍然可能漏掉它不知道的进程；“有备份”也不代表已经数清所有写入者。人类最后还是要看输出、做决定、拔硬盘，以及在AI说“完成”以后多问一句：&lt;/p&gt;
+&lt;p&gt;“真的都停了吗？”&lt;/p&gt;
+</content:encoded></item><item><title>十几亿 Token，零行手写代码 - Ask Codex 开发实录</title><link>https://zlog.zxdata.uk/2026/07/26/ask-codex/</link><guid isPermaLink="true">https://zlog.zxdata.uk/2026/07/26/ask-codex/</guid><description>AI 不但把一个真实项目做完了，还把跨设备开发、项目接力和日常工作流逐渐沉淀成了一套可以复用的 Skills</description><pubDate>Sun, 26 Jul 2026 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;先说这次最离谱的地方：这个项目里，我一行代码都没敲。&lt;/p&gt;
 &lt;p&gt;不是「AI 帮我写了大部分」，也不是我先搭好架子，再让它补几个函数。计划、架构、编码、测试、截图、文档、部署指南，全部由 &lt;code&gt;gpt-5.6-sol/ultra&lt;/code&gt; 分阶段自主完成。&lt;/p&gt;
 &lt;p&gt;我干的事情只有一件：&lt;strong&gt;验收。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;不好用就打回去，有 bug 就复现给它看，方案不顺眼就让它重新想。涉及提交、推送和部署这种有实际影响的动作，再由我授权。&lt;/p&gt;
