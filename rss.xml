@@ -1543,7 +1543,7 @@ EOF
 &lt;p&gt;20260829更新，用gpt-sol-5.6更新了个一键安装脚本 &lt;a href=&quot;https://gist.github.com/zlotus/c0516b62bd5117a7683c76f82cf8ea03&quot;&gt;bootstrap-dev-v5.sh&lt;/a&gt; ，也可以分块执行。&lt;/p&gt;
 &lt;p&gt;脚本是幂等的，可以直接用：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;curl -fsSL \
-  https://gist.githubusercontent.com/zlotus/c0516b62bd5117a7683c76f82cf8ea03/raw/bootstrap.sh \
+  https://gist.githubusercontent.com/zlotus/c0516b62bd5117a7683c76f82cf8ea03/raw/linux-bootstrap.sh \
   -o /tmp/bootstrap.sh
 
 GITHUB_TOKEN=xxx bash /tmp/bootstrap.sh
@@ -2522,50 +2522,75 @@ echo &apos;export XMODIFIERS=@im=fcitx&apos; &amp;gt;&amp;gt; ~/.xprofile
 &lt;p&gt;现在使用&lt;code&gt;topgrade&lt;/code&gt;自动感知并更新安装工具。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;5.5 关于starship&lt;/h2&gt;
+&lt;p&gt;直接用 &lt;a href=&quot;https://gist.github.com/zlotus/c0a6ce6a5f2ed2cf1e9ca6d1c9e10e38&quot;&gt;gist&lt;/a&gt; 初始化 &lt;code&gt;~/.config/starship.toml&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;curl -fsSL https://gist.githubusercontent.com/zlotus/c0a6ce6a5f2ed2cf1e9ca6d1c9e10e38/raw \
+  -o ~/.config/starship.toml
+&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;配置文件可以改好看点：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat &amp;gt; ~/.config/starship.toml &amp;lt;&amp;lt; &apos;EOF&apos;
-# ==========================
-# 1. 机器身份识别 (防错核心)
-# ==========================
-[hostname]
-ssh_only = false    # 即使是本地终端也显示主机名
-format = &apos;在 [$hostname]($style) &apos;
-style = &quot;bold purple&quot; # 建议：不同机器改成不同颜色，比如测试板用红色，生产环境用紫色
+&lt;pre&gt;&lt;code&gt;# ~/.config/starship.toml
+# 面向多设备 / SSH / 开发环境的简洁配置
+# 目标：防误操作、快速识别机器、减少无意义噪音
 
-# IP 显示 (仅限 SSH)
+# ==========================
+# 1. 用户与机器身份
+# ==========================
+
+[username]
+show_always = true
+format = &apos;[$user]($style) &apos;
+style_user = &quot;bold cyan&quot;
+style_root = &quot;bold red&quot;
+
+[hostname]
+ssh_only = false
+format = &apos;在 [$hostname]($style) &apos;
+style = &quot;bold purple&quot;
+
+# 仅 SSH 会话显示本机 IPv4，避免本地终端增加无意义信息
 [localip]
-ssh_only = true     # 性能优化：只有在你通过 SSH 连入时才去查 IP，本地直连时不查
+ssh_only = true
 disabled = false
 format = &apos;🌐 [$localipv4]($style) &apos;
 style = &quot;bold blue&quot;
 
 # ==========================
-# 2. 资源报警 (阈值触发，零延迟感知)
+# 2. 当前目录
 # ==========================
-# 内存使用率
-[memory_usage]
-disabled = false
-threshold = 80      # 性能优化：内存占用没超过 80% 时完全不渲染此模块，节省算力
-format = &apos;🐏 [$ram]($style) &apos;
-style = &quot;bold red&quot;
+
+[directory]
+truncation_length = 4
+truncate_to_repo = false
+format = &apos;[$path]($style)[$read_only]($read_only_style) &apos;
+style = &quot;bold cyan&quot;
+read_only = &quot; 󰌾&quot;
+read_only_style = &quot;red&quot;
 
 # ==========================
-# 3. 运维排障辅助
+# 3. 命令执行反馈
 # ==========================
-# 命令执行耗时 (仅当命令执行超过 2 秒时显示)
+
+# 仅在命令耗时超过 2 秒时显示
 [cmd_duration]
 min_time = 2000
 format = &apos;耗时 [$duration]($style) &apos;
 style = &quot;bold yellow&quot;
 
-# 退出码状态 (命令报错时变红)
+# 上一条命令失败时显示退出码
 [status]
 disabled = false
 format = &apos;[$symbol$status]($style) &apos;
-success_symbol = &quot;🟢 &quot;
 symbol = &quot;🔴 &quot;
 style = &quot;bold red&quot;
-EOF
+
+# ==========================
+# 4. Prompt
+# ==========================
+
+# 保持 prompt 简洁；成功状态不额外显示绿色图标
+[character]
+success_symbol = &apos;[❯](bold green)&apos;
+error_symbol = &apos;[❯](bold red)&apos;
+vimcmd_symbol = &apos;[❮](bold green)&apos;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h1&gt;6 tailscale 与 ipv6&lt;/h1&gt;
 &lt;p&gt;节后移动给的GPON坏了，运营商换了一个后发现有ipv6了。家里的rock5b、PVE工作站都可以用ipv6直连了。&lt;/p&gt;
